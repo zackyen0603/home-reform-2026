@@ -15,6 +15,23 @@ project:
       - 淺木紋
       - 少量深木與黑色五金
   last_updated: "2026-09-22"
+  drawing_dimensions:
+    1F:
+      source: IMG_3157.png
+      scale: "1:50"
+      overall_width_cm: 1092
+      overall_depth_cm: 574.5
+      status: width-partly-scaled-from-drawing
+      notes:
+        - 可直接讀取的橫向尺寸為200＋7.5牆厚＋455.6公分。
+        - 最右後段無總寬標註；樓層總寬1092公分僅供模型使用，施工前須現場覆核。
+    4F:
+      source: IMG_3158.png
+      scale: "1:50"
+      overall_width_cm: 1203.6
+      overall_depth_cm: 610.4
+      footprint: L-shaped
+      status: drawing-dimensioned
 
 status_definition:
   decided: 已決定
@@ -122,8 +139,11 @@ areas:
     floor: 1F
     name: 玄關與落塵區
     dimensions:
-      length_cm: 593
-      width_cm: 214
+      length_cm: 574.5
+      width_cm: 200
+      measurement_status: drawing-dimensioned
+      notes:
+        - 本區為圖面左側玄關／單車收納帶；舊版593×214公分為早期示意值，已停用。
     requirements:
       - id: 1F-ENT-001
         use: 格局
@@ -202,6 +222,8 @@ areas:
       combined_living_dining_length_cm: 610.4
       combined_living_dining_width_cm: 296.5
       height_cm: 280
+      measurement_status: drawing-dimensioned
+      source_drawing: IMG_3158.png
       floor_area_ping: 5.4748
     requirements:
       - id: 4F-LIV-001
@@ -287,7 +309,9 @@ areas:
     name: 廚房
     dimensions:
       length_cm: 408.5
-      width_cm: 407.1
+      width_cm: 407.2
+      measurement_status: drawing-dimensioned
+      source_drawing: IMG_3158.png
       main_counter_width_cm: 230
       island_length_cm: 130
       island_width_cm: 80
@@ -394,6 +418,8 @@ areas:
     dimensions:
       length_cm: 174.7
       width_cm: 96.6
+      measurement_status: drawing-dimensioned
+      source_drawing: IMG_3158.png
     requirements:
       - id: 4F-UTL-001
         use: 收納
@@ -419,6 +445,11 @@ areas:
   - id: AREA-4F-MASTER
     floor: 4F
     name: 主臥室
+    dimensions:
+      width_cm: 435.7
+      depth_cm: 264.7
+      measurement_status: drawing-derived
+      source_drawing: IMG_3158.png
     requirements:
       - id: 4F-MBR-001
         use: 睡眠
@@ -453,6 +484,11 @@ areas:
   - id: AREA-4F-SECOND
     floor: 4F
     name: 次臥室／書房
+    dimensions:
+      width_cm: 268.2
+      depth_cm: 265.7
+      measurement_status: drawing-derived
+      source_drawing: IMG_3158.png
     requirements:
       - id: 4F-SBR-001
         use: 睡眠
@@ -481,6 +517,15 @@ areas:
   - id: AREA-4F-BATHS
     floor: 4F
     name: 主浴與客浴
+    dimensions:
+      main_bath:
+        width_cm: 167.5
+        depth_cm: 265.7
+      guest_bath:
+        width_cm: 210.6
+        depth_cm: 178.8
+      measurement_status: drawing-derived
+      source_drawing: IMG_3158.png
     requirements:
       - id: 4F-BTH-001
         use: 防水與磁磚
