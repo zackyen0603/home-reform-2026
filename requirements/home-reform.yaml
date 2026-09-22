@@ -168,7 +168,6 @@ areas:
         requirement: 採透光門片，優先單扇清玻璃木框吊軌拉門
         status: evaluating
         priority: P1
-        budget_nzd: null
         budget_twd: 30000
       - id: 1F-ENT-009
         use: 牆面修整
