@@ -35,9 +35,11 @@ project:
       4F:
         overall_width: 1203.6
         overall_depth: 610.4
-        footprint: L-shaped
-        status: drawing-dimensioned
+        footprint: rectangular-with-internal-stair-zone
+        status: dimensioned-with-topology-correction
         source_drawing: IMG_3158.png
+        wall_topology_source: IMG_3159(1).jpeg
+        wall_model_note: 家具與櫃體不作為牆面
     regulatory_notes:
       - id: regulation-4f-existing-addition
         floor: 4F
@@ -266,11 +268,12 @@ spaces:
     name: 主臥
     category: bedroom
     dimensions:
-      width: 435.7
-      depth: 264.7
+      width: 487.9
+      depth: 344.7
       clear_height: 280
-      measurement_status: drawing-derived
+      measurement_status: combined-drawing-derived
       source_drawing: IMG_3158.png
+      wall_topology_source: IMG_3159(1).jpeg
     wardrobe:
       width: 240
       height: 240
@@ -288,11 +291,12 @@ spaces:
     name: 次臥
     category: bedroom
     dimensions:
-      width: 268.2
+      width: 320.4
       depth: 265.7
       clear_height: 280
-      measurement_status: drawing-derived
+      measurement_status: combined-drawing-derived
       source_drawing: IMG_3158.png
+      wall_topology_source: IMG_3159(1).jpeg
     requirements:
       - 預留獨立冷氣電源、銅管與排水
       - 窗簾盒配合氣密窗尺寸放樣
