@@ -11,10 +11,16 @@
 主要需求以 YAML 維護：
 
 - [完整需求資料](requirements/home-reform.yaml)
+- [整合需求資料](home-reform.yaml)
+- [智慧家庭資料](smart-home.yaml)
+- [平面圖座標](floorplan.yaml)
+- [四樓電力與燈具資料](electrical.yaml)
 
 YAML 是本專案的單一資料來源，適合：
 
 - 依樓層、空間與用途篩選
+- 以固定點位 ID、回路 ID 與空間 ID 維護插座和燈具
+- 將 electrical.yaml 點位座標直接渲染於網頁平面圖
 - 追蹤狀態、優先級與待確認事項
 - 日後產生 Markdown、表格、報價比對或 GitHub Issues
 - 避免同一規格散落在多份文件中
