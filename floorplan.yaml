@@ -239,89 +239,105 @@ floors:
       width: 1203.6
       depth: 610.4
     measurement:
-      source: IMG_3159(1).jpeg
-      source_role: wall-layout-reference
-      status: drawing-derived
-      confidence: medium
-      wall_detection_rule: 僅將深灰藍色粗線辨識為牆體；床、衣櫃、書桌、沙發、中島、電器櫃與櫥櫃均排除。
+      dimension_source: IMG_3158.png
+      wall_topology_source: IMG_3159(1).jpeg
+      status: dimensioned-with-topology-correction
+      confidence: medium-high
+      wall_detection_rule: 牆體拓樸只採深灰藍色粗線；床、衣櫃、書桌、沙發、中島、電器櫃與櫥櫃均排除。
       notes:
-        - 本次修正移除先前誤由家具輪廓生成的臥室走道牆與其他假隔間。
-        - 四樓外牆改為完整矩形；右下方為入口與樓梯區，不是建築外部缺口。
-        - 房間與開口座標依配置圖比例換算，仍須以正式施工圖與現場放樣覆核。
+        - 尺寸軸優先沿用1:50施工圖；家具配置圖只用於辨認牆、門洞與樓梯範圍。
+        - 已移除先前將衣櫃、矮櫃及家具輪廓誤判成牆所產生的臥室走道與假隔間。
+        - 四樓外框為完整矩形；右下方是入口與樓梯區，不是室外缺口。
+        - 門洞精確寬度與牆厚仍須以正式施工圖及現場放樣覆核。
       source_diagram_bounds:
         width: 1255
         depth: 664
-      mapped_wall_axes:
-        left_block_right_x: 440.3
-        living_kitchen_x: 782.4
-        left_horizontal_y: 327.9
-        service_horizontal_y: 178.1
-        kitchen_stair_y: 407.8
+      structural_axes:
+        bedroom_living_x: 487.9
+        living_width: 296.5
+        living_service_x: 796.4
+        service_zone_width: 407.2
+        left_horizontal_y: 344.7
+        service_horizontal_y: 178.8
+        kitchen_stair_y: 408.5
     rooms:
       - id: 4f-main-bedroom
         name: 主臥
         category: bedroom
         polygon:
           - [0, 0]
-          - [440.3, 0]
-          - [440.3, 327.9]
-          - [0, 327.9]
+          - [487.9, 0]
+          - [487.9, 344.7]
+          - [0, 344.7]
         dimensions:
-          width: 440.3
-          depth: 327.9
-          status: drawing-derived
+          width: 487.9
+          depth: 344.7
+          status: combined-drawing-derived
         floor_finish: wood
       - id: 4f-main-bathroom
         name: 主浴
         category: wet-area
         polygon:
-          - [0, 327.9]
-          - [181.2, 327.9]
-          - [181.2, 610.4]
+          - [0, 344.7]
+          - [167.5, 344.7]
+          - [167.5, 610.4]
           - [0, 610.4]
         dimensions:
-          width: 181.2
-          depth: 282.5
+          width: 167.5
+          depth: 265.7
           status: drawing-derived
         floor_finish: tile
       - id: 4f-secondary-bedroom
         name: 次臥
         category: bedroom
         polygon:
-          - [181.2, 327.9]
-          - [440.3, 327.9]
-          - [440.3, 610.4]
-          - [181.2, 610.4]
+          - [167.5, 344.7]
+          - [487.9, 344.7]
+          - [487.9, 610.4]
+          - [167.5, 610.4]
         dimensions:
-          width: 259.1
-          depth: 282.5
-          status: drawing-derived
+          width: 320.4
+          depth: 265.7
+          status: combined-drawing-derived
         floor_finish: wood
       - id: 4f-living-dining
         name: 客廳＋餐廳
         category: living-dining
         polygon:
-          - [440.3, 0]
-          - [782.4, 0]
-          - [782.4, 610.4]
-          - [440.3, 610.4]
+          - [487.9, 0]
+          - [784.4, 0]
+          - [784.4, 610.4]
+          - [487.9, 610.4]
         dimensions:
-          width: 342.1
+          width: 296.5
           depth: 610.4
-          status: drawing-derived
+          status: dimensioned
         floor_finish: wood
+      - id: 4f-utility-passage
+        name: 家事前室
+        category: circulation
+        polygon:
+          - [796.4, 0]
+          - [896.4, 0]
+          - [896.4, 178.8]
+          - [796.4, 178.8]
+        dimensions:
+          width: 100
+          depth: 178.8
+          status: drawing-derived
+        floor_finish: tile
       - id: 4f-storage
         name: 儲藏／洗烘衣空間
         category: storage
         polygon:
-          - [782.4, 0]
+          - [896.4, 0]
           - [993, 0]
-          - [993, 178.1]
-          - [782.4, 178.1]
+          - [993, 174.7]
+          - [896.4, 174.7]
         dimensions:
-          width: 210.6
-          depth: 178.1
-          status: drawing-derived
+          width: 96.6
+          depth: 174.7
+          status: dimensioned
         floor_finish: tile
       - id: 4f-guest-bathroom
         name: 客浴
@@ -329,37 +345,38 @@ floors:
         polygon:
           - [993, 0]
           - [1203.6, 0]
-          - [1203.6, 178.1]
-          - [993, 178.1]
+          - [1203.6, 178.8]
+          - [993, 178.8]
         dimensions:
           width: 210.6
-          depth: 178.1
+          depth: 178.8
           status: drawing-derived
         floor_finish: tile
       - id: 4f-kitchen
         name: 廚房
         category: kitchen
         polygon:
-          - [782.4, 178.1]
-          - [1203.6, 178.1]
-          - [1203.6, 407.8]
-          - [782.4, 407.8]
+          - [796.4, 178.8]
+          - [1203.6, 178.8]
+          - [1203.6, 408.5]
+          - [796.4, 408.5]
         dimensions:
-          width: 421.2
+          width: 407.2
           depth: 229.7
-          status: drawing-derived
+          zone_depth: 408.5
+          status: dimensioned
         floor_finish: microcement
       - id: 4f-entry
         name: 入口與樓梯區
         category: circulation
         polygon:
-          - [782.4, 407.8]
-          - [1203.6, 407.8]
+          - [796.4, 408.5]
+          - [1203.6, 408.5]
           - [1203.6, 610.4]
-          - [782.4, 610.4]
+          - [796.4, 610.4]
         dimensions:
-          width: 421.2
-          depth: 202.6
+          width: 407.2
+          depth: 201.9
           status: drawing-derived
         floor_finish: tile
     walls:
@@ -393,94 +410,89 @@ floors:
         thickness: 14
         height: 280
         exterior: true
-      - id: 4f-master-living-upper
-        start: [440.3, 0]
-        end: [440.3, 264]
+      - id: 4f-bedroom-living-upper
+        start: [487.9, 0]
+        end: [487.9, 264.7]
         thickness: 10
         height: 280
         exterior: false
-      - id: 4f-master-living-lower
-        start: [440.3, 349]
-        end: [440.3, 610.4]
+      - id: 4f-bedroom-living-lower
+        start: [487.9, 344.7]
+        end: [487.9, 610.4]
         thickness: 10
         height: 280
         exterior: false
       - id: 4f-left-horizontal-west
-        start: [0, 327.9]
-        end: [21.7, 327.9]
+        start: [0, 344.7]
+        end: [42, 344.7]
         thickness: 10
         height: 280
         exterior: false
       - id: 4f-left-horizontal-middle
-        start: [105.9, 327.9]
-        end: [348.6, 327.9]
+        start: [126, 344.7]
+        end: [390, 344.7]
         thickness: 10
         height: 280
         exterior: false
       - id: 4f-main-bath-secondary-divider
-        start: [181.2, 327.9]
-        end: [181.2, 610.4]
-        thickness: 10
-        height: 280
-        exterior: false
-      - id: 4f-secondary-door-jamb
-        start: [348.6, 258]
-        end: [348.6, 353.8]
+        start: [167.5, 344.7]
+        end: [167.5, 610.4]
         thickness: 10
         height: 280
         exterior: false
       - id: 4f-living-service-upper
-        start: [782.4, 0]
-        end: [782.4, 245.8]
+        start: [796.4, 0]
+        end: [796.4, 246]
         thickness: 10
         height: 280
         exterior: false
       - id: 4f-living-service-middle
-        start: [782.4, 331.6]
-        end: [782.4, 505]
+        start: [796.4, 332]
+        end: [796.4, 505]
         thickness: 10
         height: 280
         exterior: false
       - id: 4f-living-service-lower
-        start: [782.4, 590]
-        end: [782.4, 610.4]
+        start: [796.4, 590]
+        end: [796.4, 610.4]
+        thickness: 10
+        height: 280
+        exterior: false
+      - id: 4f-utility-storage-divider
+        start: [896.4, 0]
+        end: [896.4, 96]
+        thickness: 10
+        height: 280
+        exterior: false
+      - id: 4f-storage-bath-divider
+        start: [993, 0]
+        end: [993, 94]
         thickness: 10
         height: 280
         exterior: false
       - id: 4f-service-horizontal-left
-        start: [782.4, 178.1]
-        end: [899.9, 178.1]
+        start: [796.4, 178.8]
+        end: [896.4, 178.8]
         thickness: 10
         height: 280
         exterior: false
       - id: 4f-service-horizontal-middle
-        start: [980.3, 178.1]
-        end: [1124.5, 178.1]
-        thickness: 10
-        height: 280
-        exterior: false
-      - id: 4f-service-divider-a
-        start: [899.9, 0]
-        end: [899.9, 89.7]
-        thickness: 10
-        height: 280
-        exterior: false
-      - id: 4f-service-divider-b
-        start: [993, 0]
-        end: [993, 87.2]
+        start: [976.4, 178.8]
+        end: [1124.5, 178.8]
         thickness: 10
         height: 280
         exterior: false
       - id: 4f-kitchen-stair-divider
-        start: [782.4, 407.8]
-        end: [1203.6, 407.8]
+        start: [796.4, 408.5]
+        end: [1203.6, 408.5]
         thickness: 14
         height: 280
         exterior: false
     openings:
       - id: 4f-main-bedroom-window
         type: window
-        wall_id: 4f-wall-west-upper
+        boundary: west
+        between_wall_ids: [4f-wall-west-upper, 4f-wall-west-lower]
         center: [0, 201.5]
         width: 119
         height: 144
@@ -488,63 +500,70 @@ floors:
         coordinate_status: drawing-derived
       - id: 4f-master-room-door
         type: door
-        wall_id: 4f-master-living-upper
-        center: [440.3, 306.5]
-        width: 85
+        boundary: bedroom-living
+        between_wall_ids: [4f-bedroom-living-upper, 4f-bedroom-living-lower]
+        center: [487.9, 304.7]
+        width: 80
         height: 220
         sill_height: 0
         coordinate_status: drawing-derived
       - id: 4f-main-bath-door
         type: door
-        wall_id: 4f-left-horizontal-west
-        center: [63.8, 327.9]
-        width: 84.2
+        boundary: left-horizontal
+        between_wall_ids: [4f-left-horizontal-west, 4f-left-horizontal-middle]
+        center: [84, 344.7]
+        width: 84
         height: 220
         sill_height: 0
         coordinate_status: drawing-derived
       - id: 4f-secondary-bedroom-door
         type: door
-        wall_id: 4f-left-horizontal-middle
-        center: [394.5, 327.9]
-        width: 91.7
+        boundary: left-horizontal
+        between_wall_ids: [4f-left-horizontal-middle, 4f-bedroom-living-lower]
+        center: [438.9, 344.7]
+        width: 97.9
         height: 220
         sill_height: 0
         coordinate_status: drawing-derived
       - id: 4f-living-kitchen-opening
         type: door
-        wall_id: 4f-living-service-upper
-        center: [782.4, 288.7]
-        width: 85.8
+        boundary: living-service
+        between_wall_ids: [4f-living-service-upper, 4f-living-service-middle]
+        center: [796.4, 289]
+        width: 86
         height: 220
         sill_height: 0
         coordinate_status: drawing-derived
       - id: 4f-entry-door
         type: door
-        wall_id: 4f-living-service-middle
-        center: [782.4, 547.5]
+        boundary: living-entry
+        between_wall_ids: [4f-living-service-middle, 4f-living-service-lower]
+        center: [796.4, 547.5]
         width: 85
         height: 220
         sill_height: 0
         coordinate_status: drawing-derived
       - id: 4f-storage-door
         type: door
-        wall_id: 4f-service-horizontal-left
-        center: [940.1, 178.1]
-        width: 80.4
+        boundary: service-horizontal
+        between_wall_ids: [4f-service-horizontal-left, 4f-service-horizontal-middle]
+        center: [936.4, 178.8]
+        width: 80
         height: 220
         sill_height: 0
         coordinate_status: drawing-derived
       - id: 4f-guest-bath-door
         type: door
-        wall_id: 4f-service-horizontal-middle
-        center: [1155, 178.1]
+        boundary: service-horizontal
+        between_wall_ids: [4f-service-horizontal-middle, 4f-wall-east]
+        center: [1155, 178.8]
         width: 61
         height: 220
         sill_height: 0
         coordinate_status: drawing-derived
       - id: 4f-main-bath-window
         type: window
-        wall_id: 4f-wall-west-lower
+        boundary: west
         center: [0, 470]
         width: 118
         height: 141
@@ -552,7 +571,7 @@ floors:
         coordinate_status: schematic
       - id: 4f-secondary-bedroom-window
         type: window
-        wall_id: 4f-wall-south
+        boundary: south
         center: [300, 610.4]
         width: 119
         height: 149.5
@@ -560,7 +579,7 @@ floors:
         coordinate_status: drawing-derived
       - id: 4f-living-window
         type: window
-        wall_id: 4f-wall-south
+        boundary: south
         center: [650, 610.4]
         width: 201
         height: 148
@@ -568,7 +587,7 @@ floors:
         coordinate_status: drawing-derived
       - id: 4f-guest-bath-window
         type: window
-        wall_id: 4f-wall-east
+        boundary: east
         center: [1203.6, 90]
         width: 60
         height: 58
@@ -578,7 +597,7 @@ floors:
       - id: marker-fp2-living
         smart_home_id: fp2-living
         type: mmwave-presence
-        position: [610, 40, 150]
+        position: [636, 40, 150]
         rotation: 180
         coverage:
           shape: sector
@@ -587,7 +606,7 @@ floors:
       - id: marker-ap-4f
         smart_home_id: ap-4f
         type: access-point
-        position: [610, 305, 270]
+        position: [636, 305, 270]
         rotation: 0
       - id: marker-kitchen-leak
         smart_home_id: kitchen-leak
@@ -597,7 +616,7 @@ floors:
       - id: marker-storage-leak
         smart_home_id: storage-leak
         type: leak
-        position: [900, 120, 2]
+        position: [945, 90, 2]
         rotation: 0
       - id: marker-main-bath-presence
         smart_home_id: main-bath-presence
