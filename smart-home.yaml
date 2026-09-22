@@ -1,0 +1,560 @@
+schema_version: "1.0.0"
+
+metadata:
+  project_id: home-reform-2026
+  dataset: smart-home
+  title: 智慧家庭需求與施工介面
+  language: zh-TW
+  timezone: Asia/Taipei
+  last_updated: 2026-09-22
+  source_of_truth: true
+  lifecycle: planning
+
+objectives:
+  - id: objective-local-first
+    title: 本地優先
+    description: 核心照明與設備在網路、Home Assistant或雲端中斷時仍可由實體開關操作。
+    priority: must
+  - id: objective-maintainable
+    title: 可維修與可替換
+    description: 控制模組不得封死，接線盒、電箱及天花維修口需可觸及並留下迴路標示。
+    priority: must
+  - id: objective-one-lan
+    title: 單一區域網路
+    description: 1F與4F AP均由主路由器管理，避免雙重NAT並讓Home Assistant可直接存取本地設備。
+    priority: must
+  - id: objective-physical-control
+    title: 保留實體控制
+    description: 自動化是附加能力，不取代牆面開關、鐵捲門三鍵與熱水器手動控制。
+    priority: must
+
+architecture:
+  controller:
+    platform: Home Assistant
+    location: home-rack
+    availability_target: local-operation
+    backup:
+      configuration: 每週自動備份
+      destination: NAS
+      retention: 8份
+  protocols:
+    zigbee:
+      role: 感測器、牆內模組與低功耗設備
+      coordinator_location: home-rack
+      coordinator_connection: USB延長線避開USB 3.0及金屬機櫃干擾
+      router_devices_required: true
+    wifi:
+      role: FP2、Home Assistant與需高頻寬或原生Wi-Fi之設備
+      requirement: IoT SSID與固定DHCP租約
+    ethernet:
+      role: AP、NAS、Home Assistant主機及固定設備骨幹
+      requirement: Cat6或以上星狀配線
+    bluetooth:
+      role: 僅保留未來設備整合，不作主要控制骨幹
+  integrations:
+    - id: integration-homekit
+      name: HomeKit Bridge
+      purpose: 將Home Assistant選定實體同步至Apple家庭
+      current_accessories: 27
+      remote_access:
+        status: needs-verification
+        home_hub_candidate: HomePod mini
+    - id: integration-floorplan
+      name: custom:floorplan-card
+      asset_path: /local/floorplan/my_home.svg?v=1.1
+      interaction:
+        overlay_pointer_events: 不可阻擋底層點擊
+        multi_action: floorplan.execute
+
+network:
+  wan:
+    provider: 中華電信
+    entry_floor: 1F
+    modem: 中華電信小烏龜
+    bridge_mode: preferred-if-supported
+  router:
+    location: home-rack
+    dhcp_server: single
+    nat_layers: 1
+  topology:
+    - from: cht-modem-1f
+      to: main-router
+      medium: ethernet
+    - from: main-router
+      to: managed-switch
+      medium: ethernet
+    - from: managed-switch
+      to: ap-1f
+      medium: ethernet-poe
+    - from: managed-switch
+      to: ap-4f
+      medium: ethernet-poe
+    - from: managed-switch
+      to: home-assistant
+      medium: ethernet
+    - from: managed-switch
+      to: nas
+      medium: ethernet
+  vlans:
+    enabled: recommended
+    segments:
+      - id: trusted
+        purpose: 個人電腦與手機
+      - id: iot
+        purpose: IoT與智慧家庭設備
+        policy: 可連Home Assistant與必要DNS/NTP，不可主動存取trusted
+      - id: guest
+        purpose: 訪客網路
+        policy: 僅可上網
+  access_points:
+    - id: ap-1f
+      floor: 1F
+      mounting: ceiling
+      backhaul: wired
+      power: PoE
+      status: reserved
+    - id: ap-4f
+      floor: 4F
+      mounting: ceiling
+      backhaul: wired
+      power: PoE
+      status: reserved
+
+installation_requirements:
+  switch_boxes:
+    neutral_wire: required
+    permanent_live: required
+    depth_mm: 50
+    preferred_depth_mm: 60
+    notes:
+      - 零線與火線都應進入需要智慧模組的開關盒。
+      - 多切迴路需預先確認旅線數量與模組相容性。
+      - 模組後方需保留散熱與壓線空間。
+  low_voltage:
+    separation_from_mains: required
+    conduits: 弱電與110V／220V分管
+    pull_strings: 每一預留管均保留引線
+    labels: 兩端以樓層、空間、用途永久標示
+  usb_power:
+    use_cases:
+      - 毫米波感測器
+      - 平板控制面板
+    requirement: 插座或變壓器應置於可維修位置，不封於牆內
+  electrical:
+    wire_brand: 太平洋電線
+    lighting_neutral_at_switch: true
+    owner_supplied_faces:
+      - 電燈開關面板
+      - 插座面板
+
+devices:
+  - id: home-assistant
+    name: Home Assistant主機
+    type: controller
+    floor: 1F
+    area: home-rack
+    protocol: ethernet
+    power: UPS-backed
+    status: planned
+    criticality: critical
+  - id: zigbee-coordinator
+    name: Zigbee Coordinator
+    type: coordinator
+    floor: 1F
+    area: home-rack
+    protocol: USB
+    power: home-assistant
+    status: planned
+    criticality: critical
+  - id: fp2-living
+    name: 客餐廳FP2
+    type: mmwave-presence
+    manufacturer: Aqara
+    model: FP2
+    floor: 4F
+    area: 4f-living-dining
+    protocol: Wi-Fi
+    power: USB
+    installation_height_cm: 150
+    status: planned
+    priority: high
+    zones:
+      - living-sofa
+      - dining-table
+      - circulation
+  - id: entrance-motion
+    name: 玄關人體感測器
+    type: motion
+    floor: 1F
+    area: 1f-entrance
+    protocol: Zigbee
+    power: battery
+    status: planned
+    priority: high
+  - id: entrance-door-contact
+    name: 玄關門窗感測器
+    type: contact
+    floor: 1F
+    area: 1f-entrance
+    protocol: Zigbee
+    power: battery
+    status: planned
+    priority: high
+  - id: main-bath-presence
+    name: 主浴人體感測器
+    type: presence
+    floor: 4F
+    area: 4f-main-bathroom
+    protocol: Zigbee
+    power: permanent
+    status: planned
+    priority: high
+  - id: main-bath-humidity
+    name: 主浴溫濕度感測器
+    type: temperature-humidity
+    floor: 4F
+    area: 4f-main-bathroom
+    protocol: Zigbee
+    power: battery
+    status: planned
+    priority: high
+  - id: guest-bath-presence
+    name: 客浴人體感測器
+    type: presence
+    floor: 4F
+    area: 4f-guest-bathroom
+    protocol: Zigbee
+    power: permanent
+    status: planned
+    priority: high
+  - id: guest-bath-humidity
+    name: 客浴溫濕度感測器
+    type: temperature-humidity
+    floor: 4F
+    area: 4f-guest-bathroom
+    protocol: Zigbee
+    power: battery
+    status: planned
+    priority: high
+  - id: kitchen-leak
+    name: 廚下漏水感測器
+    type: leak
+    floor: 4F
+    area: 4f-kitchen
+    protocol: Zigbee
+    power: battery
+    status: planned
+    priority: high
+  - id: storage-leak
+    name: 儲藏室漏水感測器
+    type: leak
+    floor: 4F
+    area: 4f-storage
+    protocol: Zigbee
+    power: battery
+    status: planned
+    priority: high
+  - id: rolling-door-relay
+    name: 鐵捲門三路乾接點模組
+    type: dry-contact-relay
+    floor: 1F
+    area: 1f-entrance
+    protocol: Zigbee-or-Wi-Fi
+    power: permanent
+    channels: 3
+    status: design-required
+    priority: high
+  - id: water-heater-relay-1
+    name: 熱水器1控制模組
+    type: relay-contactor-control
+    floor: 4F
+    area: electrical-panel
+    protocol: Wi-Fi
+    power: AC220V
+    status: electrical-review
+  - id: water-heater-relay-2
+    name: 熱水器2控制模組
+    type: relay-contactor-control
+    floor: 4F
+    area: electrical-panel
+    protocol: Wi-Fi
+    power: AC220V
+    status: electrical-review
+
+lighting:
+  control_policy:
+    wall_dimming_required: false
+    physical_switch_required: true
+    smart_module_strategy: 零火智慧牆壁開關優先；特殊燈具再於燈具端配置模組
+    default_failure_behavior: 網路中斷時牆面仍可開關
+  circuits:
+    - id: dining-pendant
+      floor: 4F
+      area: dining
+      fixtures: 1
+      fixture_type: E27吊燈
+      color_temperature: adjustable
+      physical_control: two-way
+      smart_control: Zigbee single-channel
+      dimming_at_wall: false
+    - id: dining-downlights-left
+      floor: 4F
+      area: dining
+      fixtures: 2
+      fixture_type: downlight
+      color_temperature_k: 4000
+      physical_control: switch
+      smart_control: Zigbee module
+      wiring: fixtures-in-parallel
+    - id: dining-downlights-right
+      floor: 4F
+      area: dining
+      fixtures: 2
+      fixture_type: downlight
+      color_temperature_k: 4000
+      physical_control: switch
+      smart_control: Zigbee module
+      wiring: fixtures-in-parallel
+    - id: living-main
+      floor: 4F
+      area: living
+      fixtures: 1
+      fixture_type: ceiling-light
+      color_temperature_k: "3000-6500"
+      physical_control: two-way
+      smart_control: power plus native-remote
+      dimming_at_wall: false
+    - id: tv-wall-downlights
+      floor: 4F
+      area: living
+      fixtures: 3
+      fixture_type: downlight
+      color_temperature_k: 3000
+      physical_control: switch
+      smart_control: Zigbee module
+      wiring: fixtures-in-parallel
+
+special_controls:
+  rolling_door:
+    existing:
+      interface: three-momentary-buttons
+      buttons: [up, stop, down]
+      returns_after_press: true
+      single_press_operation: true
+    proposed:
+      device_id: rolling-door-relay
+      interface: three-dry-contact-pulse-outputs
+      pulse_duration_ms: 500
+      electrical_interlock: required
+      software_interlock: required
+      keep_existing_buttons: true
+      position_feedback:
+        closed_contact_sensor: recommended
+        open_contact_sensor: recommended
+      safety:
+        - 上升與下降輸出不可同時閉合
+        - 繼電器重新上電後所有輸出必須保持斷開
+        - Home Assistant狀態不得取代實體極限開關
+        - 遠端控制前須可確認門體周圍安全
+      commissioning:
+        - 量測原控制端電壓與共用端
+        - 確認控制箱是否已有互鎖
+        - 逐鍵測試脈衝時間
+        - 測試斷網、重啟及模組故障狀態
+  water_heaters:
+    quantity: 2
+    load_current_a: 30
+    branch_voltage: 220
+    contactor:
+      manufacturer: 士林電機
+      model: SP11
+      per_circuit: 1
+    local_switch:
+      model: EH6012FSN
+      voltage: AC220V
+      rated_current_a: 18
+    smart_module:
+      model_candidate: Sonoff MINI R2或等效模組
+      function: 僅驅動接觸器線圈
+      direct_load_control: forbidden
+    rules:
+      - 兩組熱水器各自使用斷路器、接觸器與智慧模組
+      - 線圈控制迴路與主負載線路清楚分隔及標示
+      - 電箱內保留手動旁路或明確的維修隔離方式
+      - 最終線圈電壓依接觸器實品確認
+
+automations:
+  - id: auto-entrance-arrival
+    name: 玄關進門照明
+    priority: high
+    status: planned
+    triggers:
+      - entity: entrance-door-contact
+        event: opened
+      - entity: entrance-motion
+        event: motion-detected
+    conditions:
+      - illumination_below_lux: 80
+      - house_mode_not: sleep
+    actions:
+      - turn_on: entrance-light
+      - auto_off_after_minutes: 3
+    manual_override: 牆面開關操作後暫停自動關燈10分鐘
+  - id: auto-living-zones
+    name: 客餐廳分區在席照明
+    priority: high
+    status: planned
+    triggers:
+      - entity: fp2-living
+        event: zone-occupied
+    conditions:
+      - illumination_below_lux: 120
+    actions:
+      - zone: living-sofa
+        turn_on: living-main
+      - zone: dining-table
+        turn_on: dining-pendant
+    off_policy: 分區無人10分鐘後關閉，若手動操作則延後
+  - id: auto-main-bath-ventilation
+    name: 主浴照明與濕度排風
+    priority: high
+    status: planned
+    triggers:
+      - entity: main-bath-presence
+        event: occupied
+      - entity: main-bath-humidity
+        event: humidity-changed
+    actions:
+      - occupied_and_dark: turn-on-main-bath-light
+      - humidity_above_percent: 70
+        do: turn-on-main-bath-fan
+      - humidity_below_percent_for_minutes: [65, 10]
+        do: turn-off-main-bath-fan
+    safety: 暖風機加熱模式不由一般照明自動化直接啟動
+  - id: auto-guest-bath-ventilation
+    name: 客浴照明與濕度排風
+    priority: high
+    status: planned
+    triggers:
+      - entity: guest-bath-presence
+        event: occupied
+      - entity: guest-bath-humidity
+        event: humidity-changed
+    actions:
+      - occupied_and_dark: turn-on-guest-bath-light
+      - humidity_above_percent: 70
+        do: turn-on-guest-bath-fan
+      - humidity_below_percent_for_minutes: [65, 10]
+        do: turn-off-guest-bath-fan
+  - id: auto-leak-alert
+    name: 廚房與儲藏室漏水告警
+    priority: high
+    status: planned
+    triggers:
+      - entity: kitchen-leak
+        event: wet
+      - entity: storage-leak
+        event: wet
+    actions:
+      - persistent_notification: true
+      - mobile_push: critical
+      - turn_on: selected-warning-lights
+    future_option: 增設總進水電動閥後可於人工確認策略下聯動關水
+  - id: auto-water-heater-schedule
+    name: 熱水器排程與離家關閉
+    priority: medium
+    status: draft
+    triggers:
+      - schedule: user-defined
+      - house_mode: away
+    actions:
+      - schedule_active: energize-contactor
+      - away_mode: deenergize-contactor
+    constraints:
+      - 手動開關優先權與恢復策略需入住後確認
+      - 不依賴雲端服務
+
+dashboards:
+  floorplan:
+    data_source: floorplan.yaml
+    modes:
+      - 2d-svg
+      - 3d-webgl
+    layers:
+      - rooms
+      - walls
+      - openings
+      - smart-devices
+    device_states:
+      planned: "#bba47a"
+      active: "#678060"
+      alert: "#bd604a"
+      offline: "#7c7c78"
+  mobile:
+    priorities:
+      - 全屋狀態摘要
+      - 漏水與離線告警
+      - 燈光與空調常用控制
+      - 鐵捲門需二次確認
+
+security_and_privacy:
+  remote_access: Home Assistant Cloud、VPN或反向代理三選一，不直接暴露未加密連接埠
+  credentials: 不寫入GitHub YAML
+  secrets_storage: Home Assistant secrets.yaml或部署平台環境變數
+  firmware_policy: 每季檢查，重大安全更新優先
+  audit:
+    - 遠端開門類操作保留事件紀錄
+    - 管理員帳號啟用多因素驗證
+    - IoT VLAN禁止任意存取個人裝置
+
+acceptance_tests:
+  - id: test-offline-lighting
+    title: 斷網照明測試
+    pass_condition: 路由器或Home Assistant關機時，所有牆面開關仍可正常控制對應燈具。
+  - id: test-reboot-safe-state
+    title: 模組重啟安全狀態
+    pass_condition: 復電時鐵捲門及熱水器不會因智慧模組啟動而誤動作。
+  - id: test-sensor-coverage
+    title: 感測範圍測試
+    pass_condition: FP2分區與浴室感測器可辨識預定區域，且不被門板或大型家具遮蔽。
+  - id: test-alert-delivery
+    title: 漏水告警測試
+    pass_condition: 兩處漏水感測器均能在60秒內觸發本地與手機通知。
+  - id: test-network-roaming
+    title: 全屋漫遊測試
+    pass_condition: 1F與4F間移動時手機與IoT設備維持同一LAN並可正常連線。
+  - id: test-labels
+    title: 線路與設備標示
+    pass_condition: 電箱、弱電箱、網路線、模組及其對應迴路均可依標籤追蹤。
+
+open_issues:
+  - id: sh-issue-switch-selection
+    title: 牆面智慧開關型號
+    owner: homeowner
+    priority: high
+    status: open
+    decision_needed: Sonoff M5 120 US或其他可配合台灣開關盒及面板之零火產品。
+  - id: sh-issue-rolling-door-voltage
+    title: 鐵捲門控制電壓與共用端
+    owner: electrician
+    priority: high
+    status: open
+    decision_needed: 現場量測後才能確定乾接點模組與隔離方式。
+  - id: sh-issue-zigbee-coordinator
+    title: Zigbee Coordinator與備援
+    owner: homeowner
+    priority: medium
+    status: open
+    decision_needed: 依Home Assistant主機位置選擇USB或PoE Coordinator。
+  - id: sh-issue-homekit-remote
+    title: HomeKit外網控制
+    owner: homeowner
+    priority: medium
+    status: open
+    decision_needed: 確認HomePod mini作為家庭中樞後的遠端可用性。
+  - id: sh-issue-water-valve
+    title: 漏水聯動總進水閥
+    owner: plumber
+    priority: low
+    status: open
+    decision_needed: 是否在施工階段預留電動閥電源及安裝空間。
