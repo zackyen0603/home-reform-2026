@@ -1,0 +1,680 @@
+schema_version: "1.0.0"
+
+metadata:
+  project_id: home-reform-2026
+  title: 居家整修規劃
+  owner: Zack Yen
+  language: zh-TW
+  timezone: Asia/Taipei
+  last_updated: 2026-09-22
+  data_status: working-draft
+  source_of_truth: true
+  conventions:
+    dimensions: cm
+    area: m2
+    floor_area: ping
+    electrical_voltage: V
+    power: kW
+    currency: TWD
+
+project:
+  location:
+    city: 新北市
+    district: 三重區
+  building:
+    type: 透天厝
+    registered_floors: 2
+    actual_floors: 5
+    approximate_completion: "1991年前"
+    regulatory_notes:
+      - id: regulation-4f-existing-addition
+        floor: 4F
+        subject: 既存違建
+        status: needs-verification
+        detail: 4F室內為既存列管違建；拆隔間、地磚、雨遮及修繕範圍須先確認可施工界線。
+  target_program:
+    bedrooms: 2
+    bathrooms: 2
+    living_rooms: 1
+    kitchens: 1
+  project_goals:
+    - id: goal-layout
+      title: 完成一樓與四樓整修及設備整合
+      priority: high
+    - id: goal-style
+      title: 建立日式無印、Japandi與侘寂感一致的材料語彙
+      priority: high
+    - id: goal-smart-home
+      title: 裝修階段完成智慧家庭、網路與必要線路預留
+      priority: high
+    - id: goal-maintainability
+      title: 保留設備維修性並以結構化資料追蹤決策
+      priority: medium
+
+design:
+  style:
+    primary: Japandi
+    alternatives:
+      - 日式無印
+      - 侘寂
+      - 深木色方案
+    keywords:
+      - 溫潤木質
+      - 暖灰
+      - 奶茶灰
+      - 柔米白
+      - 簡潔留白
+  lighting:
+    bathroom_color_temperature_k: 4000
+    kitchen_preferred_color_temperature_k:
+      - 4000
+      - 5000
+    living_room_main_light:
+      type: 吸頂燈
+      adjustable_color_temperature_k: "3000-6500"
+      candidate: Hotalux AURA
+    control_policy: 牆面只需開關，不需牆上直接調光
+  materials:
+    kitchen_upper_cabinet: 奶茶灰或淺灰
+    kitchen_lower_cabinet: 橡木紋
+    island: 橡木紋
+    countertop: 樂天或LG人造石・柔米白
+    kitchen_backsplash: 白色烤漆玻璃
+    kitchen_floor: 暖灰微水泥
+    living_floor: 超耐磨木地板
+    entrance_exterior_floor: 抿石子
+    entrance_wall: 水泥漆
+
+spaces:
+  - id: 1f-entrance
+    floor: 1F
+    name: 玄關／落塵區
+    category: entrance
+    dimensions:
+      length: 593
+      width: 214
+      clear_height: 340
+    requirements:
+      - 內凹大門改為直線配置
+      - 落塵區保留既有30×30公分地磚
+      - 牆外地坪使用抿石子
+      - 與客廳間設木作隔間
+      - 門洞保留90至100公分並維持採光
+      - 評估穀倉拉門、清玻木門或類似4F儲藏室門款
+      - 入口軌道燈，儲物區吸頂燈
+    openings:
+      entrance_door:
+        width: 111
+        position: 正面最右側
+        swing: 向右開
+        handle_side: 左
+      facade_window:
+        width: 110
+        height: 130
+        sill_height: 100
+        security_window: true
+      door_window_spacing: 60
+      facade_total_width: 600
+    exterior:
+      wall_finish: 洗石子
+      rolling_door: 全開時保留原外側鐵門
+      ramp: 正面小斜坡
+      glass_block: removed-from-plan
+      lighting: 僅門口上方一盞
+      nameplate:
+        text: 顏
+        style: 日式灰白小型門牌
+    status: planning
+
+  - id: 1f-guest-room
+    floor: 1F
+    name: 客房
+    category: bedroom
+    requirements:
+      - 預留冷氣電源、銅管與排水路徑
+    status: planning
+
+  - id: 4f-living-dining
+    floor: 4F
+    name: 客廳＋餐廳
+    category: living-dining
+    dimensions:
+      length: 610.4
+      width: 296.5
+      clear_height: 280
+      perimeter_m: 18.138
+      wall_area_m2: 50.7864
+      paint_area_ping: 15.3629
+      floor_area_m2: 18.0992
+      floor_area_ping: 5.4748
+      wood_floor_area_ping: 5.4748
+    requirements:
+      - 客廳配置可調色溫吸頂燈
+      - 電視牆配置3顆3000K崁燈
+      - 餐桌吊燈使用E27可調色溫燈泡
+      - 餐廳兩側共4顆4000K崁燈
+      - 投影布幕為16:9、100吋
+    status: design-development
+
+  - id: 4f-kitchen-zone
+    floor: 4F
+    name: 廚房區（含側浴與儲藏室）
+    category: kitchen-zone
+    dimensions:
+      length: 408.5
+      width: 407.1
+      clear_height: 280
+      perimeter_m: 16.312
+      wall_area_m2: 45.6736
+      paint_area_ping: 13.7478
+      floor_area_m2: 16.629
+      floor_area_ping: 5.0056
+    status: design-development
+
+  - id: 4f-kitchen
+    floor: 4F
+    name: 廚房
+    category: kitchen
+    requirements:
+      - 開放式廚房
+      - 中島作為獨立吧檯
+      - 主廚具立面總寬230公分
+      - 水槽、60公分備料抽屜、80公分IH區依序配置
+      - 上櫃總寬150公分，4扇各37.5公分
+      - 上櫃底距檯面60公分
+      - 80公分近吸式抽油煙機
+      - 櫥櫃燈採高演色COB燈條與嵌入式鋁槽
+    cabinetry:
+      countertop:
+        width: 230
+        thickness: 1.5
+      toe_kick:
+        width: 230
+        height: 10
+      sink_base:
+        doors:
+          - width: 45
+            height: 75.5
+          - width: 45
+            height: 75.5
+      prep_drawers:
+        width: 60
+        heights:
+          - 22.5
+          - 18
+          - 32
+      ih_zone:
+        total_width: 80
+        left_filler: 10
+        appliance_width: 60
+        right_filler: 10
+        drawer_height: 22.5
+    status: design-development
+
+  - id: 4f-storage
+    floor: 4F
+    name: 儲藏室
+    category: storage
+    dimensions:
+      length: 174.7
+      width: 96.6
+      clear_height: 280
+      wall_area_m2: 15.1928
+      paint_area_ping: 4.5730
+      floor_area_m2: 1.6876
+      floor_area_ping: 0.5080
+    requirements:
+      - 設漏水感測器
+    status: planning
+
+  - id: 4f-main-bedroom
+    floor: 4F
+    name: 主臥
+    category: bedroom
+    wardrobe:
+      width: 240
+      height: 240
+      modules: 3
+      module_width: 80
+      requirements:
+        - 門板覆蓋上櫃
+        - 取消開放格
+        - 外露抽屜加大
+        - 加長吊褲區，可犧牲一格抽屜高度
+    status: design-development
+
+  - id: 4f-main-bathroom
+    floor: 4F
+    name: 主浴
+    category: bathroom
+    requirements:
+      - 全換牆地磚
+      - 濕區降板並使用單一磚種
+      - 放大壁掛鏡櫃
+      - 4000K照明
+      - 人體與濕度感測
+    status: planning
+
+  - id: 4f-guest-bathroom
+    floor: 4F
+    name: 客浴
+    category: bathroom
+    requirements:
+      - 全換牆地磚
+      - 放大壁掛鏡櫃
+      - 4000K照明
+      - 人體與濕度感測
+    status: planning
+
+openings:
+  windows:
+    specification:
+      series: 九州898型
+      frame: 烤漆鋁料
+      default_glass: 5mm強化清玻璃
+    items:
+      - id: window-living
+        space_id: 4f-living-dining
+        width_mm: 2010
+        height_mm: 1480
+      - id: window-main-bedroom
+        space_id: 4f-main-bedroom
+        width_mm: 1190
+        height_mm: 1440
+        quotation:
+          glass_5mm_twd: 20500
+          glass_8mm_twd: 33000
+      - id: window-secondary-bedroom
+        space_id: 4f-secondary-bedroom
+        width_mm: 1190
+        height_mm: 1495
+      - id: window-main-bath
+        space_id: 4f-main-bathroom
+        width_mm: 1180
+        height_mm: 1410
+      - id: window-guest-bath
+        space_id: 4f-guest-bathroom
+        width_mm: 600
+        height_mm: 580
+  curtain_boxes:
+    estimated_total_chi: 28
+    finish: 木作＋油漆
+    excludes_bathrooms: true
+
+systems:
+  network:
+    topology: 中華電信小烏龜由1F接入，經主路由器分配至1F與4F AP，全屋維持同一區域網路
+    wan_entry_floor: 1F
+    lan_policy: single-lan
+    wired_reservations:
+      - 機櫃
+      - 各樓層吸頂AP
+    rack:
+      planned_devices:
+        - 桌機
+        - NAS
+        - 路由器／交換器
+        - Home Assistant主機
+      status: planning
+
+  electrical:
+    wire_brand_preference: 太平洋電線
+    neutral_wire_policy: 電燈開關盒預留中性線
+    owner_supplied:
+      - 電燈開關面板
+      - 插座面板
+    circuits:
+      - id: general-outlets
+        voltage: 110
+        conductor_mm2: 2.0
+        quantity: 3
+      - id: lighting
+        voltage: 110
+        conductor_mm2: 2.0
+        quantity: 1
+        neutral_required_at_switch: true
+      - id: bathrooms
+        voltage: 110
+        conductor_mm2: 2.0
+        quantity: 2
+      - id: bathroom-heaters
+        voltage: 220
+        conductor_mm2: 5.5
+        quantity: 2
+        dedicated: true
+      - id: ih-cooktop
+        voltage: 220
+        conductor_mm2: 5.5
+        quantity: 1
+        dedicated: true
+      - id: dishwasher
+        voltage: 110
+        conductor_mm2: 5.5
+        quantity: 1
+        dedicated: true
+      - id: washer-dryer
+        voltage: 110
+        conductor_mm2: 5.5
+        quantity: 1
+        dedicated: true
+      - id: air-conditioners
+        voltage: 220
+        conductor_mm2: 5.5
+        quantity: to-confirm
+        dedicated: true
+    safety_notes:
+      - 浴室暖風機與照明原則上分迴路
+      - IH、洗碗機、洗烘衣機、冷氣使用獨立迴路
+      - 瞬熱飲水機是否設獨立迴路依銘牌功率與同迴路負載確認
+
+  hvac:
+    air_conditioning:
+      first_floor:
+        target_capacity_kw:
+          - 5.0
+          - 6.3
+        current_candidate: 日立RAS-50YSP1
+      fourth_floor_living:
+        current_candidate: 日立RAS-50YSP
+      bedrooms:
+        candidates:
+          outdoor: RAM-50YP
+          main: RAS-28YSP
+          secondary: RAS-22YSP
+      installation_policy: 未即時裝機處仍先預留電源、銅管、排水與維修路徑
+    dehumidifier:
+      model: 日立RDI-360DX
+      type: 吊隱式
+
+  plumbing:
+    under_sink_filter: planned
+    instant_hot_dispenser: under-evaluation
+    waterproofing_policy: 濕區降板、防水及試水紀錄需納入驗收
+
+  smart_home:
+    platform: Home Assistant
+    protocols:
+      primary:
+        - Zigbee
+        - Wi-Fi
+      ecosystem_bridge: HomeKit Bridge
+    physical_control_policy: 保留牆面實體開關功能
+    occupancy_and_safety:
+      - id: automation-living-fp2
+        area: 客餐廳
+        device_type: Aqara FP2
+        purpose: 分區在席偵測
+        priority: high
+      - id: automation-entrance
+        area: 玄關
+        device_type: 人體／門窗感測器
+        purpose: 進出偵測
+        priority: high
+      - id: automation-bathrooms
+        area: 浴室
+        device_type: 人體與濕度感測器
+        purpose: 照明與排風自動化
+        priority: high
+      - id: automation-leak-kitchen
+        area: 廚房
+        device_type: 漏水感測器
+        purpose: 漏水告警
+        priority: high
+      - id: automation-leak-storage
+        area: 儲藏室
+        device_type: 漏水感測器
+        purpose: 漏水告警
+        priority: high
+    rolling_door:
+      floor: 1F
+      existing_control:
+        buttons:
+          - 上
+          - 停
+          - 下
+        momentary: true
+        behavior: 按一下即動作，放開後按鍵回彈
+      smart_control:
+        method: 乾接點繼電器
+        required_channels: 3
+        constraints:
+          - 必須維持原三鍵實體控制
+          - 上與下需做硬體互鎖，避免同時觸發
+          - 每次僅輸出短脈衝，不可長時間保持
+          - 模組故障時不可使鐵捲門自行動作
+          - 安裝前由合格電工確認控制端電壓與共用端
+      status: design-required
+    water_heaters:
+      quantity: 2
+      load_current_a: 30
+      contactor: 士林電機SP11
+      controller: Sonoff MINI R2或等效智慧模組
+      switch_model: EH6012FSN AC220V 18A
+      control_principle: 智慧模組只控制接觸器線圈，不直接承載熱水器主負載
+      status: electrical-review
+
+equipment:
+  kitchen:
+    - id: appliance-ih
+      category: IH爐
+      brand: Panasonic
+      model: KZ-J1H6AK / KZ-J1H6AST
+      status: candidate
+      specifications:
+        voltage: 200
+        phase: 單相
+        rated_power_kw: 5.8
+        selectable_power_kw: 4.8
+        breaker_a: 30
+        width_mm: 599
+        depth_mm: 560
+        height_mm: 231
+    - id: appliance-dishwasher
+      category: 洗碗機
+      brand: Fisher & Paykel
+      model: DD60DHI9
+      status: candidate
+      budget_twd: 60000
+      specifications:
+        width_cm: 57
+        depth_cm: 59.9
+        height_cm: 82
+    - id: appliance-hood
+      category: 抽油煙機
+      brand: 櫻花
+      model_candidates:
+        - R7615
+        - R7653
+      width_cm: 80
+      type: 近吸式
+      status: comparing
+    - id: fixture-sink
+      category: 水槽
+      model_candidates:
+        - 大吉熊KL-9776
+        - 大吉熊KL-9477D
+        - LIXIL同級品
+      requirements:
+        - 可內嵌砧板
+        - 容易清潔
+      budget_twd: 10000
+      status: comparing
+    - id: fixture-faucet
+      category: 廚房龍頭
+      brand: RECO RISS
+      model: 103014-B
+      procurement: owner-supplied
+      status: planned
+  bathrooms:
+    - id: fixture-toilet
+      category: 馬桶
+      brand: TOTO
+      model: CW288SGUR
+      status: selected
+    - id: fixture-washlet-main
+      category: 免治便座
+      brand: TOTO
+      model: TCF8CKM31
+      assigned_space: 4f-main-bathroom
+      procurement: purchased
+      status: purchased
+    - id: fixture-washlet-guest
+      category: 免治便座
+      brand: TOTO
+      model_candidates:
+        - TCF8CKM01
+        - TCF8CKM11
+      assigned_space: 4f-guest-bathroom
+      objective: 控制預算
+      status: comparing
+    - id: fixture-thermostatic-faucet
+      category: 恆溫水栓
+      model_candidates:
+        - INAX BF-KA145TSG-AMZ
+        - TOTO TBV03445J1
+        - TOTO TBV03403J
+        - LIXIL RBF-916
+        - LIXIL RBF-912FW
+        - SANEI SK181AD-13-EC
+      budget_jpy: 30000
+      status: comparing
+
+lighting_zones:
+  - id: light-dining-pendant
+    floor: 4F
+    area: 餐廳
+    fixture: 吊燈
+    quantity: 1
+    color_temperature: E27可調色溫
+    wall_control: 傳統兩切
+    smart_control: Zigbee單路控制
+  - id: light-dining-downlights
+    floor: 4F
+    area: 餐廳兩側
+    fixture: 崁燈
+    quantity: 4
+    color_temperature_k: 4000
+    smart_control: 左右各一顆Zigbee模組，分區並聯
+  - id: light-living-main
+    floor: 4F
+    area: 客廳
+    fixture: 吸頂燈
+    quantity: 1
+    color_temperature_k: "3000-6500"
+    wall_control: 傳統兩切
+  - id: light-tv-wall
+    floor: 4F
+    area: 電視牆
+    fixture: 崁燈
+    quantity: 3
+    color_temperature_k: 3000
+    smart_control: Zigbee模組並聯控制
+
+contract_and_procurement:
+  shared_negotiation_items:
+    - id: quote-wire-brand
+      request: 報價與施工規範註明使用太平洋電線
+      status: pending-contractor-response
+    - id: quote-second-fix-labor
+      request: 1F與4F二次施工同時進場，由合計4工調整為共用2工
+      status: pending-contractor-response
+    - id: quote-ac-model-difference
+      request: 說明1F RAS-50YSP1與4F RAS-50YSP價差2000元是否為新舊款差異
+      status: pending-contractor-response
+    - id: quote-switch-deduction
+      request: 自購電燈開關與插座面板，報價扣除星光面板材料
+      status: pending-contractor-response
+  first_floor_change_requests:
+    - 內凹大門改直線
+    - 落塵區保留原地磚，牆外地坪改抿石子
+    - 客廳局部壁坪拆除改為油漆批土填平
+    - 木作隔間保留90至100公分採光門洞
+    - 採光門預算約新台幣30000元
+    - 先安裝客廳5.0kW或6.3kW冷氣
+    - 預留客房冷氣線路
+
+decisions:
+  - id: decision-entrance-floor
+    date: 2026-09-14
+    topic: 一樓玄關地坪
+    decision: 落塵區保留原地磚，牆外使用抿石子
+    status: decided
+  - id: decision-faucet-procurement
+    date: 2026-09-14
+    topic: 廚房龍頭
+    decision: RECO RISS 103014-B改由屋主自購
+    status: decided
+  - id: decision-switch-control
+    date: 2026-09-22
+    topic: 燈光控制
+    decision: 牆面只需開關，不需牆上調光；保留實體控制
+    status: decided
+  - id: decision-network
+    date: 2026-09-22
+    topic: 家庭網路
+    decision: 1F電信入口經主路由器連接1F與4F AP，維持單一LAN
+    status: decided
+
+open_issues:
+  - id: issue-regulatory-boundary
+    category: regulation
+    title: 4F既存違建可修繕範圍
+    question: 紅磚隔間、地磚、雨遮等拆修是否需室內裝修許可或另行申請
+    owner: homeowner
+    priority: high
+    status: open
+  - id: issue-ac-capacity-1f
+    category: hvac
+    title: 1F客廳冷氣容量
+    question: 依實際熱負荷確認採5.0kW或6.3kW
+    owner: hvac-contractor
+    priority: high
+    status: open
+  - id: issue-rolling-door-voltage
+    category: smart-home
+    title: 鐵捲門控制端規格
+    question: 現場量測三鍵控制線電壓、共用端與互鎖方式
+    owner: electrician
+    priority: high
+    status: open
+  - id: issue-instant-hot-circuit
+    category: electrical
+    title: 瞬熱飲水機迴路
+    question: 依最後選定機型功率確認是否設獨立迴路
+    owner: electrician
+    priority: medium
+    status: open
+  - id: issue-kitchen-sink
+    category: procurement
+    title: 廚房水槽選型
+    question: 大吉熊與LIXIL之清潔、配件、保固與安裝相容性比較
+    owner: homeowner
+    priority: medium
+    status: open
+
+validation_rules:
+  ids_unique: true
+  required_top_level_keys:
+    - metadata
+    - project
+    - spaces
+    - systems
+    - equipment
+    - decisions
+    - open_issues
+  enums:
+    status:
+      - idea
+      - planning
+      - design-development
+      - comparing
+      - candidate
+      - selected
+      - planned
+      - purchased
+      - pending-contractor-response
+      - design-required
+      - electrical-review
+      - needs-verification
+      - open
+      - decided
