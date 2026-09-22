@@ -243,6 +243,15 @@ spaces:
         - 加長吊褲區，可犧牲一格抽屜高度
     status: design-development
 
+  - id: 4f-secondary-bedroom
+    floor: 4F
+    name: 次臥
+    category: bedroom
+    requirements:
+      - 預留獨立冷氣電源、銅管與排水
+      - 窗簾盒配合氣密窗尺寸放樣
+    status: planning
+
   - id: 4f-main-bathroom
     floor: 4F
     name: 主浴
@@ -398,6 +407,17 @@ systems:
         - Zigbee
         - Wi-Fi
       ecosystem_bridge: HomeKit Bridge
+    current_state:
+      floorplan_card:
+        integration: custom:floorplan-card
+        asset_path: /local/floorplan/my_home.svg?v=1.1
+        notes:
+          - SVG overlay不可阻擋點擊事件
+          - 多動作設定採floorplan.execute
+      homekit_bridge:
+        accessories_count: 27
+        remote_access: needs-verification
+        hub_candidate: HomePod mini
     physical_control_policy: 保留牆面實體開關功能
     occupancy_and_safety:
       - id: automation-living-fp2
