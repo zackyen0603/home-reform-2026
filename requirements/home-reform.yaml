@@ -609,6 +609,18 @@ systems:
         priority: P1
 
   electrical:
+    data_source: electrical.yaml
+    floorplan_reference: floorplan.yaml
+    fourth_floor_point_summary:
+      general_outlets_declared: 26
+      general_outlets_extracted: 27
+      optional_outlets: 3
+      high_level_outlets: 3
+      planned_220v_points: 8
+      downlights: 33
+      pendants: 3
+      ceiling_lights: 4
+      qa_status: general-outlet-count-needs-verification
     requirements:
       - id: SYS-ELC-001
         requirement: 配電盤由現有28迴路升級至32P
