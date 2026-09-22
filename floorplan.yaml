@@ -1,0 +1,393 @@
+schema_version: "1.0.0"
+
+metadata:
+  project_id: home-reform-2026
+  dataset: floorplan-coordinates
+  title: 平面圖座標與智慧設備定位
+  last_updated: 2026-09-22
+  source_of_truth: false
+  measurement_status: schematic-not-for-construction
+  warning: 目前座標依既有尺寸與討論建立示意模型；正式施工前必須以現場丈量及核定施工圖更新。
+
+coordinate_system:
+  units: cm
+  origin: top-left
+  x_axis: right
+  y_axis: down
+  z_axis: up
+  angle_units: degrees
+  polygon_rule: clockwise-or-counterclockwise-closed-implicitly
+  three_d_mapping:
+    x: x
+    y: z
+    z: y
+
+render_defaults:
+  wall_height: 280
+  wall_thickness: 12
+  slab_thickness: 12
+  colors:
+    background: "#f4f0e7"
+    wall: "#57554f"
+    room: "#ded5c6"
+    wet_area: "#c8d5d1"
+    circulation: "#e7dece"
+    door: "#9a7558"
+    window: "#6f98a0"
+    device_planned: "#b18b55"
+    device_active: "#62785d"
+    device_alert: "#b95742"
+
+import_contract:
+  accepted_formats:
+    - YAML
+    - JSON
+  required_keys:
+    - schema_version
+    - floors
+  required_floor_keys:
+    - id
+    - bounds
+    - rooms
+    - walls
+  notes:
+    - 所有座標及尺寸一律使用公分。
+    - room polygon至少需要3個點，每個點格式為[x, y]。
+    - wall以start與end兩點定義，3D高度由height或render_defaults.wall_height取得。
+    - device的smart_home_id需對應smart-home.yaml內devices.id。
+
+floors:
+  - id: 1F
+    name: 一樓玄關與客房
+    elevation: 0
+    ceiling_height: 340
+    bounds:
+      width: 593
+      depth: 214
+    rooms:
+      - id: 1f-entrance
+        name: 玄關／落塵區
+        category: circulation
+        polygon:
+          - [0, 0]
+          - [360, 0]
+          - [360, 214]
+          - [0, 214]
+        floor_finish: existing-tile
+      - id: 1f-guest-room
+        name: 客房／彈性空間
+        category: bedroom
+        polygon:
+          - [360, 0]
+          - [593, 0]
+          - [593, 214]
+          - [360, 214]
+        floor_finish: to-confirm
+    walls:
+      - id: 1f-wall-north
+        start: [0, 0]
+        end: [593, 0]
+        thickness: 15
+        height: 340
+        exterior: true
+      - id: 1f-wall-east
+        start: [593, 0]
+        end: [593, 214]
+        thickness: 15
+        height: 340
+        exterior: true
+      - id: 1f-wall-south
+        start: [593, 214]
+        end: [0, 214]
+        thickness: 15
+        height: 340
+        exterior: true
+      - id: 1f-wall-west
+        start: [0, 214]
+        end: [0, 0]
+        thickness: 15
+        height: 340
+        exterior: true
+      - id: 1f-partition
+        start: [360, 0]
+        end: [360, 55]
+        thickness: 10
+        height: 280
+        exterior: false
+      - id: 1f-partition-2
+        start: [360, 155]
+        end: [360, 214]
+        thickness: 10
+        height: 280
+        exterior: false
+    openings:
+      - id: 1f-main-door
+        type: door
+        wall_id: 1f-wall-north
+        center: [530, 0]
+        width: 111
+        height: 220
+        sill_height: 0
+        swing_degrees: 90
+      - id: 1f-facade-window
+        type: window
+        wall_id: 1f-wall-north
+        center: [175, 0]
+        width: 110
+        height: 130
+        sill_height: 100
+      - id: 1f-inner-glass-door
+        type: door
+        wall_id: 1f-partition
+        center: [360, 105]
+        width: 100
+        height: 220
+        sill_height: 0
+    devices:
+      - id: marker-entrance-motion
+        smart_home_id: entrance-motion
+        type: motion
+        position: [255, 55, 220]
+        rotation: 135
+      - id: marker-entrance-contact
+        smart_home_id: entrance-door-contact
+        type: contact
+        position: [530, 8, 210]
+        rotation: 0
+      - id: marker-rolling-door
+        smart_home_id: rolling-door-relay
+        type: relay
+        position: [55, 20, 210]
+        rotation: 0
+      - id: marker-ap-1f
+        smart_home_id: ap-1f
+        type: access-point
+        position: [300, 107, 325]
+        rotation: 0
+
+  - id: 4F
+    name: 四樓主要生活空間
+    elevation: 1020
+    ceiling_height: 280
+    bounds:
+      width: 610.4
+      depth: 703.6
+    rooms:
+      - id: 4f-living-dining
+        name: 客廳＋餐廳
+        category: living-dining
+        polygon:
+          - [0, 0]
+          - [610.4, 0]
+          - [610.4, 296.5]
+          - [0, 296.5]
+        floor_finish: wood
+      - id: 4f-kitchen
+        name: 廚房
+        category: kitchen
+        polygon:
+          - [0, 296.5]
+          - [330, 296.5]
+          - [330, 520]
+          - [0, 520]
+        floor_finish: microcement
+      - id: 4f-storage
+        name: 儲藏室
+        category: storage
+        polygon:
+          - [330, 296.5]
+          - [426.6, 296.5]
+          - [426.6, 471.2]
+          - [330, 471.2]
+        floor_finish: tile
+      - id: 4f-guest-bathroom
+        name: 客浴
+        category: wet-area
+        polygon:
+          - [426.6, 296.5]
+          - [610.4, 296.5]
+          - [610.4, 471.2]
+          - [426.6, 471.2]
+        floor_finish: tile
+      - id: 4f-main-bedroom
+        name: 主臥
+        category: bedroom
+        polygon:
+          - [0, 520]
+          - [290, 520]
+          - [290, 703.6]
+          - [0, 703.6]
+        floor_finish: wood
+      - id: 4f-secondary-bedroom
+        name: 次臥
+        category: bedroom
+        polygon:
+          - [290, 520]
+          - [455, 520]
+          - [455, 703.6]
+          - [290, 703.6]
+        floor_finish: wood
+      - id: 4f-main-bathroom
+        name: 主浴
+        category: wet-area
+        polygon:
+          - [455, 471.2]
+          - [610.4, 471.2]
+          - [610.4, 703.6]
+          - [455, 703.6]
+        floor_finish: tile
+    walls:
+      - id: 4f-wall-north
+        start: [0, 0]
+        end: [610.4, 0]
+        thickness: 15
+        height: 280
+        exterior: true
+      - id: 4f-wall-east
+        start: [610.4, 0]
+        end: [610.4, 703.6]
+        thickness: 15
+        height: 280
+        exterior: true
+      - id: 4f-wall-south
+        start: [610.4, 703.6]
+        end: [0, 703.6]
+        thickness: 15
+        height: 280
+        exterior: true
+      - id: 4f-wall-west
+        start: [0, 703.6]
+        end: [0, 0]
+        thickness: 15
+        height: 280
+        exterior: true
+      - id: 4f-divider-public-private
+        start: [0, 296.5]
+        end: [610.4, 296.5]
+        thickness: 12
+        height: 280
+        exterior: false
+      - id: 4f-kitchen-bedroom-divider
+        start: [0, 520]
+        end: [455, 520]
+        thickness: 12
+        height: 280
+        exterior: false
+      - id: 4f-storage-left
+        start: [330, 296.5]
+        end: [330, 471.2]
+        thickness: 10
+        height: 280
+        exterior: false
+      - id: 4f-bath-divider
+        start: [426.6, 296.5]
+        end: [426.6, 471.2]
+        thickness: 10
+        height: 280
+        exterior: false
+      - id: 4f-bath-horizontal
+        start: [426.6, 471.2]
+        end: [610.4, 471.2]
+        thickness: 10
+        height: 280
+        exterior: false
+      - id: 4f-bedroom-divider
+        start: [290, 520]
+        end: [290, 703.6]
+        thickness: 10
+        height: 280
+        exterior: false
+      - id: 4f-main-bath-left
+        start: [455, 471.2]
+        end: [455, 703.6]
+        thickness: 10
+        height: 280
+        exterior: false
+    openings:
+      - id: 4f-living-window
+        type: window
+        wall_id: 4f-wall-north
+        center: [250, 0]
+        width: 201
+        height: 148
+        sill_height: 90
+      - id: 4f-main-bedroom-window
+        type: window
+        wall_id: 4f-wall-south
+        center: [145, 703.6]
+        width: 119
+        height: 144
+        sill_height: 90
+      - id: 4f-secondary-bedroom-window
+        type: window
+        wall_id: 4f-wall-south
+        center: [372, 703.6]
+        width: 119
+        height: 149.5
+        sill_height: 90
+      - id: 4f-main-bath-window
+        type: window
+        wall_id: 4f-wall-south
+        center: [535, 703.6]
+        width: 118
+        height: 141
+        sill_height: 100
+      - id: 4f-guest-bath-window
+        type: window
+        wall_id: 4f-wall-east
+        center: [610.4, 380]
+        width: 60
+        height: 58
+        sill_height: 150
+    devices:
+      - id: marker-fp2-living
+        smart_home_id: fp2-living
+        type: mmwave-presence
+        position: [305, 25, 150]
+        rotation: 180
+        coverage:
+          shape: sector
+          radius: 500
+          angle: 120
+      - id: marker-ap-4f
+        smart_home_id: ap-4f
+        type: access-point
+        position: [305, 350, 270]
+        rotation: 0
+      - id: marker-kitchen-leak
+        smart_home_id: kitchen-leak
+        type: leak
+        position: [65, 330, 2]
+        rotation: 0
+      - id: marker-storage-leak
+        smart_home_id: storage-leak
+        type: leak
+        position: [375, 390, 2]
+        rotation: 0
+      - id: marker-main-bath-presence
+        smart_home_id: main-bath-presence
+        type: presence
+        position: [545, 540, 220]
+        rotation: 90
+      - id: marker-main-bath-humidity
+        smart_home_id: main-bath-humidity
+        type: temperature-humidity
+        position: [585, 580, 180]
+        rotation: 90
+      - id: marker-guest-bath-presence
+        smart_home_id: guest-bath-presence
+        type: presence
+        position: [520, 325, 220]
+        rotation: 90
+      - id: marker-guest-bath-humidity
+        smart_home_id: guest-bath-humidity
+        type: temperature-humidity
+        position: [580, 350, 180]
+        rotation: 90
+
+validation_rules:
+  unique_ids_per_collection: true
+  smart_home_device_reference_required: true
+  polygon_minimum_points: 3
+  wall_minimum_length: 1
+  coordinates_must_be_within_floor_bounds: true
