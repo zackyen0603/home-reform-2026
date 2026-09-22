@@ -385,6 +385,20 @@ systems:
       status: planning
 
   electrical:
+    data_source: electrical.yaml
+    floorplan_reference: floorplan.yaml
+    fourth_floor_layout:
+      outlets:
+        high_level_declared: 3
+        planned_220v: 8
+        general_declared: 26
+        optional: 3
+      lighting:
+        downlights: 33
+        pendants: 3
+        ceiling_lights: 4
+      coordinate_status: drawing-extracted-needs-electrical-review
+      circuit_assignment_status: proposed
     wire_brand_preference: 太平洋電線
     neutral_wire_policy: 電燈開關盒預留中性線
     owner_supplied:
@@ -461,6 +475,7 @@ systems:
   smart_home:
     data_source: smart-home.yaml
     floorplan_source: floorplan.yaml
+    electrical_source: electrical.yaml
     platform: Home Assistant
     protocols:
       - Zigbee
