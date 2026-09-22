@@ -1,0 +1,700 @@
+schema_version: "1.0"
+project:
+  name: home-reform-2026
+  title: 2026 居家整修規劃
+  location: 新北市三重區
+  scope:
+    - 1F 門面與玄關
+    - 4F 居住空間
+  target_layout_4f: 2房2衛1客廳1餐廳1廚房
+  style:
+    primary: Japandi／日式無印
+    accents:
+      - 侘寂感
+      - 暖白與暖灰
+      - 淺木紋
+      - 少量深木與黑色五金
+  last_updated: "2026-09-22"
+
+status_definition:
+  decided: 已決定
+  planned: 已納入規劃，規格仍可微調
+  evaluating: 選項比較中
+  pending: 尚待確認
+  purchased: 已購買
+  cancelled: 已取消
+
+priority_definition:
+  P0: 施工前必須確認，會影響結構、管線或封板
+  P1: 主要設備與空間功能
+  P2: 家具、外觀及使用體驗
+  P3: 可於後期決定
+
+constraints:
+  - id: CON-001
+    category: 法規
+    requirement: 4F為列管既存違建，採室內修繕與非結構性調整
+    status: decided
+    priority: P0
+    notes:
+      - 不增加面積或高度
+      - 不外推、不加蓋、不封陽台成室內
+      - 不拆梁柱、不切割樓板
+      - 非承重隔間調整仍需事前確認
+  - id: CON-002
+    category: 材料
+    requirement: 電線優先指定太平洋電線
+    status: planned
+    priority: P0
+  - id: CON-003
+    category: 採購
+    requirement: 自購或刪除項目後，報價須同步扣除材料、管理費與營業稅
+    status: planned
+    priority: P1
+  - id: CON-004
+    category: 採購
+    requirement: 電燈開關與插座面板考慮屋主自購，扣除國際星光面板
+    status: planned
+    priority: P1
+
+areas:
+  - id: AREA-1F-FACADE
+    floor: 1F
+    name: 外觀與大門
+    dimensions:
+      facade_width_cm: 600
+      floor_height_cm: 340
+    requirements:
+      - id: 1F-FAC-001
+        use: 門面
+        requirement: 保留外側鐵門／鐵捲門，開啟後可正常全收
+        status: decided
+        priority: P0
+      - id: 1F-FAC-002
+        use: 大門
+        requirement: 右側設111cm寬木質大門，向右開，門把位於左側
+        status: decided
+        priority: P0
+      - id: 1F-FAC-003
+        use: 採光
+        requirement: 左側窗戶約110×130cm，窗台離地約100cm，保留防盜功能
+        status: planned
+        priority: P0
+        notes:
+          - 窗與大門間距約60cm
+          - 窗戶位置曾討論右移，施工圖需定案
+      - id: 1F-FAC-004
+        use: 立面材質
+        requirement: 外牆採洗石子／抿石子質感
+        status: evaluating
+        priority: P1
+      - id: 1F-FAC-005
+        use: 採光裝飾
+        requirement: 玻璃磚配置於窗戶左側
+        status: evaluating
+        priority: P1
+        notes:
+          - 列數、尺寸及收邊方式待確認
+      - id: 1F-FAC-006
+        use: 照明與門禁
+        requirement: 大門右側設壁燈，壁燈下設門鈴
+        status: planned
+        priority: P0
+        notes:
+          - 壁燈獨立出線與一切開關
+      - id: 1F-FAC-007
+        use: 門牌
+        requirement: 小型灰白色日式門牌，文字為「顏」
+        status: planned
+        priority: P2
+      - id: 1F-FAC-008
+        use: 雨遮
+        requirement: 取消新增雨遮
+        status: cancelled
+        priority: P2
+      - id: 1F-FAC-009
+        use: 弱電
+        requirement: 取消1F電視出口
+        status: cancelled
+        priority: P1
+
+  - id: AREA-1F-ENTRY
+    floor: 1F
+    name: 玄關與落塵區
+    dimensions:
+      length_cm: 593
+      width_cm: 214
+    requirements:
+      - id: 1F-ENT-001
+        use: 格局
+        requirement: 原內凹大門改為平直立面
+        status: decided
+        priority: P0
+      - id: 1F-ENT-002
+        use: 地坪
+        requirement: 落塵區保留原有30×30cm地磚
+        status: decided
+        priority: P0
+      - id: 1F-ENT-003
+        use: 地坪
+        requirement: 僅拆除砌牆位置及外側必要地坪，牆外地坪施作抿石子
+        status: planned
+        priority: P0
+      - id: 1F-ENT-004
+        use: 天花
+        requirement: 不做完整天花板，以整理原頂為主
+        status: decided
+        priority: P1
+      - id: 1F-ENT-005
+        use: 牆面
+        requirement: 牆面採暖白色一般水泥漆
+        status: planned
+        priority: P1
+      - id: 1F-ENT-006
+        use: 照明
+        requirement: 入口採軌道燈，儲物區採吸頂燈
+        status: planned
+        priority: P0
+        notes:
+          - 玄關新增一路燈線
+          - 是否與儲物區共用一切待確認
+      - id: 1F-ENT-007
+        use: 隔間
+        requirement: 玄關與客廳之間使用木作隔間，門洞90～100cm
+        status: planned
+        priority: P0
+      - id: 1F-ENT-008
+        use: 內門
+        requirement: 採透光門片，優先單扇清玻璃木框吊軌拉門
+        status: evaluating
+        priority: P1
+        budget_nzd: null
+        budget_twd: 30000
+      - id: 1F-ENT-009
+        use: 牆面修整
+        requirement: 客廳原局部壁坪拆除改為批土油漆填平
+        status: planned
+        priority: P1
+
+  - id: AREA-1F-HVAC
+    floor: 1F
+    name: 空調
+    requirements:
+      - id: 1F-HVAC-001
+        use: 客廳冷氣
+        requirement: 先安裝客廳一台冷暖空調
+        status: planned
+        priority: P0
+        options:
+          - 5.0kW
+          - 6.3kW
+      - id: 1F-HVAC-002
+        use: 客房冷氣預留
+        requirement: 保留電源、開孔及排水條件
+        status: planned
+        priority: P0
+        notes:
+          - 是否預埋銅管待確認
+
+  - id: AREA-4F-LIVING
+    floor: 4F
+    name: 客廳
+    dimensions:
+      combined_living_dining_length_cm: 610.4
+      combined_living_dining_width_cm: 296.5
+      height_cm: 280
+      floor_area_ping: 5.4748
+    requirements:
+      - id: 4F-LIV-001
+        use: 地坪
+        requirement: 客餐廳採超耐磨木地板
+        status: planned
+        priority: P1
+      - id: 4F-LIV-002
+        use: 家具
+        requirement: 沙發約240×90cm
+        status: planned
+        priority: P2
+      - id: 4F-LIV-003
+        use: 影音
+        requirement: 電視／投影設備櫃約260cm
+        status: planned
+        priority: P1
+      - id: 4F-LIV-004
+        use: 影音
+        requirement: 100吋16:9投影布幕，外殼長度約260cm
+        status: planned
+        priority: P0
+        notes:
+          - 預留投影機電源、HDMI或網路線、吊架與布幕電源
+          - 確認投射距離、冷氣及燈具避讓
+      - id: 4F-LIV-005
+        use: 主照明
+        requirement: 可調3000～6500K吸頂燈
+        status: evaluating
+        priority: P1
+        options:
+          - Hotalux AURA
+          - 其他高演色可調色溫吸頂燈
+      - id: 4F-LIV-006
+        use: 氣氛照明
+        requirement: 電視牆配置約3顆3000K崁燈，以Zigbee群組控制
+        status: planned
+        priority: P1
+      - id: 4F-LIV-007
+        use: 門窗
+        requirement: 九州898型氣密窗，W2010×H1480mm，5mm強化清玻璃
+        status: planned
+        priority: P0
+
+  - id: AREA-4F-DINING
+    floor: 4F
+    name: 餐廳
+    requirements:
+      - id: 4F-DIN-001
+        use: 家具
+        requirement: 餐桌約140×80×75cm
+        status: planned
+        priority: P2
+      - id: 4F-DIN-002
+        use: 吊燈
+        requirement: 餐桌中央配置E27可調色溫吊燈
+        status: planned
+        priority: P1
+        notes:
+          - 保留實體開關
+          - 採兩切或智慧控制待確認
+      - id: 4F-DIN-003
+        use: 崁燈
+        requirement: 餐桌兩側共約4顆4000K崁燈，左右分區控制
+        status: planned
+        priority: P1
+      - id: 4F-DIN-004
+        use: 收納
+        requirement: 餐邊櫃／電器櫃約190cm寬
+        status: planned
+        priority: P1
+        notes:
+          - 預留咖啡機、飲水設備及小家電插座
+          - 櫃內需考慮散熱與走線
+      - id: 4F-DIN-005
+        use: 收納
+        requirement: 鄰近區域配置約150cm鞋櫃／高櫃，整合汙衣與收納功能
+        status: planned
+        priority: P2
+
+  - id: AREA-4F-KITCHEN
+    floor: 4F
+    name: 廚房
+    dimensions:
+      length_cm: 408.5
+      width_cm: 407.1
+      main_counter_width_cm: 230
+      island_length_cm: 130
+      island_width_cm: 80
+    requirements:
+      - id: 4F-KIT-001
+        use: 格局
+        requirement: 230cm一字型工作檯，另設130×80cm中島／電器櫃
+        status: decided
+        priority: P0
+      - id: 4F-KIT-002
+        use: 材料
+        requirement: 上櫃奶茶灰或淺灰，下櫃與中島採橡木紋
+        status: evaluating
+        priority: P1
+      - id: 4F-KIT-003
+        use: 檯面
+        requirement: LG或樂天柔米白人造石，厚度約1.5cm
+        status: planned
+        priority: P1
+      - id: 4F-KIT-004
+        use: 背牆
+        requirement: 白色烤漆玻璃與自購琺瑯板二選一
+        status: evaluating
+        priority: P0
+      - id: 4F-KIT-005
+        use: 地坪
+        requirement: 暖灰微水泥感30×60cm磁磚
+        status: planned
+        priority: P1
+      - id: 4F-KIT-006
+        use: 工作檯配置
+        requirement: 左水槽約90cm、中備料抽屜60cm、右IH區80cm
+        status: planned
+        priority: P0
+      - id: 4F-KIT-007
+        use: 吊櫃
+        requirement: 吊櫃總寬150cm，4扇各約37.5cm，櫃底離檯面約60cm
+        status: planned
+        priority: P0
+      - id: 4F-KIT-008
+        use: IH
+        requirement: Panasonic KZ-J1H6AK／KZ-J1H6AST，置中於80cm櫃體
+        status: evaluating
+        priority: P0
+        specifications:
+          voltage: 單相200V
+          power_kw: 5.8
+          switchable_power_kw: 4.8
+          breaker_a: 30
+          width_mm: 599
+      - id: 4F-KIT-009
+        use: 排煙
+        requirement: 80cm近吸式抽油煙機
+        status: evaluating
+        priority: P0
+        options:
+          - 櫻花 R7615
+          - 櫻花 R7653
+        notes:
+          - 重視清潔便利與開放式廚房排煙能力
+      - id: 4F-KIT-010
+        use: 水槽
+        requirement: 大吉熊水槽屋主自購
+        status: evaluating
+        priority: P0
+        options:
+          - KL-9477D
+          - KL-9776
+        notes:
+          - 重視大槽體、砧板內嵌及配件整合
+      - id: 4F-KIT-011
+        use: 龍頭
+        requirement: RECO RISS 103014-B伸縮龍頭屋主自購
+        status: planned
+        priority: P1
+      - id: 4F-KIT-012
+        use: 洗碗機
+        requirement: Fisher & Paykel DD60DHI9，使用同櫃體設計師面板
+        status: planned
+        priority: P0
+        budget_twd: 60000
+      - id: 4F-KIT-013
+        use: 淨水
+        requirement: 設置廚下淨水器，保留濾芯更換及漏水感測空間
+        status: planned
+        priority: P0
+      - id: 4F-KIT-014
+        use: 飲水設備
+        requirement: 瞬熱飲水設備依實際功率確認是否設獨立迴路
+        status: pending
+        priority: P0
+      - id: 4F-KIT-015
+        use: 櫥櫃照明
+        requirement: 嵌入式鋁槽搭配高演色COB燈條
+        status: evaluating
+        priority: P2
+        options:
+          - 舞光2009偏光45度鋁槽
+          - 1515鋁槽搭配10mm COB
+
+  - id: AREA-4F-UTILITY
+    floor: 4F
+    name: 儲藏室與家事空間
+    dimensions:
+      length_cm: 174.7
+      width_cm: 96.6
+    requirements:
+      - id: 4F-UTL-001
+        use: 收納
+        requirement: 配置冰箱、洗烘衣機、清潔工具與家用品收納
+        status: planned
+        priority: P1
+      - id: 4F-UTL-002
+        use: 家電
+        requirement: 洗烘衣機設110V專用迴路、進水與排水
+        status: planned
+        priority: P0
+      - id: 4F-UTL-003
+        use: 清潔設備
+        requirement: 預留吸塵器充電插座與掃地機器人基地
+        status: planned
+        priority: P1
+      - id: 4F-UTL-004
+        use: 除濕
+        requirement: 日立吊隱式除濕機RDI-360DX，4出風口、1回風口
+        status: planned
+        priority: P0
+
+  - id: AREA-4F-MASTER
+    floor: 4F
+    name: 主臥室
+    requirements:
+      - id: 4F-MBR-001
+        use: 睡眠
+        requirement: Queen床架約182×188cm，雙側設床頭插座
+        status: planned
+        priority: P1
+      - id: 4F-MBR-002
+        use: 工作
+        requirement: 書桌約120×60×75cm，預留110V、USB及網路
+        status: planned
+        priority: P1
+      - id: 4F-MBR-003
+        use: 衣櫃
+        requirement: 240×240cm衣櫃，分3個80cm模組
+        status: planned
+        priority: P1
+        notes:
+          - 左側男主人、中間共用、右側女主人
+          - 上櫃門板完整遮蓋，不留開放格
+          - 下方外露抽屜加大
+          - 上班褲設吊掛或抽拉褲架，休閒褲折疊收納
+          - 中間保留長衣、行李箱與換季用品空間
+      - id: 4F-MBR-004
+        use: 門窗
+        requirement: 九州898型氣密窗，W1190×H1440mm
+        status: evaluating
+        priority: P0
+        options:
+          - 5mm強化清玻璃
+          - 8mm強化清玻璃
+
+  - id: AREA-4F-SECOND
+    floor: 4F
+    name: 次臥室／書房
+    requirements:
+      - id: 4F-SBR-001
+        use: 睡眠
+        requirement: 客房雙人床約152×188cm
+        status: planned
+        priority: P2
+      - id: 4F-SBR-002
+        use: 工作
+        requirement: 工作桌約120×60×75cm，預留110V、USB及網路
+        status: planned
+        priority: P1
+      - id: 4F-SBR-003
+        use: 收納
+        requirement: 配置衣櫃及辦公設備收納
+        status: planned
+        priority: P2
+      - id: 4F-SBR-004
+        use: 門窗
+        requirement: 九州898型氣密窗，W1190×H1495mm
+        status: evaluating
+        priority: P0
+        options:
+          - 5mm強化清玻璃
+          - 8mm強化清玻璃
+
+  - id: AREA-4F-BATHS
+    floor: 4F
+    name: 主浴與客浴
+    requirements:
+      - id: 4F-BTH-001
+        use: 防水與磁磚
+        requirement: 兩間衛浴牆地磚全面更新，濕區降版並整合乾濕區高差
+        status: planned
+        priority: P0
+      - id: 4F-BTH-002
+        use: 設備
+        requirement: 每間配置浴櫃洗手盆、鏡櫃、馬桶、免治便座、恆溫淋浴、乾濕分離及暖風換氣
+        status: planned
+        priority: P0
+      - id: 4F-BTH-003
+        use: 馬桶
+        requirement: TOTO CW288SGUR
+        status: evaluating
+        priority: P1
+      - id: 4F-BTH-004
+        use: 主浴免治便座
+        requirement: TOTO TCF8CKM31
+        status: purchased
+        priority: P1
+      - id: 4F-BTH-005
+        use: 客浴免治便座
+        requirement: 選擇較經濟型號
+        status: evaluating
+        priority: P1
+        options:
+          - TCF8CKM01
+          - TCF8CKM11
+      - id: 4F-BTH-006
+        use: 恆溫淋浴
+        requirement: 日系恆溫水栓，預算約30000日圓
+        status: evaluating
+        priority: P1
+        options:
+          - INAX BF-KA145TSG-AMZ
+          - TOTO TBV03445J1
+          - TOTO TBV03403J
+          - LIXIL RBF-916
+          - LIXIL RBF-912FW
+          - SANEI SK181AD-13-EC
+      - id: 4F-BTH-007
+        use: 照明
+        requirement: 衛浴照明採4000K，不做窗簾
+        status: decided
+        priority: P1
+      - id: 4F-BTH-008
+        use: 電力
+        requirement: 免治便座110V插座；220V暖風機各自獨立迴路
+        status: planned
+        priority: P0
+      - id: 4F-BTH-009
+        use: 主浴窗
+        requirement: 九州898型氣密窗，W1180×H1410mm，5mm強化清玻璃
+        status: planned
+        priority: P0
+      - id: 4F-BTH-010
+        use: 客浴窗
+        requirement: 九州898型氣密窗，W600×H580mm，5mm強化清玻璃
+        status: planned
+        priority: P0
+
+systems:
+  hvac:
+    requirements:
+      - id: SYS-HVAC-001
+        requirement: 4F客餐廳採日立RAS-50YSP一對一冷暖
+        status: planned
+        priority: P0
+      - id: SYS-HVAC-002
+        requirement: 主臥RAS-28YSP＋次臥RAS-22YSP一對二
+        status: planned
+        priority: P0
+      - id: SYS-HVAC-003
+        requirement: 1F與4F冷氣二次施工合併安排，爭取由4工改為共用2工
+        status: evaluating
+        priority: P1
+      - id: SYS-HVAC-004
+        requirement: 釐清1F RAS-50YSP1與4F RAS-50YSP的型號及價差
+        status: pending
+        priority: P1
+
+  electrical:
+    requirements:
+      - id: SYS-ELC-001
+        requirement: 配電盤由現有28迴路升級至32P
+        status: planned
+        priority: P0
+      - id: SYS-ELC-002
+        requirement: 一般插座2.0mm²分3迴路
+        status: planned
+        priority: P0
+      - id: SYS-ELC-003
+        requirement: 一般照明2.0mm²分區配置，所有智慧開關盒預留中性線
+        status: planned
+        priority: P0
+      - id: SYS-ELC-004
+        requirement: 兩間浴室電源各含漏電斷路器
+        status: planned
+        priority: P0
+      - id: SYS-ELC-005
+        requirement: 暖風機、IH、洗碗機、中島、洗烘衣機、冷氣、除濕機與電熱水器依負載設專用迴路
+        status: planned
+        priority: P0
+      - id: SYS-ELC-006
+        requirement: 瞬熱飲水機依銘牌功率確認專用迴路
+        status: pending
+        priority: P0
+
+  lighting:
+    requirements:
+      - id: SYS-LGT-001
+        requirement: 主要作業照明約4000K，氣氛照明約3000K，優先高演色
+        status: decided
+        priority: P1
+      - id: SYS-LGT-002
+        requirement: 崁燈尺寸、光束角、調光方式及屋主自購範圍需定案
+        status: pending
+        priority: P0
+      - id: SYS-LGT-003
+        requirement: 調光器、智慧開關與燈具驅動器必須相容
+        status: planned
+        priority: P0
+
+  smart_home:
+    requirements:
+      - id: SYS-SMT-001
+        requirement: 保留牆上實體開關操作，同時支援Home Assistant
+        status: planned
+        priority: P0
+      - id: SYS-SMT-002
+        requirement: 依設備選擇Wi-Fi或Zigbee，照明優先使用可本地控制方案
+        status: evaluating
+        priority: P1
+      - id: SYS-SMT-003
+        requirement: 熱水器主電流不通過智慧模組，由智慧開關控制士林SP11接觸器
+        status: planned
+        priority: P0
+        notes:
+          - 熱水器EH6012FSN為AC220V、18A
+          - 保留散熱、維修及手動旁路條件
+      - id: SYS-SMT-004
+        requirement: 評估Aqara毫米波感測器及USB供電預留
+        status: evaluating
+        priority: P2
+
+  network:
+    requirements:
+      - id: SYS-NET-001
+        requirement: 房間、影音區與設備櫃預留Cat6以上有線網路
+        status: planned
+        priority: P0
+      - id: SYS-NET-002
+        requirement: NAS、路由器、交換器、UPS及Home Assistant集中至居家機櫃
+        status: evaluating
+        priority: P1
+      - id: SYS-NET-003
+        requirement: 各樓層預留有線AP點位，樓層幹線預留光纖或空管
+        status: evaluating
+        priority: P1
+
+open_decisions:
+  - id: DEC-001
+    decision: 1F玻璃磚列數、尺寸與收邊方式
+    affects:
+      - 1F-FAC-003
+      - 1F-FAC-005
+  - id: DEC-002
+    decision: 1F客廳冷氣選5.0kW或6.3kW
+    affects:
+      - 1F-HVAC-001
+  - id: DEC-003
+    decision: 1F客房是否預埋冷媒銅管
+    affects:
+      - 1F-HVAC-002
+  - id: DEC-004
+    decision: 玄關玻璃拉門的款式、五金與正式報價
+    affects:
+      - 1F-ENT-008
+  - id: DEC-005
+    decision: 主臥與次臥窗戶採5mm或8mm玻璃
+    affects:
+      - 4F-MBR-004
+      - 4F-SBR-004
+  - id: DEC-006
+    decision: 廚房水槽選KL-9477D或KL-9776
+    affects:
+      - 4F-KIT-010
+  - id: DEC-007
+    decision: 廚房背牆採烤漆玻璃或琺瑯板
+    affects:
+      - 4F-KIT-004
+  - id: DEC-008
+    decision: 80cm近吸式油煙機最終型號
+    affects:
+      - 4F-KIT-009
+  - id: DEC-009
+    decision: 客浴免治便座、兩間恆溫龍頭及暖風機型號
+    affects:
+      - 4F-BTH-005
+      - 4F-BTH-006
+  - id: DEC-010
+    decision: 崁燈尺寸、光束角、調光方式與自購範圍
+    affects:
+      - SYS-LGT-002
+  - id: DEC-011
+    decision: 智慧開關採Wi-Fi或Zigbee，以及牆壁端與燈具端的分工
+    affects:
+      - SYS-SMT-001
+      - SYS-SMT-002
+  - id: DEC-012
+    decision: 自購、刪除項目與合併工資後的新版總價
+    affects:
+      - CON-003
+      - CON-004
+      - SYS-HVAC-003
