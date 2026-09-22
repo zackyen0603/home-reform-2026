@@ -631,6 +631,13 @@ decisions:
     status: decided
 
 open_issues:
+  - id: issue-1f-overall-dimensions
+    category: measurement
+    title: 1F後段總寬與房間邊界覆核
+    question: 施工放樣前現場丈量1F總寬、右側後段寬度及樓梯／衛浴轉折；目前1092公分為1:50圖面比例估算
+    owner: contractor
+    priority: high
+    status: open
   - id: issue-regulatory-boundary
     category: regulation
     title: 4F既存違建可修繕範圍
