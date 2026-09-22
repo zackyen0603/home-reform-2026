@@ -3,184 +3,47 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="description" content="居家整修規劃資料儀表板，由 home-reform.yaml 動態產生。">
-  <title>居家整修規劃｜Home Reform 2026</title>
+  <meta name="description" content="顏宅居家整修、智慧家庭與2D/3D平面圖資料儀表板。">
+  <meta name="theme-color" content="#1e211d">
+  <title>顏宅整修控制台｜Home Reform 2026</title>
+  <link rel="stylesheet" href="./assets/styles.css">
   <script src="https://cdn.jsdelivr.net/npm/js-yaml@4.1.0/dist/js-yaml.min.js"></script>
-  <style>
-    :root {
-      --paper:#f5f1e8; --paper-2:#ece5d8; --ink:#272923; --muted:#74766d;
-      --line:#d7d0c3; --wood:#876e51; --moss:#69735c; --clay:#a46d54;
-      --white:#fffdf8; --shadow:0 12px 36px rgba(63,52,39,.08);
-      --radius:18px; --font:"Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;
-    }
-    *{box-sizing:border-box} html{scroll-behavior:smooth}
-    body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--font);line-height:1.65}
-    button,input,select{font:inherit} a{color:inherit}
-    .shell{display:grid;grid-template-columns:250px minmax(0,1fr);min-height:100vh}
-    aside{position:sticky;top:0;height:100vh;padding:30px 24px;border-right:1px solid var(--line);background:rgba(245,241,232,.92);backdrop-filter:blur(12px);overflow:auto}
-    .brand{font-family:Georgia,"Noto Serif TC",serif;font-size:25px;line-height:1.25;letter-spacing:.04em}
-    .brand small{display:block;margin-top:8px;color:var(--muted);font:600 11px/1.5 var(--font);letter-spacing:.18em;text-transform:uppercase}
-    nav{display:grid;gap:5px;margin-top:34px}
-    nav button{border:0;border-radius:10px;background:transparent;color:var(--muted);padding:9px 11px;text-align:left;cursor:pointer}
-    nav button:hover,nav button.active{background:var(--paper-2);color:var(--ink)}
-    .data-note{margin-top:30px;padding-top:18px;border-top:1px solid var(--line);font-size:12px;color:var(--muted)}
-    main{width:min(1360px,100%);padding:42px clamp(24px,4vw,64px) 80px}
-    .hero{display:flex;justify-content:space-between;align-items:flex-end;gap:30px;margin-bottom:34px}
-    .eyebrow{color:var(--wood);font-size:12px;font-weight:800;letter-spacing:.16em;text-transform:uppercase}
-    h1,h2,h3{font-family:Georgia,"Noto Serif TC",serif;font-weight:500}
-    h1{margin:7px 0 8px;font-size:clamp(34px,5vw,62px);line-height:1.08}
-    .subtitle{color:var(--muted)}
-    .toolbar{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
-    .toolbar input,.toolbar select{min-height:42px;border:1px solid var(--line);border-radius:12px;background:var(--white);padding:8px 12px;color:var(--ink)}
-    .toolbar input{width:220px}
-    .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:13px;margin-bottom:42px}
-    .stat{background:var(--white);border:1px solid var(--line);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow)}
-    .stat span{display:block;color:var(--muted);font-size:12px}.stat strong{display:block;margin-top:3px;font:500 31px/1.2 Georgia,serif}
-    section{scroll-margin-top:24px;margin:0 0 52px}
-    .section-head{display:flex;justify-content:space-between;align-items:end;gap:18px;margin-bottom:16px;padding-bottom:11px;border-bottom:1px solid var(--line)}
-    .section-head h2{margin:0;font-size:27px}.section-head p{margin:0;color:var(--muted);font-size:13px}
-    .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
-    .grid.three{grid-template-columns:repeat(3,minmax(0,1fr))}
-    .card{background:var(--white);border:1px solid var(--line);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow)}
-    .card-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
-    .card h3{margin:0 0 6px;font-size:20px}.meta{color:var(--muted);font-size:12px}
-    .badge{display:inline-flex;align-items:center;min-height:25px;padding:3px 9px;border-radius:999px;background:#e8eadf;color:#4d5843;font-size:11px;font-weight:700;white-space:nowrap}
-    .badge.high,.badge.open{background:#f5e2d8;color:#8c5139}.badge.decided,.badge.purchased,.badge.selected{background:#dfe9dd;color:#496245}
-    .facts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin:15px 0 0}
-    .fact{padding:10px;background:var(--paper);border-radius:11px}.fact b{display:block;font-size:11px;color:var(--muted);font-weight:600}.fact span{font-size:14px}
-    ul.clean{margin:13px 0 0;padding:0;list-style:none}ul.clean li{position:relative;padding:5px 0 5px 18px;font-size:14px}ul.clean li:before{content:"";position:absolute;left:2px;top:14px;width:6px;height:6px;border-radius:50%;background:var(--wood)}
-    .decision{display:grid;grid-template-columns:104px 1fr auto;gap:18px;align-items:start;padding:15px 0;border-bottom:1px solid var(--line)}
-    .decision:last-child{border-bottom:0}.decision time{color:var(--muted);font-size:12px}.decision strong{display:block}.decision p{margin:2px 0;color:#4e514a;font-size:14px}
-    .issue{border-left:4px solid var(--clay)}
-    .system-block{margin-top:12px;padding-top:12px;border-top:1px solid var(--line)}
-    .system-block:first-of-type{margin-top:0;padding-top:0;border-top:0}
-    .system-block b{font-size:13px}.system-block p{margin:3px 0;color:#4f514b;font-size:14px}
-    .empty{padding:30px;border:1px dashed var(--line);border-radius:var(--radius);color:var(--muted);text-align:center}
-    .error{max-width:780px;margin:12vh auto;padding:28px;border:1px solid #d9b9a9;border-radius:18px;background:#fff6f0}
-    .error code{display:block;margin-top:12px;padding:12px;background:#322f2b;color:#fff;border-radius:8px;overflow:auto}
-    footer{padding-top:25px;border-top:1px solid var(--line);color:var(--muted);font-size:12px}
-    .mobile-nav{display:none}
-    @media(max-width:980px){.shell{display:block}aside{display:none}.mobile-nav{display:flex;position:sticky;top:0;z-index:10;gap:8px;overflow:auto;padding:10px 18px;border-bottom:1px solid var(--line);background:rgba(245,241,232,.95);backdrop-filter:blur(12px)}.mobile-nav button{border:0;border-radius:999px;background:var(--white);padding:7px 12px;white-space:nowrap}.stats,.grid.three{grid-template-columns:repeat(2,minmax(0,1fr))}}
-    @media(max-width:680px){main{padding:28px 18px 60px}.hero{align-items:flex-start;flex-direction:column}.toolbar{justify-content:flex-start;width:100%}.toolbar input{width:100%}.stats,.grid,.grid.three{grid-template-columns:1fr}.decision{grid-template-columns:1fr;gap:4px}.facts{grid-template-columns:1fr 1fr}}
-  </style>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
 </head>
 <body>
-  <div class="mobile-nav" id="mobileNav"></div>
-  <div class="shell">
-    <aside>
-      <div class="brand">顏宅整修<small>Home Reform · 2026</small></div>
-      <nav id="sideNav"></nav>
-      <div class="data-note">本頁內容由 <b>home-reform.yaml</b> 即時載入。修改 YAML 後重新整理即可更新。</div>
+  <div class="loading" id="loading"><div class="loading-mark"></div><p>載入三份專案資料中…</p></div>
+  <div class="app-shell" id="app" hidden>
+    <aside class="sidebar">
+      <a class="brand" href="#overview" aria-label="回到總覽">
+        <span class="brand-mark">顏</span><span>宅整修控制台<small>HOME REFORM · 2026</small></span>
+      </a>
+      <nav id="nav"></nav>
+      <div class="source-panel">
+        <p>資料來源</p>
+        <a href="./home-reform.yaml">home-reform.yaml</a>
+        <a href="./smart-home.yaml">smart-home.yaml</a>
+        <a href="./floorplan.yaml">floorplan.yaml</a>
+      </div>
     </aside>
-    <main id="app"><div class="empty">正在載入整修資料…</div></main>
+
+    <header class="mobile-header">
+      <div class="brand"><span class="brand-mark">顏</span><span>整修控制台</span></div>
+      <button id="menuButton" class="icon-button" aria-label="開啟選單">☰</button>
+    </header>
+
+    <main>
+      <section id="overview" class="hero-section"></section>
+      <section id="floorplan" class="content-section"></section>
+      <section id="smart-home" class="content-section"></section>
+      <section id="automations" class="content-section"></section>
+      <section id="infrastructure" class="content-section"></section>
+      <section id="spaces" class="content-section"></section>
+      <section id="equipment" class="content-section"></section>
+      <section id="decisions" class="content-section"></section>
+      <footer id="footer"></footer>
+    </main>
   </div>
-
-  <script>
-    const DATA_FILE = './home-reform.yaml';
-    const NAV = [
-      ['overview','總覽'],['spaces','空間'],['systems','系統工程'],['equipment','設備選品'],
-      ['smart-home','智慧家庭'],['decisions','已決事項'],['issues','待確認事項']
-    ];
-    const esc = value => String(value ?? '').replace(/[&<>'"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
-    const arr = value => Array.isArray(value) ? value : value == null ? [] : [value];
-    const label = value => String(value ?? '未標示').replaceAll('-', ' ');
-    const list = items => arr(items).length ? `<ul class="clean">${arr(items).map(x=>`<li>${esc(typeof x === 'object' ? JSON.stringify(x) : x)}</li>`).join('')}</ul>` : '';
-    const badge = (text, extra='') => `<span class="badge ${esc(extra || text)}">${esc(label(text))}</span>`;
-    const sectionHead = (title,desc,count='') => `<div class="section-head"><div><h2>${esc(title)}</h2><p>${esc(desc)}</p></div>${count!==''?`<span class="meta">${esc(count)} 項</span>`:''}</div>`;
-    const fact = (key,val) => val == null ? '' : `<div class="fact"><b>${esc(key)}</b><span>${esc(val)}</span></div>`;
-    const flattenText = obj => JSON.stringify(obj).toLowerCase();
-
-    function setupNav(){
-      const html=NAV.map(([id,name])=>`<button data-target="${id}">${name}</button>`).join('');
-      document.querySelector('#sideNav').innerHTML=html;
-      document.querySelector('#mobileNav').innerHTML=html;
-      document.querySelectorAll('[data-target]').forEach(btn=>btn.addEventListener('click',()=>document.getElementById(btn.dataset.target)?.scrollIntoView({behavior:'smooth'})));
-    }
-
-    function renderSpace(space){
-      const d=space.dimensions||{};
-      const dims=[
-        fact('樓層',space.floor),fact('用途',label(space.category)),
-        fact('尺寸',d.length&&d.width?`${d.length} × ${d.width} cm`:null),
-        fact('樓高',d.clear_height?`${d.clear_height} cm`:null),
-        fact('地坪',d.floor_area_ping?`${d.floor_area_ping} 坪`:null),
-        fact('牆面',d.wall_area_m2?`${d.wall_area_m2} m²`:null)
-      ].join('');
-      return `<article class="card searchable" data-floor="${esc(space.floor)}" data-search="${esc(flattenText(space))}">
-        <div class="card-head"><div><h3>${esc(space.name)}</h3><div class="meta">${esc(space.id)}</div></div>${badge(space.status)}</div>
-        ${dims?`<div class="facts">${dims}</div>`:''}${list(space.requirements)}
-      </article>`;
-    }
-
-    function renderEquipment(item){
-      const candidates=item.model_candidates?arr(item.model_candidates).join(' ／ '):null;
-      return `<article class="card searchable" data-floor="all" data-search="${esc(flattenText(item))}">
-        <div class="card-head"><div><div class="meta">${esc(item.category)}</div><h3>${esc([item.brand,item.model].filter(Boolean).join(' ') || candidates || item.id)}</h3></div>${badge(item.status)}</div>
-        <div class="facts">${fact('採購',item.procurement)}${fact('預算',item.budget_twd?`NT$ ${Number(item.budget_twd).toLocaleString()}`:item.budget_jpy?`¥ ${Number(item.budget_jpy).toLocaleString()}`:null)}${fact('候選',candidates)}${fact('空間',item.assigned_space)}</div>
-        ${list(item.requirements)}
-      </article>`;
-    }
-
-    function renderSystems(data){
-      const s=data.systems||{};
-      const circuits=arr(s.electrical?.circuits);
-      return `<section id="systems">${sectionHead('系統工程','網路、電力、空調與給排水的共同規格')}
-        <div class="grid">
-          <article class="card searchable" data-floor="all" data-search="${esc(flattenText(s.network||{}))}"><h3>網路與機櫃</h3><div class="system-block"><b>拓樸</b><p>${esc(s.network?.topology)}</p></div><div class="system-block"><b>有線預留</b>${list(s.network?.wired_reservations)}</div><div class="system-block"><b>機櫃設備</b>${list(s.network?.rack?.planned_devices)}</div></article>
-          <article class="card searchable" data-floor="all" data-search="${esc(flattenText(s.electrical||{}))}"><div class="card-head"><h3>電力系統</h3>${badge(s.electrical?.wire_brand_preference||'')}</div><div class="system-block"><b>配線政策</b><p>${esc(s.electrical?.neutral_wire_policy)}</p></div><div class="system-block"><b>獨立迴路與線徑</b>${list(circuits.map(c=>`${c.id}｜${c.voltage}V｜${c.conductor_mm2}mm²${c.dedicated?'｜獨立迴路':''}`))}</div></article>
-          <article class="card searchable" data-floor="all" data-search="${esc(flattenText(s.hvac||{}))}"><h3>空調與除濕</h3><div class="system-block"><b>1F客廳</b><p>${esc(arr(s.hvac?.air_conditioning?.first_floor?.target_capacity_kw).join(' / '))} kW；${esc(s.hvac?.air_conditioning?.first_floor?.current_candidate)}</p></div><div class="system-block"><b>4F客廳</b><p>${esc(s.hvac?.air_conditioning?.fourth_floor_living?.current_candidate)}</p></div><div class="system-block"><b>除濕</b><p>${esc(s.hvac?.dehumidifier?.model)}（${esc(s.hvac?.dehumidifier?.type)}）</p></div></article>
-          <article class="card searchable" data-floor="all" data-search="${esc(flattenText(s.plumbing||{}))}"><h3>給排水與防水</h3><div class="system-block"><b>廚下淨水</b><p>${esc(label(s.plumbing?.under_sink_filter))}</p></div><div class="system-block"><b>瞬熱飲水</b><p>${esc(label(s.plumbing?.instant_hot_dispenser))}</p></div><div class="system-block"><b>驗收原則</b><p>${esc(s.plumbing?.waterproofing_policy)}</p></div></article>
-        </div></section>`;
-    }
-
-    function renderSmartHome(data){
-      const sh=data.systems?.smart_home||{}; const rd=sh.rolling_door||{};
-      const sensors=arr(sh.occupancy_and_safety).map(x=>`<article class="card searchable" data-floor="all" data-search="${esc(flattenText(x))}"><div class="card-head"><div><div class="meta">${esc(x.area)}</div><h3>${esc(x.purpose)}</h3></div>${badge(x.priority,x.priority)}</div><p>${esc(x.device_type)}</p></article>`).join('');
-      return `<section id="smart-home">${sectionHead('智慧家庭','Home Assistant 為核心，保留實體控制與離線可用性')}
-        <div class="grid three">${sensors}</div>
-        <div class="grid" style="margin-top:14px">
-          <article class="card searchable" data-floor="1F" data-search="${esc(flattenText(rd))}"><div class="card-head"><h3>1F 鐵捲門</h3>${badge(rd.status)}</div><p>原三鍵上／停／下皆為回彈式按鍵，智慧控制採三路乾接點短脈衝。</p>${list(rd.smart_control?.constraints)}</article>
-          <article class="card searchable" data-floor="all" data-search="${esc(flattenText(sh.water_heaters||{}))}"><div class="card-head"><h3>熱水器控制</h3>${badge(sh.water_heaters?.status)}</div><div class="facts">${fact('主負載',`${sh.water_heaters?.load_current_a}A`)}${fact('接觸器',sh.water_heaters?.contactor)}${fact('智慧模組',sh.water_heaters?.controller)}${fact('數量',sh.water_heaters?.quantity)}</div><p class="meta" style="margin-top:12px">${esc(sh.water_heaters?.control_principle)}</p></article>
-        </div></section>`;
-    }
-
-    function render(data){
-      const spaces=arr(data.spaces), equipment=[...arr(data.equipment?.kitchen),...arr(data.equipment?.bathrooms)], decisions=arr(data.decisions), issues=arr(data.open_issues);
-      const floors=['all',...new Set(spaces.map(x=>x.floor).filter(Boolean))];
-      document.querySelector('#app').innerHTML=`
-        <header class="hero" id="overview"><div><div class="eyebrow">${esc(data.metadata?.project_id)}</div><h1>${esc(data.metadata?.title)}</h1><div class="subtitle">${esc(data.project?.location?.city)} ${esc(data.project?.location?.district)} · ${esc(data.project?.building?.type)} · 更新 ${esc(data.metadata?.last_updated)}</div></div>
-          <div class="toolbar"><input id="search" type="search" placeholder="搜尋空間、設備、議題…"><select id="floorFilter">${floors.map(f=>`<option value="${esc(f)}">${f==='all'?'全部樓層':esc(f)}</option>`).join('')}</select></div></header>
-        <div class="stats">
-          <div class="stat"><span>規劃空間</span><strong>${spaces.length}</strong></div><div class="stat"><span>設備項目</span><strong>${equipment.length}</strong></div><div class="stat"><span>已決事項</span><strong>${decisions.filter(x=>x.status==='decided').length}</strong></div><div class="stat"><span>待確認</span><strong>${issues.filter(x=>x.status==='open').length}</strong></div>
-        </div>
-        <section id="spaces">${sectionHead('空間需求','按樓層與用途整理尺寸、材料和施工需求',spaces.length)}<div class="grid">${spaces.map(renderSpace).join('')}</div></section>
-        ${renderSystems(data)}
-        <section id="equipment">${sectionHead('設備與選品','已購、候選與比價中的廚房及衛浴設備',equipment.length)}<div class="grid three">${equipment.map(renderEquipment).join('')}</div></section>
-        ${renderSmartHome(data)}
-        <section id="decisions">${sectionHead('已決事項','確定的設計與工程原則',decisions.length)}<div class="card">${decisions.map(d=>`<div class="decision searchable" data-floor="all" data-search="${esc(flattenText(d))}"><time>${esc(d.date)}</time><div><strong>${esc(d.topic)}</strong><p>${esc(d.decision)}</p></div>${badge(d.status)}</div>`).join('')}</div></section>
-        <section id="issues">${sectionHead('待確認事項','施工前需取得答案或現場確認的項目',issues.length)}<div class="grid">${issues.map(i=>`<article class="card issue searchable" data-floor="all" data-search="${esc(flattenText(i))}"><div class="card-head"><div><div class="meta">${esc(i.category)} · ${esc(i.owner)}</div><h3>${esc(i.title)}</h3></div>${badge(i.priority,i.priority)}</div><p>${esc(i.question)}</p></article>`).join('')}</div></section>
-        <footer>資料來源：<b>${esc(DATA_FILE)}</b> · Schema ${esc(data.schema_version)} · 狀態 ${esc(data.metadata?.data_status)}</footer>`;
-      setupFilters();
-    }
-
-    function setupFilters(){
-      const search=document.querySelector('#search'), floor=document.querySelector('#floorFilter');
-      function apply(){const q=search.value.trim().toLowerCase(), f=floor.value; document.querySelectorAll('.searchable').forEach(el=>{const text=el.dataset.search||'', ef=el.dataset.floor||'all'; el.style.display=(!q||text.includes(q))&&(f==='all'||ef==='all'||ef===f)?'':'none';});}
-      search.addEventListener('input',apply); floor.addEventListener('change',apply);
-    }
-
-    async function init(){
-      setupNav();
-      try{
-        const res=await fetch(DATA_FILE,{cache:'no-store'}); if(!res.ok) throw new Error(`HTTP ${res.status}`);
-        const raw=await res.text(); const data=window.jsyaml.load(raw);
-        if(!data?.metadata||!Array.isArray(data?.spaces)) throw new Error('YAML 缺少必要的 metadata 或 spaces 結構');
-        render(data);
-      }catch(error){
-        document.querySelector('#app').innerHTML=`<div class="error"><h2>無法載入 YAML</h2><p>${esc(error.message)}</p><p>請使用 GitHub Pages 或本機 HTTP server 開啟；瀏覽器直接以 file:// 開啟時會阻擋 fetch。</p><code>python3 -m http.server 8000</code></div>`;
-      }
-    }
-    init();
-  </script>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <script src="./assets/app.js"></script>
 </body>
 </html>
