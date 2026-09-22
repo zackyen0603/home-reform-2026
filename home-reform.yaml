@@ -26,6 +26,18 @@ project:
     registered_floors: 2
     actual_floors: 5
     approximate_completion: "1991年前"
+    floor_dimensions:
+      1F:
+        overall_width: 1092
+        overall_depth: 574.5
+        status: width-partly-scaled-from-drawing
+        source_drawing: IMG_3157.png
+      4F:
+        overall_width: 1203.6
+        overall_depth: 610.4
+        footprint: L-shaped
+        status: drawing-dimensioned
+        source_drawing: IMG_3158.png
     regulatory_notes:
       - id: regulation-4f-existing-addition
         floor: 4F
@@ -91,9 +103,16 @@ spaces:
     name: 玄關／落塵區
     category: entrance
     dimensions:
-      length: 593
-      width: 214
+      length: 574.5
+      width: 200
       clear_height: 340
+      measurement_status: drawing-dimensioned
+      source_drawing: IMG_3157.png
+      floor_overall_width_estimated: 1092
+      floor_overall_depth: 574.5
+      notes:
+        - 此處尺寸為圖面左側玄關／單車收納帶，不再沿用舊版593×214公分示意值。
+        - 一樓後段未標總寬，1092公分為依1:50圖面比例估算，施工前須現場覆核。
     requirements:
       - 內凹大門改為直線配置
       - 落塵區保留既有30×30公分地磚
@@ -130,6 +149,13 @@ spaces:
     floor: 1F
     name: 客房
     category: bedroom
+    dimensions:
+      width: 428.9
+      depth: 367
+      clear_height: 340
+      measurement_status: scaled-from-drawing
+      notes:
+        - 右側後段未標完整尺寸，本值僅供2D／3D規劃模型使用。
     requirements:
       - 預留冷氣電源、銅管與排水路徑
     status: planning
@@ -148,6 +174,8 @@ spaces:
       floor_area_m2: 18.0992
       floor_area_ping: 5.4748
       wood_floor_area_ping: 5.4748
+      measurement_status: drawing-dimensioned
+      source_drawing: IMG_3158.png
     requirements:
       - 客廳配置可調色溫吸頂燈
       - 電視牆配置3顆3000K崁燈
@@ -162,13 +190,17 @@ spaces:
     category: kitchen-zone
     dimensions:
       length: 408.5
-      width: 407.1
+      width: 407.2
+      measurement_status: drawing-dimensioned
+      source_drawing: IMG_3158.png
       clear_height: 280
       perimeter_m: 16.312
       wall_area_m2: 45.6736
       paint_area_ping: 13.7478
       floor_area_m2: 16.629
       floor_area_ping: 5.0056
+      notes:
+        - 新圖連續尺寸為407.2×408.5公分；原估算407.1公分差0.1公分，面積欄暫保留原估算待現場丈量重算。
     status: design-development
 
   - id: 4f-kitchen
@@ -223,6 +255,8 @@ spaces:
       paint_area_ping: 4.5730
       floor_area_m2: 1.6876
       floor_area_ping: 0.5080
+      measurement_status: drawing-dimensioned
+      source_drawing: IMG_3158.png
     requirements:
       - 設漏水感測器
     status: planning
@@ -231,6 +265,12 @@ spaces:
     floor: 4F
     name: 主臥
     category: bedroom
+    dimensions:
+      width: 435.7
+      depth: 264.7
+      clear_height: 280
+      measurement_status: drawing-derived
+      source_drawing: IMG_3158.png
     wardrobe:
       width: 240
       height: 240
@@ -247,6 +287,12 @@ spaces:
     floor: 4F
     name: 次臥
     category: bedroom
+    dimensions:
+      width: 268.2
+      depth: 265.7
+      clear_height: 280
+      measurement_status: drawing-derived
+      source_drawing: IMG_3158.png
     requirements:
       - 預留獨立冷氣電源、銅管與排水
       - 窗簾盒配合氣密窗尺寸放樣
@@ -256,6 +302,12 @@ spaces:
     floor: 4F
     name: 主浴
     category: bathroom
+    dimensions:
+      width: 167.5
+      depth: 265.7
+      clear_height: 280
+      measurement_status: drawing-derived
+      source_drawing: IMG_3158.png
     requirements:
       - 全換牆地磚
       - 濕區降板並使用單一磚種
@@ -268,6 +320,12 @@ spaces:
     floor: 4F
     name: 客浴
     category: bathroom
+    dimensions:
+      width: 210.6
+      depth: 178.8
+      clear_height: 280
+      measurement_status: drawing-derived
+      source_drawing: IMG_3158.png
     requirements:
       - 全換牆地磚
       - 放大壁掛鏡櫃
