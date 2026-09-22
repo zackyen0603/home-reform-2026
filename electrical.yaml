@@ -8,7 +8,7 @@ metadata:
   last_updated: 2026-09-22
   source_of_truth: true
   data_status: drawing-extracted-needs-electrical-review
-  warning: 點位座標依配置示意圖換算並對應floorplan.yaml；空間歸屬已依修正後牆面格局重算。回路分組為規劃案，施工前須由合格電工依負載、配電盤容量與現場管路確認。
+  warning: 點位座標依配置示意圖換算並對應floorplan.yaml；空間歸屬已依施工圖尺寸軸與家具排除後的牆面格局重算。回路分組為規劃案，施工前須由合格電工依負載、配電盤容量與現場管路確認。
 
 sources:
   - id: SRC-4F-OUTLETS
@@ -286,7 +286,7 @@ points:
   - id: OUT-4F-S006
     type: general_outlet
     floor: 4F
-    space_id: 4f-storage
+    space_id: 4f-utility-passage
     circuit_id: C-OUT-4F-03
     position: [816.2, 30.7, 30]
     source_id: SRC-4F-OUTLETS
@@ -294,8 +294,8 @@ points:
   - id: OUT-4F-S007
     type: general_outlet
     floor: 4F
-    space_id: 4f-living-dining
-    circuit_id: C-OUT-4F-02
+    space_id: 4f-main-bedroom
+    circuit_id: C-OUT-4F-01
     position: [459.1, 83.4, 30]
     source_id: SRC-4F-OUTLETS
     status: needs-point-verification
@@ -310,7 +310,7 @@ points:
   - id: OUT-4F-S009
     type: general_outlet
     floor: 4F
-    space_id: 4f-storage
+    space_id: 4f-utility-passage
     circuit_id: C-OUT-4F-03
     position: [806, 156.5, 30]
     source_id: SRC-4F-OUTLETS
@@ -318,8 +318,8 @@ points:
   - id: OUT-4F-S010
     type: general_outlet
     floor: 4F
-    space_id: 4f-living-dining
-    circuit_id: C-OUT-4F-02
+    space_id: 4f-main-bedroom
+    circuit_id: C-OUT-4F-01
     position: [459.5, 157, 30]
     source_id: SRC-4F-OUTLETS
     status: needs-point-verification
@@ -342,8 +342,8 @@ points:
   - id: OUT-4F-S013
     type: general_outlet
     floor: 4F
-    space_id: 4f-living-dining
-    circuit_id: C-OUT-4F-02
+    space_id: 4f-main-bedroom
+    circuit_id: C-OUT-4F-01
     position: [459.5, 219.8, 30]
     source_id: SRC-4F-OUTLETS
     status: needs-point-verification
@@ -414,8 +414,8 @@ points:
   - id: OUT-4F-S022
     type: general_outlet
     floor: 4F
-    space_id: 4f-living-dining
-    circuit_id: C-OUT-4F-02
+    space_id: 4f-secondary-bedroom
+    circuit_id: C-OUT-4F-01
     position: [459, 417, 30]
     source_id: SRC-4F-OUTLETS
     status: needs-point-verification
@@ -446,8 +446,8 @@ points:
   - id: OUT-4F-S026
     type: general_outlet
     floor: 4F
-    space_id: 4f-living-dining
-    circuit_id: C-OUT-4F-02
+    space_id: 4f-secondary-bedroom
+    circuit_id: C-OUT-4F-01
     position: [459.2, 577.7, 30]
     source_id: SRC-4F-OUTLETS
     status: needs-point-verification
@@ -478,8 +478,8 @@ points:
   - id: OUT-4F-O003
     type: optional_outlet
     floor: 4F
-    space_id: 4f-living-dining
-    circuit_id: C-OUT-4F-02
+    space_id: 4f-secondary-bedroom
+    circuit_id: C-OUT-4F-01
     position: [459.5, 525.7, 30]
     source_id: SRC-4F-OUTLETS
     status: optional
@@ -502,15 +502,15 @@ points:
   - id: OUT-4F-U003
     type: high_level_outlet
     floor: 4F
-    space_id: 4f-living-dining
-    circuit_id: C-OUT-4F-02
+    space_id: 4f-secondary-bedroom
+    circuit_id: C-OUT-4F-01
     position: [485, 601.7, 220]
     source_id: SRC-4F-OUTLETS
     status: drawing-extracted
   - id: OUT-4F-V001
     type: planned_220v
     floor: 4F
-    space_id: 4f-storage
+    space_id: 4f-utility-passage
     circuit_id: C-220-UTILITY-RESERVED
     position: [869.2, 30.6, to-confirm]
     source_id: SRC-4F-OUTLETS
@@ -591,12 +591,12 @@ points:
   - id: LGT-4F-DL002
     type: downlight
     floor: 4F
-    space_id: 4f-living-dining
-    circuit_id: C-LGT-4F-02
+    space_id: 4f-main-bedroom
+    circuit_id: C-LGT-4F-01
     position: [465.6, 69.6, 280]
     source_id: SRC-4F-LIGHTS
     status: drawing-extracted
-    control_group_id: SG-LIVING-DINING-DOWNLIGHT
+    control_group_id: SG-MASTER-DOWNLIGHT
   - id: LGT-4F-DL003
     type: downlight
     floor: 4F
@@ -654,12 +654,12 @@ points:
   - id: LGT-4F-DL009
     type: downlight
     floor: 4F
-    space_id: 4f-living-dining
-    circuit_id: C-LGT-4F-02
+    space_id: 4f-main-bedroom
+    circuit_id: C-LGT-4F-01
     position: [466, 135, 280]
     source_id: SRC-4F-LIGHTS
     status: drawing-extracted
-    control_group_id: SG-LIVING-DINING-DOWNLIGHT
+    control_group_id: SG-MASTER-DOWNLIGHT
   - id: LGT-4F-DL010
     type: downlight
     floor: 4F
@@ -681,12 +681,12 @@ points:
   - id: LGT-4F-DL012
     type: downlight
     floor: 4F
-    space_id: 4f-living-dining
-    circuit_id: C-LGT-4F-02
+    space_id: 4f-main-bedroom
+    circuit_id: C-LGT-4F-01
     position: [466, 199.7, 280]
     source_id: SRC-4F-LIGHTS
     status: drawing-extracted
-    control_group_id: SG-LIVING-DINING-DOWNLIGHT
+    control_group_id: SG-MASTER-DOWNLIGHT
   - id: LGT-4F-DL013
     type: downlight
     floor: 4F
@@ -807,12 +807,12 @@ points:
   - id: LGT-4F-DL026
     type: downlight
     floor: 4F
-    space_id: 4f-living-dining
-    circuit_id: C-LGT-4F-02
+    space_id: 4f-secondary-bedroom
+    circuit_id: C-LGT-4F-01
     position: [473.9, 424.5, 280]
     source_id: SRC-4F-LIGHTS
     status: drawing-extracted
-    control_group_id: SG-LIVING-DINING-DOWNLIGHT
+    control_group_id: SG-SECONDARY-DOWNLIGHT
   - id: LGT-4F-DL027
     type: downlight
     floor: 4F
@@ -834,12 +834,12 @@ points:
   - id: LGT-4F-DL029
     type: downlight
     floor: 4F
-    space_id: 4f-living-dining
-    circuit_id: C-LGT-4F-02
+    space_id: 4f-secondary-bedroom
+    circuit_id: C-LGT-4F-01
     position: [473.8, 522.6, 280]
     source_id: SRC-4F-LIGHTS
     status: drawing-extracted
-    control_group_id: SG-LIVING-DINING-DOWNLIGHT
+    control_group_id: SG-SECONDARY-DOWNLIGHT
   - id: LGT-4F-DL030
     type: downlight
     floor: 4F
@@ -933,24 +933,16 @@ points:
   - id: LGT-4F-CL004
     type: ceiling_light
     floor: 4F
-    space_id: 4f-storage
+    space_id: 4f-utility-passage
     circuit_id: C-LGT-4F-02
     position: [845.8, 101.9, 280]
     source_id: SRC-4F-LIGHTS
     status: drawing-extracted
-    control_group_id: SG-UTILITY-CEILING
+    control_group_id: SG-UTILITY-PASSAGE-CEILING
 control_groups:
   - id: SG-MASTER-DOWNLIGHT
     name: SG MASTER DOWNLIGHT
-    point_ids: [LGT-4F-DL001, LGT-4F-DL003, LGT-4F-DL008, LGT-4F-DL010, LGT-4F-DL011, LGT-4F-DL014, LGT-4F-DL021]
-    wall_control: physical-switch
-    dimming_at_wall: false
-    neutral_required: true
-    smart_control: module-or-smart-switch-to-confirm
-    status: proposed
-  - id: SG-LIVING-DINING-DOWNLIGHT
-    name: SG LIVING DINING DOWNLIGHT
-    point_ids: [LGT-4F-DL002, LGT-4F-DL009, LGT-4F-DL012, LGT-4F-DL019, LGT-4F-DL020, LGT-4F-DL024, LGT-4F-DL026, LGT-4F-DL027, LGT-4F-DL029, LGT-4F-DL030]
+    point_ids: [LGT-4F-DL001, LGT-4F-DL002, LGT-4F-DL003, LGT-4F-DL008, LGT-4F-DL009, LGT-4F-DL010, LGT-4F-DL011, LGT-4F-DL012, LGT-4F-DL014, LGT-4F-DL021]
     wall_control: physical-switch
     dimming_at_wall: false
     neutral_required: true
@@ -980,9 +972,17 @@ control_groups:
     neutral_required: true
     smart_control: module-or-smart-switch-to-confirm
     status: proposed
+  - id: SG-LIVING-DINING-DOWNLIGHT
+    name: SG LIVING DINING DOWNLIGHT
+    point_ids: [LGT-4F-DL019, LGT-4F-DL020, LGT-4F-DL024, LGT-4F-DL027, LGT-4F-DL030]
+    wall_control: physical-switch
+    dimming_at_wall: false
+    neutral_required: true
+    smart_control: module-or-smart-switch-to-confirm
+    status: proposed
   - id: SG-SECONDARY-DOWNLIGHT
     name: SG SECONDARY DOWNLIGHT
-    point_ids: [LGT-4F-DL023, LGT-4F-DL032, LGT-4F-DL033]
+    point_ids: [LGT-4F-DL023, LGT-4F-DL026, LGT-4F-DL029, LGT-4F-DL032, LGT-4F-DL033]
     wall_control: physical-switch
     dimming_at_wall: false
     neutral_required: true
@@ -1036,8 +1036,8 @@ control_groups:
     neutral_required: true
     smart_control: module-or-smart-switch-to-confirm
     status: proposed
-  - id: SG-UTILITY-CEILING
-    name: SG UTILITY CEILING
+  - id: SG-UTILITY-PASSAGE-CEILING
+    name: SG UTILITY PASSAGE CEILING
     point_ids: [LGT-4F-CL004]
     wall_control: physical-switch
     dimming_at_wall: false
