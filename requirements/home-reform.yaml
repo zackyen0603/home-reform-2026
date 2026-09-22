@@ -688,6 +688,11 @@ systems:
         priority: P1
 
 open_decisions:
+  - id: DEC-013
+    decision: 現場覆核1F總寬、右側後段寬度及樓梯／衛浴轉折座標
+    priority: P0
+    notes:
+      - floorplan.yaml目前總寬1092公分為1:50圖面比例估算，不可直接作施工放樣。
   - id: DEC-001
     decision: 1F玻璃磚列數、尺寸與收邊方式
     affects:
