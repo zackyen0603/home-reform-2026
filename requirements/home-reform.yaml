@@ -30,8 +30,10 @@ project:
       scale: "1:50"
       overall_width_cm: 1203.6
       overall_depth_cm: 610.4
-      footprint: L-shaped
-      status: drawing-dimensioned
+      footprint: rectangular-with-internal-stair-zone
+      status: dimensioned-with-topology-correction
+      wall_topology_source: IMG_3159(1).jpeg
+      wall_model_note: 家具、櫃體、中島與沙發均不作為牆面
 
 status_definition:
   decided: 已決定
@@ -446,10 +448,11 @@ areas:
     floor: 4F
     name: 主臥室
     dimensions:
-      width_cm: 435.7
-      depth_cm: 264.7
-      measurement_status: drawing-derived
+      width_cm: 487.9
+      depth_cm: 344.7
+      measurement_status: combined-drawing-derived
       source_drawing: IMG_3158.png
+      wall_topology_source: IMG_3159(1).jpeg
     requirements:
       - id: 4F-MBR-001
         use: 睡眠
@@ -485,10 +488,11 @@ areas:
     floor: 4F
     name: 次臥室／書房
     dimensions:
-      width_cm: 268.2
+      width_cm: 320.4
       depth_cm: 265.7
-      measurement_status: drawing-derived
+      measurement_status: combined-drawing-derived
       source_drawing: IMG_3158.png
+      wall_topology_source: IMG_3159(1).jpeg
     requirements:
       - id: 4F-SBR-001
         use: 睡眠
