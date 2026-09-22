@@ -401,77 +401,14 @@ systems:
     waterproofing_policy: 濕區降板、防水及試水紀錄需納入驗收
 
   smart_home:
+    data_source: smart-home.yaml
+    floorplan_source: floorplan.yaml
     platform: Home Assistant
     protocols:
-      primary:
-        - Zigbee
-        - Wi-Fi
-      ecosystem_bridge: HomeKit Bridge
-    current_state:
-      floorplan_card:
-        integration: custom:floorplan-card
-        asset_path: /local/floorplan/my_home.svg?v=1.1
-        notes:
-          - SVG overlay不可阻擋點擊事件
-          - 多動作設定採floorplan.execute
-      homekit_bridge:
-        accessories_count: 27
-        remote_access: needs-verification
-        hub_candidate: HomePod mini
-    physical_control_policy: 保留牆面實體開關功能
-    occupancy_and_safety:
-      - id: automation-living-fp2
-        area: 客餐廳
-        device_type: Aqara FP2
-        purpose: 分區在席偵測
-        priority: high
-      - id: automation-entrance
-        area: 玄關
-        device_type: 人體／門窗感測器
-        purpose: 進出偵測
-        priority: high
-      - id: automation-bathrooms
-        area: 浴室
-        device_type: 人體與濕度感測器
-        purpose: 照明與排風自動化
-        priority: high
-      - id: automation-leak-kitchen
-        area: 廚房
-        device_type: 漏水感測器
-        purpose: 漏水告警
-        priority: high
-      - id: automation-leak-storage
-        area: 儲藏室
-        device_type: 漏水感測器
-        purpose: 漏水告警
-        priority: high
-    rolling_door:
-      floor: 1F
-      existing_control:
-        buttons:
-          - 上
-          - 停
-          - 下
-        momentary: true
-        behavior: 按一下即動作，放開後按鍵回彈
-      smart_control:
-        method: 乾接點繼電器
-        required_channels: 3
-        constraints:
-          - 必須維持原三鍵實體控制
-          - 上與下需做硬體互鎖，避免同時觸發
-          - 每次僅輸出短脈衝，不可長時間保持
-          - 模組故障時不可使鐵捲門自行動作
-          - 安裝前由合格電工確認控制端電壓與共用端
-      status: design-required
-    water_heaters:
-      quantity: 2
-      load_current_a: 30
-      contactor: 士林電機SP11
-      controller: Sonoff MINI R2或等效智慧模組
-      switch_model: EH6012FSN AC220V 18A
-      control_principle: 智慧模組只控制接觸器線圈，不直接承載熱水器主負載
-      status: electrical-review
+      - Zigbee
+      - Wi-Fi
+      - Ethernet
+    summary: 詳細設備、配線、自動化、安全規則及驗收測試統一由smart-home.yaml維護。
 
 equipment:
   kitchen:
