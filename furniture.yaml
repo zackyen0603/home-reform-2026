@@ -230,9 +230,9 @@ items:
     name: 廚房中島／電器櫃
     kind: island
     room_id: 4f-kitchen
-    position: [1000, 330, 0]
-    size: [245, 80, 90]
-    rotation_deg: 0
+    position: [1000, 293, 0]
+    size: [210, 80, 90]
+    rotation_deg: 90
     dimension_basis: spreadsheet-width-depth; estimated-height
     procurement_status: 不需購買
     brand: 耘得系統櫃
@@ -244,9 +244,9 @@ items:
     name: 廚房一字型下櫃與檯面
     kind: kitchen_base
     room_id: 4f-kitchen
-    position: [1000, 210, 0]
-    size: [330, 60, 90]
-    rotation_deg: 0
+    position: [1170, 293, 0]
+    size: [230, 60, 90]
+    rotation_deg: 90
     dimension_basis: spreadsheet; image-reference
     procurement_status: 統包規劃
     brand: 耘得系統櫃
@@ -258,9 +258,9 @@ items:
     name: 廚房霧面白上櫃
     kind: kitchen_wall
     room_id: 4f-kitchen
-    position: [920, 210, 0]
+    position: [1170, 288, 0]
     size: [220, 38, 70]
-    rotation_deg: 0
+    rotation_deg: 90
     dimension_basis: image-reference; spreadsheet
     procurement_status: 統包規劃
     brand: 耘得系統櫃
@@ -272,9 +272,9 @@ items:
     name: 廚房水槽
     kind: kitchen_sink
     room_id: 4f-kitchen
-    position: [865, 210, 0]
+    position: [1170, 215, 0]
     size: [70, 55, 95]
-    rotation_deg: 0
+    rotation_deg: 90
     dimension_basis: spreadsheet; image-reference
     procurement_status: 待確認型號
     brand: 大吉熊
@@ -285,9 +285,9 @@ items:
     name: 抽屜式洗碗機
     kind: kitchen_dishwasher
     room_id: 4f-kitchen
-    position: [945, 210, 0]
+    position: [1170, 275, 0]
     size: [57, 60, 82]
-    rotation_deg: 0
+    rotation_deg: 90
     dimension_basis: spreadsheet
     procurement_status: 尚未購買
     brand: fisher & paykel
@@ -299,9 +299,9 @@ items:
     name: IH 爐與爐連烤
     kind: kitchen_cooktop
     room_id: 4f-kitchen
-    position: [1080, 210, 0]
+    position: [1170, 350, 0]
     size: [60, 56, 95]
-    rotation_deg: 0
+    rotation_deg: 90
     dimension_basis: spreadsheet; image-reference
     procurement_status: 已購買
     brand: Panasonic
@@ -313,9 +313,9 @@ items:
     name: 黑色近吸式抽油煙機
     kind: kitchen_hood
     room_id: 4f-kitchen
-    position: [1080, 202, 0]
+    position: [1170, 350, 0]
     size: [80, 45, 220]
-    rotation_deg: 0
+    rotation_deg: 90
     dimension_basis: spreadsheet; image-reference
     procurement_status: 待確認型號
     brand: SAKURA
@@ -327,7 +327,7 @@ items:
     name: 廚房冰箱
     kind: kitchen_fridge
     room_id: 4f-kitchen
-    position: [1165, 270, 0]
+    position: [850, 215, 0]
     size: [60.1, 65.3, 179]
     rotation_deg: 0
     dimension_basis: spreadsheet; image-reference
