@@ -1,0 +1,133 @@
+schema_version: "1.0.0"
+metadata:
+  title: 各房間材質與室內配置
+  coordinate_reference: floorplan.yaml
+  units: cm
+  source_image: 63FCFCDE-0827-4727-97B0-ED62EBE8A8D8.jpeg
+  status: design-visualization
+  note: 主浴以參考圖辨識材質與設備配置；座標對齊 floorplan.yaml，設備尺寸及位置除試算表已列者外仍須依現場與施工圖確認。其他房間可增添 room_id 設定而共用渲染器。
+
+materials:
+  warm_gray_stone:
+    name: 暖灰米色石紋磚
+    color: "#b7afa6"
+    finish: matte-stone
+  fluted_charcoal:
+    name: 深灰直條紋磚
+    color: "#6b6863"
+    finish: vertical-fluted-tile
+    stripe_spacing_cm: 8
+  shower_gray_stone:
+    name: 淋浴區深灰石紋磚
+    color: "#77736e"
+    finish: matte-stone
+  warm_gray_floor:
+    name: 暖灰止滑地磚
+    color: "#bab3a9"
+    finish: matte-anti-slip-tile
+  shower_floor:
+    name: 淋浴區暖灰地磚
+    color: "#95908a"
+    finish: matte-anti-slip-tile
+  soft_white:
+    name: 柔白烤漆／陶瓷
+    color: "#f1ede6"
+    finish: satin
+  mirror:
+    name: 鏡面
+    color: "#a7b6b5"
+    finish: reflective
+  clear_glass:
+    name: 清玻璃
+    color: "#b7d2d0"
+    finish: clear-glass
+    opacity: 0.27
+  brushed_metal:
+    name: 霧面金屬
+    color: "#555854"
+    finish: brushed-metal
+  warm_oak:
+    name: 淺橡木
+    color: "#b9a58d"
+    finish: woodgrain
+
+rooms:
+  - room_id: 4f-main-bathroom
+    floor_id: 4F
+    reference_view:
+      camera_direction: south
+      entrance_side: north
+      window_side: west
+      note: 由北側門向南看，右側（西牆）是對外窗。
+    surfaces:
+      ceiling: soft_white
+      floor: warm_gray_floor
+      walls:
+        default:
+          upper: warm_gray_stone
+          lower: fluted_charcoal
+          lower_height_cm: 110
+        south:
+          upper: shower_gray_stone
+          lower: shower_gray_stone
+          lower_height_cm: 0
+      floor_zones:
+        - id: master-shower-floor
+          material: shower_floor
+          polygon: [[6, 531], [161, 531], [161, 604], [6, 604]]
+    objects:
+      - id: 4f-master-vanity
+        name: 白色檯面與浴櫃
+        kind: vanity
+        position: [137, 404, 0]
+        size: [80, 50, 85]
+        rotation_deg: 90
+        material: soft_white
+        source: "巧新新家規劃.xlsx／★家具購買規劃總表!13；檯面外觀參考圖"
+        dimension_status: width-spreadsheet; position-estimated
+      - id: 4f-master-mirror-cabinet
+        name: 鏡櫃
+        kind: mirror_cabinet
+        position: [159, 404, 110]
+        size: [80, 14, 108]
+        rotation_deg: 90
+        material: mirror
+        source: reference-image
+        dimension_status: estimated
+      - id: 4f-master-toilet
+        name: TOTO 馬桶
+        kind: toilet
+        position: [105, 482, 0]
+        size: [45.2, 72.2, 62.5]
+        rotation_deg: 90
+        material: soft_white
+        source: "巧新新家規劃.xlsx／★家具購買規劃總表!17"
+        dimension_status: dimensions-spreadsheet; position-estimated
+      - id: 4f-master-shower-glass
+        name: 黑框清玻璃淋浴隔間
+        kind: glass_partition
+        position: [88, 531, 0]
+        size: [110, 2, 205]
+        rotation_deg: 0
+        material: clear_glass
+        frame_material: brushed_metal
+        source: reference-image
+        dimension_status: estimated
+      - id: 4f-master-shower-fixture
+        name: 恆溫花灑
+        kind: shower
+        position: [115, 599, 65]
+        size: [18, 9, 150]
+        rotation_deg: 0
+        material: brushed_metal
+        source: "巧新新家規劃.xlsx／★家具購買規劃總表!3"
+        dimension_status: position-estimated
+      - id: 4f-master-towel-bar
+        name: 西牆毛巾桿
+        kind: towel_bar
+        position: [8, 395, 110]
+        size: [52, 7, 6]
+        rotation_deg: 90
+        material: brushed_metal
+        source: reference-image
+        dimension_status: estimated
