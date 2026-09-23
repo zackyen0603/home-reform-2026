@@ -1,0 +1,133 @@
+'use strict';
+
+// Room finishes and fitted objects share floorplan.yaml's centimetre coordinates.
+window.RoomInteriors = (() => {
+  const materials = data => data?.materials || {};
+  const roomStyle = (data,id) => (data?.rooms || []).find(room=>room.room_id===id);
+  const color = (data,id,fallback='#d9d2c5') => materials(data)[id]?.color || fallback;
+  const opacity = (data,id) => Number(materials(data)[id]?.opacity ?? 1);
+  const objects = (data,floorId) => (data?.rooms||[]).filter(r=>r.floor_id===floorId).flatMap(r=>(r.objects||[]).map(o=>({...o,room_id:r.room_id})));
+  const footprint = o => {const [w,d]=o.size,rotated=Math.abs(o.rotation_deg||0)%180===90;return [rotated?d:w,rotated?w:d];};
+  const esc = value => String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+  function validate(data,plan) {
+    if(!data || !Array.isArray(data.rooms) || !data.materials)throw new Error('室內配置缺少 rooms 或 materials');
+    const known=new Set(plan.floors.flatMap(f=>f.rooms.map(r=>`${f.id}/${r.id}`))), ids=new Set();
+    for(const r of data.rooms){
+      if(!known.has(`${r.floor_id}/${r.room_id}`))throw new Error(`室內配置的空間不存在：${r.room_id}`);
+      const refs=[r.surfaces?.floor,r.surfaces?.ceiling,r.surfaces?.walls?.default?.upper,r.surfaces?.walls?.default?.lower,...Object.values(r.surfaces?.walls||{}).flatMap(w=>[w?.upper,w?.lower]),...(r.surfaces?.floor_zones||[]).map(z=>z.material)];
+      for(const o of r.objects||[]){
+        if(!o.id||ids.has(o.id)||!Array.isArray(o.position)||o.position.length!==3||!Array.isArray(o.size)||o.size.length!==3||![...o.position,...o.size].every(Number.isFinite)||o.size.some(n=>n<=0))throw new Error(`室內物件資料有誤：${o.id||'(無 ID)'}`);
+        ids.add(o.id);refs.push(o.material,o.frame_material);
+      }
+      for(const ref of refs.filter(Boolean))if(!materials(data)[ref])throw new Error(`找不到室內材質：${ref}`);
+    }
+    return true;
+  }
+
+  function svgFloorZones(floor,data) {
+    return (data?.rooms||[]).filter(r=>r.floor_id===floor.id).flatMap(r=>(r.surfaces?.floor_zones||[]).map(z=>`<polygon points="${z.polygon.map(p=>p.join(',')).join(' ')}" fill="${color(data,z.material)}" stroke="#f5f0e7" stroke-width="1"/>`)).join('');
+  }
+  function svgObjects(floor,data) {
+    return objects(data,floor.id).map(o=>{
+      const [x,y]=o.position,[w,d]=o.size,t=o.kind,fill=color(data,o.material);
+      const shape=t==='glass_partition'?`<rect x="${-w/2}" y="${-d/2-1}" width="${w}" height="${d+2}" fill="${fill}" fill-opacity=".48" stroke="${color(data,o.frame_material,'#555854')}" stroke-width="2"/>`
+        :t==='toilet'?`<ellipse cx="0" cy="0" rx="${w*.37}" ry="${d*.37}" fill="${fill}" stroke="#887f74"/><rect x="${-w*.35}" y="${-d*.48}" width="${w*.7}" height="${d*.14}" rx="2" fill="${fill}" stroke="#887f74"/>`
+        :t==='vanity'?`<rect x="${-w/2}" y="${-d/2}" width="${w}" height="${d}" rx="2" fill="${fill}" stroke="#8b796b" stroke-width="2"/><ellipse cx="0" cy="0" rx="${w*.29}" ry="${d*.27}" fill="#cad5d2" stroke="#9ca5a0"/>`
+        :t==='mirror_cabinet'?`<rect x="${-w/2}" y="${-d/2}" width="${w}" height="${d}" fill="${fill}" stroke="#7e8986" stroke-width="2"/><line x1="0" y1="${-d/2}" x2="0" y2="${d/2}" stroke="#fff"/>`
+        :`<rect x="${-w/2}" y="${-d/2}" width="${w}" height="${d}" rx="2" fill="${fill}" stroke="#5d625c" stroke-width="1.5"/>`;
+      return `<g class="interior-object kind-${esc(t)}" data-interior-id="${esc(o.id)}" tabindex="0" role="button" aria-label="${esc(o.name)}" transform="translate(${x} ${y}) rotate(${o.rotation_deg||0})"><title>${esc(o.name)} · ${o.size.join(' × ')} cm</title>${shape}</g>`;
+    }).join('');
+  }
+
+  function box(parent,THREE,w,h,d,x,y,z,material,id) {
+    const mesh=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),material);mesh.position.set(x,y,z);mesh.userData.interiorId=id;mesh.castShadow=true;mesh.receiveShadow=true;parent.add(mesh);return mesh;
+  }
+  const material3D=(THREE,data,id,options={})=>{const finish=materials(data)[id]?.finish;return new THREE.MeshStandardMaterial({color:color(data,id),roughness:finish==='reflective'?.18:.82,metalness:finish==='reflective'?.45:0,transparent:opacity(data,id)<1,opacity:opacity(data,id),side:THREE.DoubleSide,...options});};
+
+  function add3D(parent,floor,data,THREE) {
+    const selectable=[];
+    for(const r of (data?.rooms||[]).filter(r=>r.floor_id===floor.id))for(const zone of r.surfaces?.floor_zones||[]){
+      const shape=new THREE.Shape();zone.polygon.forEach((p,i)=>i?shape.lineTo(...p):shape.moveTo(...p));
+      const mesh=new THREE.Mesh(new THREE.ShapeGeometry(shape),material3D(THREE,data,zone.material));mesh.rotation.x=-Math.PI/2;mesh.position.y=1;parent.add(mesh);
+    }
+    for(const o of objects(data,floor.id)){
+      const [w,d,h]=o.size,[x,z,base]=o.position,group=new THREE.Group();group.position.set(x,0,z);group.rotation.y=-(o.rotation_deg||0)*Math.PI/180;group.userData.interiorId=o.id;parent.add(group);
+      const main=material3D(THREE,data,o.material),frame=material3D(THREE,data,o.frame_material||o.material);
+      const part=(bw,bh,bd,bx,by,bz,mat=main)=>{const mesh=box(group,THREE,bw,bh,bd,bx,by,bz,mat,o.id);selectable.push(mesh);return mesh;};
+      switch(o.kind){
+        case 'vanity':
+          part(w,h-10,d,0,base+(h-10)/2,0);part(w+2,4,d+3,0,base+h-2,0);
+          part(w*.65,2,d*.53,0,base+h+1,0,main);
+          break;
+        case 'mirror_cabinet':
+          part(w,h,d,0,base+h/2,0);part(1,h,1,0,base+h/2,d/2+1,frame);
+          break;
+        case 'toilet': {
+          const bowl=new THREE.Mesh(new THREE.CylinderGeometry(w*.37,w*.41,37,24),main);bowl.position.set(0,base+30,d*.06);bowl.userData.interiorId=o.id;group.add(bowl);selectable.push(bowl);
+          part(w*.75,5,d*.67,0,base+51,d*.06);part(w*.78,37,d*.19,0,base+39,-d*.42);break;
+        }
+        case 'glass_partition':
+          part(w,h,d,0,base+h/2,0);
+          for(const edge of [-1,1])part(2,h,3,edge*w/2,base+h/2,0,frame);
+          part(w,2,3,0,base+h,0,frame);break;
+        case 'shower':
+          part(2,h*.8,2,0,base+h*.4,0);part(w,2,d,0,base+h*.83,0);part(w*.8,2,d*.8,0,base+h*.9,0);break;
+        case 'towel_bar':
+          part(w,2,2,0,base+h/2,0);for(const edge of [-1,1])part(2,6,6,edge*w/2,base+h/2,0);break;
+        default:part(w,h,d,0,base+h/2,0);
+      }
+    }
+    return selectable;
+  }
+
+  // Returns cut wall blocks and finish panels for any room with a surfaces entry.
+  function addWalls3D(parent,floor,data,THREE) {
+    for(const wall of floor.walls){
+      const [ax,az]=wall.start,[bx,bz]=wall.end,dx=bx-ax,dz=bz-az,len=Math.hypot(dx,dz),ux=dx/len,uz=dz/len,thick=wall.thickness||10,height=wall.height||floor.ceiling_height||280;
+      const normal=[-uz,ux],angle=-Math.atan2(dz,dx);
+      const relevant=(floor.openings||[]).filter(o=>{
+        if(!o.center)return false;const vx=o.center[0]-ax,vz=o.center[1]-az,t=vx*ux+vz*uz,perp=Math.abs(vx*normal[0]+vz*normal[1]);return perp<thick/2+6 && t+o.width/2>0 && t-o.width/2<len;
+      }).map(o=>({a:Math.max(0,Math.min(len,(o.center[0]-ax)*ux+(o.center[1]-az)*uz-o.width/2)),b:Math.max(0,Math.min(len,(o.center[0]-ax)*ux+(o.center[1]-az)*uz+o.width/2)),bottom:Number(o.sill_height)||0,top:Math.min(height,(Number(o.sill_height)||0)+(Number(o.height)||210)),type:o.type})).filter(o=>o.b>o.a);
+      const adjacent=(data?.rooms||[]).filter(r=>r.floor_id===floor.id).map(r=>({style:r,room:floor.rooms.find(room=>room.id===r.room_id)})).filter(v=>v.room).flatMap(v=>{
+        const p=v.room.polygon,xs=p.map(a=>a[0]),zs=p.map(a=>a[1]),bounds={west:Math.min(...xs),east:Math.max(...xs),north:Math.min(...zs),south:Math.max(...zs)};
+        return Object.entries(bounds).filter(([side,pos])=>Math.abs((side==='west'||side==='east'?ax:az)-pos)<16 && Math.abs((side==='west'||side==='east'?bx:bz)-pos)<16).map(([side])=>({...v,side,bounds,center:[(bounds.west+bounds.east)/2,(bounds.north+bounds.south)/2]}));
+      });
+      const stops=[0,len,...relevant.flatMap(o=>[o.a,o.b]),...adjacent.flatMap(v=>v.side==='west'||v.side==='east'?[v.bounds.north,v.bounds.south].map(z=>(z-az)*uz):[v.bounds.west,v.bounds.east].map(x=>(x-ax)*ux)).filter(t=>t>0&&t<len)].sort((a,b)=>a-b).filter((v,i,all)=>i===0||v-all[i-1]>.01);
+      for(let i=0;i<stops.length-1;i++){
+        const a=stops[i],b=stops[i+1],mid=(a+b)/2;if(b-a<.1)continue;
+        const opening=relevant.find(o=>o.a<=mid&&o.b>=mid),bands=opening?[[0,opening.bottom],[opening.top,height]]:[[0,height]];
+        for(const [lo,hi] of bands){if(hi-lo<.1)continue;
+          const cx=ax+ux*mid,cz=az+uz*mid;
+          const block=box(parent,THREE,b-a,hi-lo,thick,cx,(lo+hi)/2,cz,new THREE.MeshStandardMaterial({color:wall.exterior?0x53564f:0x808079,roughness:.88}));block.rotation.y=angle;
+          for(const v of adjacent){
+            const along=v.side==='west'||v.side==='east'?cz:cx;
+            if(along<(v.side==='west'||v.side==='east'?v.bounds.north:v.bounds.west)-1||along>(v.side==='west'||v.side==='east'?v.bounds.south:v.bounds.east)+1)continue;
+            const surfaces=v.style.surfaces?.walls?.[v.side]||v.style.surfaces?.walls?.default;if(!surfaces)continue;
+            const sign=Math.sign((v.center[0]-cx)*normal[0]+(v.center[1]-cz)*normal[1])||1;
+            const inset=thick/2+.4;
+            const split=Math.max(0,Number(surfaces.lower_height_cm)||0);
+            for(const [start,end,mat] of [[lo,Math.min(hi,split),surfaces.lower],[Math.max(lo,split),hi,surfaces.upper]]){
+              if(end-start<.1||!mat)continue;
+              const mesh=box(parent,THREE,b-a,end-start,.7,cx+normal[0]*inset*sign,(start+end)/2,cz+normal[1]*inset*sign,material3D(THREE,data,mat));mesh.rotation.y=angle;
+              const spacing=Number(materials(data)[mat]?.stripe_spacing_cm)||0;
+              if(spacing && end>start){for(let t=a+spacing;t<b;t+=spacing){const stripe=box(parent,THREE,.6,end-start,.9,ax+ux*t+normal[0]*(inset+.6)*sign,(start+end)/2,az+uz*t+normal[1]*(inset+.6)*sign,new THREE.MeshStandardMaterial({color:0x4b4b49}));stripe.rotation.y=angle;}}
+            }
+          }
+        }
+      }
+    }
+    // Some doors and windows are already represented by a gap between wall segments.
+    for(const o of floor.openings||[]){
+      if(o.type!=='window'||!o.center)continue;
+      const vertical=o.boundary==='east'||o.boundary==='west',glass=box(parent,THREE,o.width,o.height||120,1.4,o.center[0],(Number(o.sill_height)||0)+(o.height||120)/2,o.center[1],new THREE.MeshStandardMaterial({color:0xb8d2d6,transparent:true,opacity:.34,metalness:.1,roughness:.16,side:THREE.DoubleSide}));
+      if(vertical)glass.rotation.y=Math.PI/2;
+    }
+  }
+  function sidebar(data,roomId){const style=roomStyle(data,roomId);if(!style)return '';
+    const surface=style.surfaces||{},wall=surface.walls?.default||{},names={north:'北牆',east:'東牆',south:'南牆',west:'西牆'};
+    const finishes=[['地面',surface.floor],['一般牆面',wall.upper],['腰牆',wall.lower],...Object.entries(surface.walls||{}).filter(([side])=>side!=='default').flatMap(([side,value])=>[[`${names[side]||side}上部`,value.upper],[`${names[side]||side}下部`,value.lower]])];
+    return `<div class="interior-sidebar"><h4>室內材質與設備</h4><div class="interior-materials">${finishes.filter(([,id])=>id).map(([title,id])=>`<div><i style="background:${color(data,id)}"></i>${esc(title)}：${esc(materials(data)[id]?.name||id)}</div>`).join('')}</div>${(style.objects||[]).map(o=>`<div class="interior-entry">${esc(o.name)}<small>${o.size.join(' × ')} cm</small></div>`).join('')}<p class="micro">${esc(style.reference_view?.note||'設備位置為規劃示意，請依現場確認。')}</p></div>`;
+  }
+  return {validate,roomStyle,objects,color,footprint,svgFloorZones,svgObjects,add3D,addWalls3D,sidebar};
+})();
