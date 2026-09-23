@@ -25,7 +25,7 @@ window.FurnitureView = (() => {
       : ['wardrobe','sideboard','entry_cabinet','media_console','shelf'].includes(item.kind)
         ? `<line x1="0" y1="${-d/2}" x2="0" y2="${d/2}" stroke="#846a4e" stroke-width="2"/>`
         : `<rect x="${-w*.33}" y="${-d*.3}" width="${w*.66}" height="${d*.6}" rx="3" fill="none" stroke="#846a4e" stroke-width="2"/>`;
-    return `<g class="furniture-item" tabindex="0" role="button" aria-label="${escapeHtml(item.name)}" data-furniture-id="${escapeHtml(item.id)}" transform="translate(${x} ${y}) rotate(${item.rotation_deg || 0})"><title>${escapeHtml(item.name)} · ${w} × ${d} cm · ${escapeHtml(item.procurement_status)}</title><rect x="${-w/2}" y="${-d/2}" width="${w}" height="${d}" rx="${item.kind === 'sofa' ? 11 : 3}"/>${stripe}</g>`;
+    return `<g class="furniture-item kind-${escapeHtml(item.kind)}" tabindex="0" role="button" aria-label="${escapeHtml(item.name)}" data-furniture-id="${escapeHtml(item.id)}" transform="translate(${x} ${y}) rotate(${item.rotation_deg || 0})"><title>${escapeHtml(item.name)} · ${w} × ${d} cm · ${escapeHtml(item.procurement_status)}</title><rect x="${-w/2}" y="${-d/2}" width="${w}" height="${d}" rx="${item.kind === 'sofa' ? 11 : 3}"/>${stripe}</g>`;
   }).join('');
   function add3D(parent, items, THREE) {
     const placed = [];
