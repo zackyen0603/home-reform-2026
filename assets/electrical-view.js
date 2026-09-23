@@ -215,8 +215,8 @@ window.renderElectricalExperience = function renderElectricalExperience(state) {
       mesh.rotation.x = Math.PI/2;mesh.position.y = -.5;scene.add(mesh);floorMeshes.push(mesh);
     });
     window.RoomInteriors.addWalls3D(scene,floor,state.interiors,THREE);
-    const furnitureItems = state.showFurniture ? window.FurnitureView.itemsForFloor(state.furniture,floor.id) : [];
-    const furnitureGroups=window.FurnitureView.add3D(scene,furnitureItems,THREE);if(state.showFurniture)window.RoomInteriors.add3D(scene,floor,state.interiors,THREE);
+    const furnitureItems = state.showFurniture ? [...window.FurnitureView.itemsForFloor(state.furniture,floor.id),...window.RoomInteriors.objects(state.interiors,floor.id)] : [];
+    const furnitureGroups=window.FurnitureView.add3D(scene,furnitureItems,THREE);const interiorGroups=state.showFurniture?window.RoomInteriors.add3D(scene,floor,state.interiors,THREE):[];
     if(showRoutes) {
       const routeItems=window.ElectricalCircuitView.previewRoutes(electrical,floor,routeFilter,routeRoom);
       const routeGroup=new THREE.Group();routeGroup.name='electrical-route-preview';
@@ -259,23 +259,22 @@ window.renderElectricalExperience = function renderElectricalExperience(state) {
     const center=new THREE.Vector3(focus[0],80,focus[1]);
     const spawn=focusRoom || floor.rooms.find(room=>room.id==='4f-living-dining') || floor.rooms[0];
     const spawnPoint=centroid(spawn.polygon);
-    if (walk) camera.position.set(spawnPoint[0],155,spawnPoint[1]);
     function updateCamera() {
       if(walk) camera.rotation.set(pitch,yaw,0,'YXZ');
       else {camera.position.set(center.x+radius*Math.sin(orbitPhi)*Math.cos(yaw),center.y+radius*Math.cos(orbitPhi),center.z+radius*Math.sin(orbitPhi)*Math.sin(yaw));camera.lookAt(center);}
     }
     if (walk) yaw=Math.PI;updateCamera();
     const keys=new Set();let touching=false,px=0,py=0,downX=0,downY=0,moveX=0,moveY=0,lookPointer=null;
-    const onKeyDown=event=>{if(!walk||document.activeElement?.matches('input,select,textarea'))return; if(['KeyW','KeyA','KeyS','KeyD','ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(event.code)){keys.add(event.code);event.preventDefault();}};
-    const onKeyUp=event=>keys.delete(event.code);
-    window.addEventListener('keydown',onKeyDown);window.addEventListener('keyup',onKeyUp);
-    teardown.push(()=>{window.removeEventListener('keydown',onKeyDown);window.removeEventListener('keyup',onKeyUp);});
+    const onKeyDown=event=>{if(!walk)return;const target=event.target;if(target?.matches?.('input,select,textarea,button,[contenteditable="true"]'))return;if(document.activeElement&&document.activeElement!==document.body&&document.activeElement!==renderer.domElement&&!document.activeElement.closest?.('.electrical-canvas'))return; if(['KeyW','KeyA','KeyS','KeyD','ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(event.code)){keys.add(event.code);event.preventDefault();}};
+    const onKeyUp=event=>keys.delete(event.code);const onWindowBlur=()=>keys.clear();
+    window.addEventListener('keydown',onKeyDown);window.addEventListener('keyup',onKeyUp);window.addEventListener('blur',onWindowBlur);
+    teardown.push(()=>{window.removeEventListener('keydown',onKeyDown);window.removeEventListener('keyup',onKeyUp);window.removeEventListener('blur',onWindowBlur);});
     const move=event=>{if(!touching||event.pointerId!==lookPointer)return;const dx=event.clientX-px,dy=event.clientY-py;px=event.clientX;py=event.clientY;
       yaw-=dx*.006;if(walk)pitch=Math.max(-1.3,Math.min(1.3,pitch-dy*.006));else orbitPhi=Math.max(.28,Math.min(1.48,orbitPhi+dy*.006));updateCamera();};
     const down=event=>{if(event.pointerType==='touch'&&walk&&event.clientX<canvas.getBoundingClientRect().left+canvas.clientWidth*.35)return;touching=true;lookPointer=event.pointerId;px=downX=event.clientX;py=downY=event.clientY;renderer.domElement.setPointerCapture(event.pointerId);};
     const up=event=>{if(event.pointerId!==lookPointer)return;touching=false;lookPointer=null;
-      if(Math.hypot(event.clientX-downX,event.clientY-downY)<8){const rect=renderer.domElement.getBoundingClientRect();mouse.set((event.clientX-rect.left)/rect.width*2-1,-(event.clientY-rect.top)/rect.height*2+1);raycaster.setFromCamera(mouse,camera);raycaster.params.Mesh.threshold=8;const hit=raycaster.intersectObjects(markerMeshes)[0];if(hit)selectPoint(hit.object.userData.pointId);else {const furniture=raycaster.intersectObjects(furnitureGroups,true)[0];if(furniture)selectFurniture(furniture.object.userData.furnitureId);}}};
-    renderer.domElement.addEventListener('pointerdown',down);renderer.domElement.addEventListener('pointermove',move);renderer.domElement.addEventListener('pointerup',up);renderer.domElement.addEventListener('pointercancel',up);
+      if(Math.hypot(event.clientX-downX,event.clientY-downY)<8){const rect=renderer.domElement.getBoundingClientRect();mouse.set((event.clientX-rect.left)/rect.width*2-1,-(event.clientY-rect.top)/rect.height*2+1);raycaster.setFromCamera(mouse,camera);raycaster.params.Mesh.threshold=8;const hit=raycaster.intersectObjects(markerMeshes)[0];if(hit)selectPoint(hit.object.userData.pointId);else {const furniture=raycaster.intersectObjects([...furnitureGroups,...interiorGroups],true)[0];if(furniture)selectFurniture(furniture.object.userData.furnitureId);}}};
+    renderer.domElement.tabIndex=0;renderer.domElement.setAttribute('aria-label',walk?'第一人稱空間預覽。點選畫面後使用 WASD 或方向鍵移動':'3D 空間預覽');renderer.domElement.addEventListener('pointerdown',event=>{if(walk&&event.pointerType==='mouse')renderer.domElement.focus({preventScroll:true});down(event);});renderer.domElement.addEventListener('pointermove',move);renderer.domElement.addEventListener('pointerup',up);renderer.domElement.addEventListener('pointercancel',up);
     const onWheel=event=>{if(walk)return;event.preventDefault();radius=Math.max(280,Math.min(2300,radius*(1+event.deltaY*.001)));updateCamera();};
     renderer.domElement.addEventListener('wheel',onWheel,{passive:false});
     teardown.push(()=>{renderer.domElement.removeEventListener('pointerdown',down);renderer.domElement.removeEventListener('pointermove',move);renderer.domElement.removeEventListener('pointerup',up);renderer.domElement.removeEventListener('pointercancel',up);renderer.domElement.removeEventListener('wheel',onWheel);});
@@ -284,6 +283,7 @@ window.renderElectricalExperience = function renderElectricalExperience(state) {
     const wallDistance=(x,z,w)=>{const ax=w.start[0],az=w.start[1],dx=w.end[0]-ax,dz=w.end[1]-az,t=Math.max(0,Math.min(1,((x-ax)*dx+(z-az)*dz)/(dx*dx+dz*dz||1)));return Math.hypot(x-ax-t*dx,z-az-t*dz);};
     const insideOutline=(x,y,p)=>{let inside=false;for(let i=0,j=p.length-1;i<p.length;j=i++){if((p[i][1]>y)!==(p[j][1]>y)&&x<(p[j][0]-p[i][0])*(y-p[i][1])/(p[j][1]-p[i][1])+p[i][0])inside=!inside;}return inside;};
     const canWalk=(x,z)=>x>12&&z>12&&x<floor.bounds.width-12&&z<floor.bounds.depth-12&&(!floor.outline||insideOutline(x,z,floor.outline))&&floor.walls.every(w=>wallDistance(x,z,w)>Math.max(12,(w.thickness||10)/2+9))&&furnitureItems.every(item=>{const b=window.FurnitureView.footprint(item);return x<b.left-12||x>b.right+12||z<b.top-12||z>b.bottom+12;});
+    if(walk){let start=null;for(let radius=0;radius<=240&&!start;radius+=20){const count=radius?24:1;for(let i=0;i<count;i++){const a=i/count*Math.PI*2,x=spawnPoint[0]+Math.cos(a)*radius,z=spawnPoint[1]+Math.sin(a)*radius;if(canWalk(x,z)){start=[x,z];break;}}}const point=start||spawnPoint;camera.position.set(point[0],155,point[1]);updateCamera();}
     if(walk){
       const pad=document.createElement('div');pad.className='electrical-dpad';pad.setAttribute('aria-label','移動控制');
       pad.innerHTML='<button type="button" data-move="forward" aria-label="前進">▲</button><button type="button" data-move="left" aria-label="向左">◀</button><button type="button" data-move="backward" aria-label="後退">▼</button><button type="button" data-move="right" aria-label="向右">▶</button>';
@@ -314,4 +314,3 @@ window.renderElectricalExperience = function renderElectricalExperience(state) {
     teardown.push(()=>{cancelAnimationFrame(frame);resize.disconnect();scene.traverse(node=>{node.geometry?.dispose();const mats=Array.isArray(node.material)?node.material:[node.material];mats.forEach(material=>material?.dispose());});renderer.dispose();renderer.domElement.remove();});
   }
 };
-
