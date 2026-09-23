@@ -77,6 +77,7 @@ lighting_preview:
     downlight:
       diameter_cm: 12
       beam_radius_cm: 95
+      beam_angle_deg: 40
       lumens: 700
       color_temperature_k: 4000
       model: recessed-round
