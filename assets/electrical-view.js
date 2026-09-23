@@ -192,7 +192,7 @@ window.renderElectricalExperience = function renderElectricalExperience(state) {
       ${lighting.svgWash(electrical,floor,state)}
       ${routeSvg}
       ${showRoutes ? `<g class="circuit-panel" transform="translate(${electrical.distribution_panel.position[0]} ${electrical.distribution_panel.position[1]})"><rect x="-17" y="-18" width="34" height="36" rx="5"/><text y="5">盤</text></g>` : ''}
-      ${floor.rooms.map(room => {const [x,y] = centroid(room.polygon); return `<text class="electrical-room-name" x="${x}" y="${y}">${escapeHtml(room.name)}</text>`;}).join('')}
+      ${window.RoomInteriors.svgOpenings(floor)}${floor.rooms.map(room => {const [x,y] = centroid(room.polygon); return `<text class="electrical-room-name" x="${x}" y="${y}">${escapeHtml(room.name)}</text>`;}).join('')}
       ${fixtureSvg}
     </svg>`;
     state.electricalLightingController=value=>{const base=canvas.querySelector('.electrical-scene-base');if(base)base.style.filter=`brightness(${lightingEnabled?lighting.ambientBrightness(value):1})`;};
@@ -224,15 +224,9 @@ window.renderElectricalExperience = function renderElectricalExperience(state) {
     floor.rooms.forEach(room => {
       const shape = new THREE.Shape();room.polygon.forEach((p,i) => i ? shape.lineTo(p[0],p[1]) : shape.moveTo(p[0],p[1]));
       const mesh = new THREE.Mesh(new THREE.ShapeGeometry(shape),new THREE.MeshLambertMaterial({color:roomColor(room.category),side:THREE.DoubleSide}));
-      mesh.rotation.x = -Math.PI/2;mesh.position.y = -.5;scene.add(mesh);floorMeshes.push(mesh);
+      mesh.rotation.x = Math.PI/2;mesh.position.y = -.5;scene.add(mesh);floorMeshes.push(mesh);
     });
-    floor.walls.forEach(wall => {
-      const dx=wall.end[0]-wall.start[0], dz=wall.end[1]-wall.start[1], length=Math.hypot(dx,dz), height=wall.height || floor.ceiling_height || 280;
-      const material=new THREE.MeshLambertMaterial({color:wall.exterior?0x72776e:0xa7a79d,side:THREE.DoubleSide,transparent:walk,opacity:walk?.86:1});
-      const mesh=new THREE.Mesh(new THREE.BoxGeometry(length,height,wall.thickness||10),material);
-      mesh.position.set((wall.start[0]+wall.end[0])/2,height/2,(wall.start[1]+wall.end[1])/2);
-      mesh.rotation.y=-Math.atan2(dz,dx);scene.add(mesh);
-    });
+    window.RoomInteriors.addWalls3D(scene,floor,state.interiors,THREE);
     const furnitureItems = state.showFurniture ? window.FurnitureView.itemsForFloor(state.furniture,floor.id) : [];
     const furnitureGroups=window.FurnitureView.add3D(scene,furnitureItems,THREE);
     if(showRoutes) {
@@ -300,7 +294,8 @@ window.renderElectricalExperience = function renderElectricalExperience(state) {
     // Wall collision and the exterior bounds leave door openings passable, even
     // where adjacent room polygons have a small drafting gap between them.
     const wallDistance=(x,z,w)=>{const ax=w.start[0],az=w.start[1],dx=w.end[0]-ax,dz=w.end[1]-az,t=Math.max(0,Math.min(1,((x-ax)*dx+(z-az)*dz)/(dx*dx+dz*dz||1)));return Math.hypot(x-ax-t*dx,z-az-t*dz);};
-    const canWalk=(x,z)=>x>12&&z>12&&x<floor.bounds.width-12&&z<floor.bounds.depth-12&&floor.walls.every(w=>wallDistance(x,z,w)>Math.max(12,(w.thickness||10)/2+9))&&furnitureItems.every(item=>{const b=window.FurnitureView.footprint(item);return x<b.left-12||x>b.right+12||z<b.top-12||z>b.bottom+12;});
+    const insideOutline=(x,y,p)=>{let inside=false;for(let i=0,j=p.length-1;i<p.length;j=i++){if((p[i][1]>y)!==(p[j][1]>y)&&x<(p[j][0]-p[i][0])*(y-p[i][1])/(p[j][1]-p[i][1])+p[i][0])inside=!inside;}return inside;};
+    const canWalk=(x,z)=>x>12&&z>12&&x<floor.bounds.width-12&&z<floor.bounds.depth-12&&(!floor.outline||insideOutline(x,z,floor.outline))&&floor.walls.every(w=>wallDistance(x,z,w)>Math.max(12,(w.thickness||10)/2+9))&&furnitureItems.every(item=>{const b=window.FurnitureView.footprint(item);return x<b.left-12||x>b.right+12||z<b.top-12||z>b.bottom+12;});
     if(walk){
       const pad=document.createElement('div');pad.className='electrical-dpad';pad.setAttribute('aria-label','移動控制');
       pad.innerHTML='<button type="button" data-move="forward" aria-label="前進">▲</button><button type="button" data-move="left" aria-label="向左">◀</button><button type="button" data-move="backward" aria-label="後退">▼</button><button type="button" data-move="right" aria-label="向右">▶</button>';
@@ -331,3 +326,4 @@ window.renderElectricalExperience = function renderElectricalExperience(state) {
     teardown.push(()=>{cancelAnimationFrame(frame);resize.disconnect();scene.traverse(node=>{node.geometry?.dispose();const mats=Array.isArray(node.material)?node.material:[node.material];mats.forEach(material=>material?.dispose());});renderer.dispose();renderer.domElement.remove();});
   }
 };
+
