@@ -224,6 +224,26 @@ items:
   budget_twd: 5000
   source_row: 38
   source_item_number: 44
+- id: FUR-4F-LIV-TV-75
+  name: 75 吋電視
+  kind: television
+  room_id: 4f-living-dining
+  position:
+  - 451.9
+  - 132.35
+  - 105
+  size:
+  - 166.2
+  - 8
+  - 93.5
+  rotation_deg: 90
+  dimension_basis: 75-inch-16-9-display; wall-mounted-estimate
+  procurement_status: 待確認型號
+  brand: 待選
+  budget_twd: 0
+  source_row: null
+  source_item_number: null
+  note: 依電視牆上方配置示意；實際掛高與壁掛架需依沙發視線及牆體確認。
 - id: FUR-4F-LIV-TV-CABINET
   name: 電視／投影設備櫃
   kind: media_console
