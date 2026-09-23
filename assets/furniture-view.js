@@ -2,7 +2,8 @@
 
 // Rendering helpers only. All identities, dimensions and placement live in furniture.yaml.
 window.FurnitureView = (() => {
-  const overrideKey='home-reform:furniture-overrides:v1';
+  // v2 invalidates old interactive overrides so the revised YAML defaults are visible.
+  const overrideKey='home-reform:furniture-overrides:v2';
   const readOverrides=()=>{try{return JSON.parse(localStorage.getItem(overrideKey)||'{}')||{};}catch{return {};}};
   const applyOverrides=items=>{const overrides=readOverrides();return (items||[]).map(item=>{const patch=overrides[item.id];return patch?{...item,...patch,position:patch.position||item.position,size:patch.size||item.size}:item;});};
   const itemsForFloor = (data, floorId) => floorId === data?.metadata?.floor_id ? applyOverrides(data.items||[]) : [];
