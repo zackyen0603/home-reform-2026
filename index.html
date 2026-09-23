@@ -11,12 +11,13 @@
   <link rel="stylesheet" href="./assets/lighting-preview.css?v=20260923-lighting-controls">
   <link rel="stylesheet" href="./assets/furniture-view.css?v=20260923-kitchen">
   <link rel="stylesheet" href="./assets/elevation-view.css?v=20260923-elevation">
+  <link rel="stylesheet" href="./assets/room-interiors.css?v=20260923-master-bath">
   <link rel="stylesheet" href="./assets/circuit-view.css?v=20260923-routes">
   <script src="https://cdn.jsdelivr.net/npm/js-yaml@4.1.0/dist/js-yaml.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
 </head>
 <body>
-  <div class="loading" id="loading"><div class="loading-mark"></div><p>載入五份專案資料中…</p></div>
+  <div class="loading" id="loading"><div class="loading-mark"></div><p>載入六份專案資料中…</p></div>
   <div class="app-shell" id="app" hidden>
     <aside class="sidebar">
       <a class="brand" href="#overview" aria-label="回到總覽">
@@ -30,6 +31,7 @@
         <a href="./floorplan.yaml">floorplan.yaml</a>
         <a href="./electrical.yaml">electrical.yaml</a>
         <a href="./furniture.yaml">furniture.yaml</a>
+        <a href="./interiors.yaml">interiors.yaml</a>
       </div>
     </aside>
 
@@ -52,9 +54,10 @@
     </main>
   </div>
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
-  <script src="./assets/app.js?v=20260923-elevation"></script>
+  <script src="./assets/app.js?v=20260923-master-bath"></script>
   <script src="./assets/furniture-view.js?v=20260923-kitchen2"></script>
-  <script src="./assets/elevation-view.js?v=20260923-elevation"></script>
+  <script src="./assets/room-interiors.js?v=20260923-master-bath"></script>
+  <script src="./assets/elevation-view.js?v=20260923-master-bath"></script>
   <script src="./assets/circuit-view.js?v=20260923-route-room"></script>
   <script src="./assets/lighting-preview.js?v=20260923-lighting-controls"></script>
   <script src="./assets/electrical-view.js?v=20260923-lighting-controls"></script>
