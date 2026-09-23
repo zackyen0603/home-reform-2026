@@ -25,6 +25,7 @@ window.renderElectricalExperience = function renderElectricalExperience(state) {
   const view = state.electricalView || '2d';
   const selectedCircuitId = state.selectedCircuitId || 'all';
   const routeFilter = state.electricalRouteFilter || 'all';
+  const routeRoom = state.electricalRouteRoom || 'all';
   const showRoutes = Boolean(state.electricalShowRoutes);
   const roomFilter = state.electricalRoom || 'all';
   const kindFilter = state.electricalKind || 'all';
@@ -36,6 +37,9 @@ window.renderElectricalExperience = function renderElectricalExperience(state) {
   const visible = points.filter(matching);
 
   const roomOptions = floor.rooms.map(room => `<option value="${escapeHtml(room.id)}">${escapeHtml(room.name)}</option>`).join('');
+  const routeRoomOptions = floor.rooms.filter(room => points.some(point => point.space_id === room.id))
+    .map(room => `<option value="${escapeHtml(room.id)}">${escapeHtml(room.name)}</option>`).join('');
+  const routeRoomName = rooms.get(routeRoom)?.name || '全室';
   const stats = ['general_outlet', 'optional_outlet', 'high_level_outlet', 'planned_220v', 'downlight', 'pendant', 'ceiling_light']
     .map(type => `<span><b>${points.filter(point => point.type === type).length}</b> ${escapeHtml(typeLabels[type]?.label || type)}</span>`).join('');
   target.innerHTML = `
@@ -46,7 +50,7 @@ window.renderElectricalExperience = function renderElectricalExperience(state) {
       <label>種類<select id="electricalKind"><option value="all">全部點位</option><option value="outlets">全部插座</option><option value="general_outlet">一般插座</option><option value="optional_outlet">選配插座</option><option value="high_level_outlet">高位插座</option><option value="planned_220v">220V 規劃</option><option value="lighting">全部燈具</option><option value="downlight">崁燈</option><option value="pendant">吊燈</option><option value="ceiling_light">吸頂燈</option></select></label>
       <label>搜尋點位<input id="electricalSearch" type="search" placeholder="ID、空間或回路" value="${escapeHtml(search)}"></label>`}
       <label class="furniture-toggle"><input id="electricalFurnitureToggle" type="checkbox" ${state.showFurniture ? 'checked' : ''}> 顯示家具</label>
-      ${view !== 'circuits' ? `<label class="route-toggle"><input id="electricalRoutesToggle" type="checkbox" ${showRoutes?'checked':''}> 顯示迴路佈線</label><label class="route-filter">佈線範圍<select id="electricalRouteFilter"><option value="all">插座與燈具</option><option value="outlets">僅插座／220V</option><option value="lighting">僅電燈</option>${electrical.circuits.map(c=>`<option value="${escapeHtml(c.id)}">${escapeHtml(c.name)}</option>`).join('')}</select></label>` : ''}
+      ${view !== 'circuits' ? `<label class="route-toggle"><input id="electricalRoutesToggle" type="checkbox" ${showRoutes?'checked':''}> 顯示迴路佈線</label><label class="route-room">佈線房間<select id="electricalRouteRoom"><option value="all">全室</option>${routeRoomOptions}</select></label><label class="route-filter">佈線範圍<select id="electricalRouteFilter"><option value="all">插座與燈具</option><option value="outlets">僅插座／220V</option><option value="lighting">僅電燈</option>${electrical.circuits.map(c=>`<option value="${escapeHtml(c.id)}">${escapeHtml(c.name)}</option>`).join('')}</select></label>` : ''}
       <div class="electrical-view-switch" role="group" aria-label="視圖模式">
         <button type="button" data-electrical-view="2d" aria-pressed="${view === '2d'}">2D</button>
         <button type="button" data-electrical-view="3d" aria-pressed="${view === '3d'}">3D 俯瞰</button>
@@ -57,7 +61,7 @@ window.renderElectricalExperience = function renderElectricalExperience(state) {
     <div class="electrical-workspace">
       <div class="electrical-map-wrap">
         <div id="electricalCanvas" class="electrical-canvas" aria-label="四樓電力配置圖"></div>
-        <div class="electrical-map-help">${view === 'circuits' ? '全室總覽先顯示插座；選擇迴路查看從主臥電箱計算的平面通達示意。' : view === 'walk' ? '桌面：WASD／方向鍵移動，拖曳轉向；手機：左側方向鍵移動、右半畫面拖曳轉向。點選標記查看資料。' : view === '3d' ? '拖曳旋轉；滾輪或右側 ＋／－ 按鈕縮放。點選標記查看資料。' : '點選標記查看資料；手機可左右滑動平面圖。座標為規劃示意，非施工放樣。'}${view !== 'circuits' && showRoutes ? ' <span class="route-legend"><i class="route-key-outlet"></i>插座／220V <i class="route-key-light"></i>電燈</span> 佈線為穿過圖面門洞的示意路徑，非實際配管。' : ''}</div>
+        <div class="electrical-map-help">${view === 'circuits' ? '全室總覽先顯示插座；選擇迴路查看從主臥電箱計算的平面通達示意。' : view === 'walk' ? '桌面：WASD／方向鍵移動，拖曳轉向；手機：左側方向鍵移動、右半畫面拖曳轉向。點選標記查看資料。' : view === '3d' ? '拖曳旋轉；滾輪或右側 ＋／－ 按鈕縮放。點選標記查看資料。' : '點選標記查看資料；手機可左右滑動平面圖。座標為規劃示意，非施工放樣。'}${view !== 'circuits' && showRoutes ? ` <span class="route-legend"><i class="route-key-outlet"></i>插座／220V <i class="route-key-light"></i>電燈</span> 目前顯示${escapeHtml(routeRoomName)}的端點連線；路徑從主臥電箱出發，可能經過其他房間。僅供示意，非實際配管。` : ''}</div>
       </div>
       <aside class="electrical-inspector"><div id="electricalDetails" aria-live="polite"></div>
         ${view === 'circuits' ? '<div id="circuitTopology"></div>' : ''}
@@ -99,8 +103,10 @@ window.renderElectricalExperience = function renderElectricalExperience(state) {
   }
   if(view !== 'circuits') {
     target.querySelector('#electricalRouteFilter').value=routeFilter;
+    target.querySelector('#electricalRouteRoom').value=routeRoom;
     target.querySelector('#electricalRoutesToggle').addEventListener('change',event=>{state.electricalShowRoutes=event.target.checked;window.renderElectricalExperience(state);});
     target.querySelector('#electricalRouteFilter').addEventListener('change',event=>{state.electricalRouteFilter=event.target.value;state.electricalShowRoutes=true;window.renderElectricalExperience(state);});
+    target.querySelector('#electricalRouteRoom').addEventListener('change',event=>{state.electricalRouteRoom=event.target.value;state.electricalShowRoutes=true;window.renderElectricalExperience(state);});
   }
   target.querySelector('#electricalFurnitureToggle').addEventListener('change', event => {state.showFurniture = event.target.checked; window.renderElectricalExperience(state); if (typeof renderFloorplan === 'function') renderFloorplan();});
   target.querySelector('#electricalSearch')?.addEventListener('input', event => {
@@ -125,7 +131,7 @@ window.renderElectricalExperience = function renderElectricalExperience(state) {
 
   function render2D() {
     const pad = 35, b = floor.bounds;
-    const routeItems=showRoutes?window.ElectricalCircuitView.previewRoutes(electrical,floor,routeFilter):[];
+    const routeItems=showRoutes?window.ElectricalCircuitView.previewRoutes(electrical,floor,routeFilter,routeRoom):[];
     const routeSvg=routeItems.map(({route,kind})=>route?`<polyline class="circuit-route electrical-route-${kind}" points="${route.path.map(p=>p.join(',')).join(' ')}"/>`:'').join('');
     canvas.classList.add('is-2d');
     canvas.innerHTML = `<svg viewBox="${-pad} ${-pad} ${b.width + 2*pad} ${b.depth + 2*pad}" role="img" aria-label="四樓插座與燈具平面圖">
@@ -172,7 +178,7 @@ window.renderElectricalExperience = function renderElectricalExperience(state) {
     const furnitureItems = state.showFurniture ? window.FurnitureView.itemsForFloor(state.furniture,floor.id) : [];
     const furnitureGroups=window.FurnitureView.add3D(scene,furnitureItems,THREE);
     if(showRoutes) {
-      const routeItems=window.ElectricalCircuitView.previewRoutes(electrical,floor,routeFilter);
+      const routeItems=window.ElectricalCircuitView.previewRoutes(electrical,floor,routeFilter,routeRoom);
       const routeGroup=new THREE.Group();routeGroup.name='electrical-route-preview';
       const outletSegments=[],lightSegments=[];
       routeItems.forEach(({point,route,kind})=>{
