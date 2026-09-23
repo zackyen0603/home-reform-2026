@@ -176,10 +176,10 @@ window.renderElectricalExperience = function renderElectricalExperience(state) {
     const onWheel=event=>{if(walk)return;event.preventDefault();radius=Math.max(280,Math.min(2300,radius*(1+event.deltaY*.001)));updateCamera();};
     renderer.domElement.addEventListener('wheel',onWheel,{passive:false});
     teardown.push(()=>{renderer.domElement.removeEventListener('pointerdown',down);renderer.domElement.removeEventListener('pointermove',move);renderer.domElement.removeEventListener('pointerup',up);renderer.domElement.removeEventListener('pointercancel',up);renderer.domElement.removeEventListener('wheel',onWheel);});
-    // Collision checks the floor polygons and the wall segments, leaving door gaps passable.
-    const inRoom=(x,z)=>floor.rooms.some(room=>{let inside=false;const p=room.polygon;for(let i=0,j=p.length-1;i<p.length;j=i++){const a=p[i],b=p[j];if(((a[1]>z)!==(b[1]>z))&&(x<(b[0]-a[0])*(z-a[1])/(b[1]-a[1])+a[0]))inside=!inside;}return inside;});
+    // Wall collision and the exterior bounds leave door openings passable, even
+    // where adjacent room polygons have a small drafting gap between them.
     const wallDistance=(x,z,w)=>{const ax=w.start[0],az=w.start[1],dx=w.end[0]-ax,dz=w.end[1]-az,t=Math.max(0,Math.min(1,((x-ax)*dx+(z-az)*dz)/(dx*dx+dz*dz||1)));return Math.hypot(x-ax-t*dx,z-az-t*dz);};
-    const canWalk=(x,z)=>x>12&&z>12&&x<floor.bounds.width-12&&z<floor.bounds.depth-12&&inRoom(x,z)&&floor.walls.every(w=>wallDistance(x,z,w)>Math.max(12,(w.thickness||10)/2+9));
+    const canWalk=(x,z)=>x>12&&z>12&&x<floor.bounds.width-12&&z<floor.bounds.depth-12&&floor.walls.every(w=>wallDistance(x,z,w)>Math.max(12,(w.thickness||10)/2+9));
     if(walk){
       const pad=document.createElement('div');pad.className='electrical-dpad';pad.setAttribute('aria-label','移動控制');
       pad.innerHTML='<button type="button" data-move="forward" aria-label="前進">▲</button><button type="button" data-move="left" aria-label="向左">◀</button><button type="button" data-move="backward" aria-label="後退">▼</button><button type="button" data-move="right" aria-label="向右">▶</button>';
