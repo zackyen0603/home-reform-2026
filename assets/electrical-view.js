@@ -42,6 +42,7 @@ window.renderElectricalExperience = function renderElectricalExperience(state) {
       <label>空間<select id="electricalRoom"><option value="all">全部空間</option>${roomOptions}</select></label>
       <label>種類<select id="electricalKind"><option value="all">全部點位</option><option value="outlets">全部插座</option><option value="general_outlet">一般插座</option><option value="optional_outlet">選配插座</option><option value="high_level_outlet">高位插座</option><option value="planned_220v">220V 規劃</option><option value="lighting">全部燈具</option><option value="downlight">崁燈</option><option value="pendant">吊燈</option><option value="ceiling_light">吸頂燈</option></select></label>
       <label>搜尋點位<input id="electricalSearch" type="search" placeholder="ID、空間或回路" value="${escapeHtml(search)}"></label>
+      <label class="furniture-toggle"><input id="electricalFurnitureToggle" type="checkbox" ${state.showFurniture ? 'checked' : ''}> 顯示家具</label>
       <div class="electrical-view-switch" role="group" aria-label="視圖模式">
         <button type="button" data-electrical-view="2d" aria-pressed="${view === '2d'}">2D</button>
         <button type="button" data-electrical-view="3d" aria-pressed="${view === '3d'}">3D 俯瞰</button>
@@ -76,10 +77,18 @@ window.renderElectricalExperience = function renderElectricalExperience(state) {
     target.querySelectorAll('[data-point-id]').forEach(el => el.classList.toggle('is-selected', el.dataset.pointId === id));
     list.querySelector(`[data-point-id="${CSS.escape(id)}"]`)?.scrollIntoView({block:'nearest'});
   }
+  function selectFurniture(id) {
+    const item = window.FurnitureView.itemsForFloor(state.furniture,floor.id).find(value=>value.id===id);
+    if (!item) return;
+    details.innerHTML = `<div class="furniture-detail"><small>家具配置</small><br>${window.FurnitureView.detailHtml(item,escapeHtml)}</div>`;
+    target.querySelectorAll('[data-point-id]').forEach(el=>el.classList.remove('is-selected'));
+    target.querySelectorAll('[data-furniture-id]').forEach(el=>el.classList.toggle('is-selected',el.dataset.furnitureId===id));
+  }
   target.querySelector('#electricalRoom').value = roomFilter;
   target.querySelector('#electricalKind').value = kindFilter;
   target.querySelector('#electricalRoom').addEventListener('change', event => {state.electricalRoom = event.target.value; window.renderElectricalExperience(state);});
   target.querySelector('#electricalKind').addEventListener('change', event => {state.electricalKind = event.target.value; window.renderElectricalExperience(state);});
+  target.querySelector('#electricalFurnitureToggle').addEventListener('change', event => {state.showFurniture = event.target.checked; window.renderElectricalExperience(state); if (typeof renderFloorplan === 'function') renderFloorplan();});
   target.querySelector('#electricalSearch').addEventListener('input', event => {
     state.electricalSearch = event.target.value;
     // Keep the map and list in sync without stealing focus from the search box.
@@ -106,11 +115,12 @@ window.renderElectricalExperience = function renderElectricalExperience(state) {
       <rect x="${-pad}" y="${-pad}" width="${b.width + 2*pad}" height="${b.depth + 2*pad}" fill="#f4f0e7"/>
       ${floor.rooms.map(room => `<polygon points="${room.polygon.map(pair => pair.join(',')).join(' ')}" fill="${roomColor(room.category)}" opacity=".75"/>`).join('')}
       ${floor.walls.map(wall => `<line x1="${wall.start[0]}" y1="${wall.start[1]}" x2="${wall.end[0]}" y2="${wall.end[1]}" stroke="#515750" stroke-width="${wall.thickness || 10}"/>`).join('')}
+      ${state.showFurniture ? window.FurnitureView.svg(window.FurnitureView.itemsForFloor(state.furniture,floor.id),escapeHtml) : ''}
       ${floor.rooms.map(room => {const [x,y] = centroid(room.polygon); return `<text class="electrical-room-name" x="${x}" y="${y}">${escapeHtml(room.name)}</text>`;}).join('')}
       ${visible.map(point => `<g class="electrical-marker" data-point-id="${escapeHtml(point.id)}" tabindex="0" role="button" aria-label="${escapeHtml(point.id + ' ' + titleOf(point))}" transform="translate(${point.position[0]} ${point.position[1]})"><circle r="13" fill="${escapeHtml(colorOf(point))}"/><text y=".5">${escapeHtml(symbolOf(point))}</text></g>`).join('')}
     </svg>`;
-    canvas.addEventListener('click', event => {const marker=event.target.closest('[data-point-id]'); if(marker) selectPoint(marker.dataset.pointId);});
-    canvas.addEventListener('keydown', event => {const marker=event.target.closest('[data-point-id]'); if(marker && ['Enter',' '].includes(event.key)){event.preventDefault();selectPoint(marker.dataset.pointId);}});
+    canvas.addEventListener('click', event => {const marker=event.target.closest('[data-point-id]');const furniture=event.target.closest('[data-furniture-id]');if(marker)selectPoint(marker.dataset.pointId);else if(furniture)selectFurniture(furniture.dataset.furnitureId);});
+    canvas.addEventListener('keydown', event => {const node=event.target.closest('[data-point-id],[data-furniture-id]');if(node && ['Enter',' '].includes(event.key)){event.preventDefault();if(node.dataset.pointId)selectPoint(node.dataset.pointId);else selectFurniture(node.dataset.furnitureId);}});
   }
 
   function render3D(walk) {
@@ -140,6 +150,8 @@ window.renderElectricalExperience = function renderElectricalExperience(state) {
       mesh.position.set((wall.start[0]+wall.end[0])/2,height/2,(wall.start[1]+wall.end[1])/2);
       mesh.rotation.y=-Math.atan2(dz,dx);scene.add(mesh);
     });
+    const furnitureItems = state.showFurniture ? window.FurnitureView.itemsForFloor(state.furniture,floor.id) : [];
+    const furnitureGroups=window.FurnitureView.add3D(scene,furnitureItems,THREE);
     const markerMeshes=[];
     visible.forEach(point => {
       const color=new THREE.Color(colorOf(point));
@@ -172,7 +184,7 @@ window.renderElectricalExperience = function renderElectricalExperience(state) {
       yaw-=dx*.006;if(walk)pitch=Math.max(-1.3,Math.min(1.3,pitch-dy*.006));else orbitPhi=Math.max(.28,Math.min(1.48,orbitPhi+dy*.006));updateCamera();};
     const down=event=>{if(event.pointerType==='touch'&&walk&&event.clientX<canvas.getBoundingClientRect().left+canvas.clientWidth*.35)return;touching=true;lookPointer=event.pointerId;px=downX=event.clientX;py=downY=event.clientY;renderer.domElement.setPointerCapture(event.pointerId);};
     const up=event=>{if(event.pointerId!==lookPointer)return;touching=false;lookPointer=null;
-      if(Math.hypot(event.clientX-downX,event.clientY-downY)<8){const rect=renderer.domElement.getBoundingClientRect();mouse.set((event.clientX-rect.left)/rect.width*2-1,-(event.clientY-rect.top)/rect.height*2+1);raycaster.setFromCamera(mouse,camera);raycaster.params.Mesh.threshold=8;const hit=raycaster.intersectObjects(markerMeshes)[0];if(hit)selectPoint(hit.object.userData.pointId);}};
+      if(Math.hypot(event.clientX-downX,event.clientY-downY)<8){const rect=renderer.domElement.getBoundingClientRect();mouse.set((event.clientX-rect.left)/rect.width*2-1,-(event.clientY-rect.top)/rect.height*2+1);raycaster.setFromCamera(mouse,camera);raycaster.params.Mesh.threshold=8;const hit=raycaster.intersectObjects(markerMeshes)[0];if(hit)selectPoint(hit.object.userData.pointId);else {const furniture=raycaster.intersectObjects(furnitureGroups,true)[0];if(furniture)selectFurniture(furniture.object.userData.furnitureId);}}};
     renderer.domElement.addEventListener('pointerdown',down);renderer.domElement.addEventListener('pointermove',move);renderer.domElement.addEventListener('pointerup',up);renderer.domElement.addEventListener('pointercancel',up);
     const onWheel=event=>{if(walk)return;event.preventDefault();radius=Math.max(280,Math.min(2300,radius*(1+event.deltaY*.001)));updateCamera();};
     renderer.domElement.addEventListener('wheel',onWheel,{passive:false});
@@ -180,7 +192,7 @@ window.renderElectricalExperience = function renderElectricalExperience(state) {
     // Wall collision and the exterior bounds leave door openings passable, even
     // where adjacent room polygons have a small drafting gap between them.
     const wallDistance=(x,z,w)=>{const ax=w.start[0],az=w.start[1],dx=w.end[0]-ax,dz=w.end[1]-az,t=Math.max(0,Math.min(1,((x-ax)*dx+(z-az)*dz)/(dx*dx+dz*dz||1)));return Math.hypot(x-ax-t*dx,z-az-t*dz);};
-    const canWalk=(x,z)=>x>12&&z>12&&x<floor.bounds.width-12&&z<floor.bounds.depth-12&&floor.walls.every(w=>wallDistance(x,z,w)>Math.max(12,(w.thickness||10)/2+9));
+    const canWalk=(x,z)=>x>12&&z>12&&x<floor.bounds.width-12&&z<floor.bounds.depth-12&&floor.walls.every(w=>wallDistance(x,z,w)>Math.max(12,(w.thickness||10)/2+9))&&furnitureItems.every(item=>{const b=window.FurnitureView.footprint(item);return x<b.left-12||x>b.right+12||z<b.top-12||z>b.bottom+12;});
     if(walk){
       const pad=document.createElement('div');pad.className='electrical-dpad';pad.setAttribute('aria-label','移動控制');
       pad.innerHTML='<button type="button" data-move="forward" aria-label="前進">▲</button><button type="button" data-move="left" aria-label="向左">◀</button><button type="button" data-move="backward" aria-label="後退">▼</button><button type="button" data-move="right" aria-label="向右">▶</button>';
