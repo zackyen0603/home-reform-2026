@@ -1,6 +1,15 @@
 .electrical-canvas.is-circuit{background:#f4f0e7}
 .circuit-route{fill:none;stroke-width:3.2;stroke-linecap:round;stroke-linejoin:round;opacity:.5;vector-effect:non-scaling-stroke;pointer-events:none}
 .circuit-route.is-provisional{stroke-dasharray:7 6}
+.electrical-route-outlets{stroke:#32877b;opacity:.43}
+.electrical-route-lighting{stroke:#d89b35;opacity:.45}
+.route-legend{display:inline-flex;align-items:center;gap:5px;white-space:nowrap}
+.route-legend i{display:inline-block;width:19px;height:4px;border-radius:3px;margin-left:7px}
+.route-key-outlet{background:#32877b}.route-key-light{background:#d89b35}
+.circuit-picker-overview{display:grid;gap:6px;margin:12px 0}
+.circuit-picker-overview button{display:flex;justify-content:space-between;gap:8px;align-items:center;width:100%;padding:9px;border:1px solid #e0e2db;border-radius:8px;background:#fff;text-align:left;font-size:12px;cursor:pointer}
+.circuit-picker-overview button:hover{background:#e5efe6}
+.circuit-picker-overview small{white-space:nowrap;color:#64716a}
 .circuit-room{fill:#636b61;font-size:13px;text-anchor:middle;pointer-events:none}
 .circuit-terminal,.circuit-load{cursor:pointer;outline:none}
 .circuit-terminal circle,.circuit-load rect{stroke:#fff;stroke-width:2.5;vector-effect:non-scaling-stroke;filter:drop-shadow(0 1px 2px #40423f66)}
