@@ -1,0 +1,44 @@
+/* Electrical explorer: deliberately scoped to avoid changing other dashboard sections. */
+.electrical-summary{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 16px}
+.electrical-summary span{padding:6px 11px;border:1px solid var(--line);border-radius:999px;background:var(--surface-strong);font-size:12px;white-space:nowrap}
+.electrical-summary b{font-size:15px;color:var(--forest)}
+.electrical-toolbar{display:flex;align-items:end;flex-wrap:wrap;gap:10px;margin-bottom:14px}
+.electrical-toolbar label{display:grid;gap:4px;color:var(--muted);font-size:12px}
+.electrical-toolbar select,.electrical-toolbar input{min-width:140px;height:42px;padding:7px 11px;border:1px solid var(--line);border-radius:10px;background:#fff;color:var(--ink)}
+.electrical-view-switch{display:flex;align-self:end;gap:3px;padding:3px;border:1px solid var(--line);border-radius:12px;background:var(--surface-strong)}
+.electrical-view-switch button{min-height:36px;padding:5px 13px;border:0;border-radius:9px;background:transparent;cursor:pointer;font-size:13px;white-space:nowrap}
+.electrical-view-switch button[aria-pressed="true"]{background:var(--forest);color:#fff}
+.electrical-workspace{display:grid;grid-template-columns:minmax(0,1fr) 295px;overflow:hidden;border:1px solid var(--line);border-radius:17px;background:var(--surface-strong)}
+.electrical-map-wrap{min-width:0;background:#ece8df}
+.electrical-canvas{position:relative;width:100%;height:clamp(420px,52vw,650px);overflow:hidden;touch-action:none}
+.electrical-canvas svg,.electrical-canvas canvas{display:block;width:100%;height:100%}
+.electrical-canvas canvas{touch-action:none}
+.electrical-room-name{fill:#585e56;font-size:16px;font-weight:700;text-anchor:middle;pointer-events:none}
+.electrical-marker{cursor:pointer;outline:none}
+.electrical-marker circle{stroke:#fff;stroke-width:3;vector-effect:non-scaling-stroke;filter:drop-shadow(0 1px 2px #5557)}
+.electrical-marker text{fill:#222;font-size:11px;font-weight:800;text-anchor:middle;dominant-baseline:middle;pointer-events:none}
+.electrical-marker.is-selected circle,.electrical-marker:hover circle,.electrical-marker:focus-visible circle{stroke:#1d3224;stroke-width:5}
+.electrical-map-help{padding:9px 14px;border-top:1px solid var(--line);font-size:12px;color:#565d55;background:#f5f2ec}
+.electrical-inspector{min-width:0;padding:16px;border-left:1px solid var(--line);background:#fffdf8}
+.electrical-inspector h3{margin:18px 0 9px;font-size:16px}.electrical-inspector h3 small{color:var(--muted);font-size:12px}
+.electrical-detail-heading{display:flex;align-items:center;gap:10px}.electrical-detail-heading h3{margin:0}.electrical-detail-heading small{color:var(--muted);font-size:11px}
+.electrical-dot{width:20px;height:20px;flex:0 0 20px;border:2px solid #fff;border-radius:50%;box-shadow:0 0 0 1px var(--line)}
+.electrical-inspector dl{margin:14px 0;padding:8px 12px;border-radius:12px;background:#f3f1ea}
+.electrical-inspector dl div{display:grid;grid-template-columns:85px 1fr;gap:8px;padding:6px 0;border-bottom:1px solid #ddd9cf;font-size:12px}
+.electrical-inspector dl div:last-child{border:0}.electrical-inspector dt{color:var(--muted)}.electrical-inspector dd{min-width:0;margin:0;overflow-wrap:anywhere;font-weight:700}.electrical-inspector dd small{display:block;font-weight:400;color:var(--muted)}
+.electrical-point-list{max-height:290px;overflow:auto;overscroll-behavior:contain}
+.electrical-list-item{display:flex;align-items:center;gap:9px;width:100%;padding:9px;border:0;border-bottom:1px solid #ebe8e0;background:transparent;text-align:left;cursor:pointer}
+.electrical-list-item[hidden]{display:none}.electrical-list-item:hover,.electrical-list-item.is-selected{background:#e9efe7}
+.electrical-list-item i{width:13px;height:13px;flex:0 0 13px;border-radius:50%}.electrical-list-item span{min-width:0}.electrical-list-item b{display:block;font-size:12px}.electrical-list-item small{display:block;color:var(--muted);font-size:11px}
+.electrical-caveat{margin:10px 1px 20px;color:var(--muted);font-size:12px}
+.electrical-circuit-details{margin-top:12px;padding:12px 15px;border:1px solid var(--line);border-radius:12px;background:var(--surface-strong)}
+.electrical-circuit-details summary{cursor:pointer;font-weight:700}
+.electrical-circuit-details .table-wrap{margin-top:12px}
+.electrical-dpad,.electrical-zoom{position:absolute;z-index:3;display:grid;gap:4px;user-select:none;-webkit-user-select:none}
+.electrical-dpad{left:15px;bottom:16px;grid-template-columns:repeat(3,48px);grid-template-rows:repeat(2,48px);grid-template-areas:'. up .' 'left down right'}
+.electrical-dpad [data-move="forward"]{grid-area:up}.electrical-dpad [data-move="left"]{grid-area:left}.electrical-dpad [data-move="backward"]{grid-area:down}.electrical-dpad [data-move="right"]{grid-area:right}
+.electrical-zoom{right:14px;bottom:14px;grid-template-columns:repeat(2,44px)}
+.electrical-dpad button,.electrical-zoom button{width:44px;height:44px;border:1px solid #fff9;border-radius:12px;background:#263b32d9;color:#fff;font-size:18px;font-weight:800;touch-action:none;cursor:pointer}
+.electrical-dpad button:active,.electrical-zoom button:active{background:#63856b}
+@media(max-width:950px){.electrical-workspace{grid-template-columns:1fr}.electrical-inspector{border-left:0;border-top:1px solid var(--line)}.electrical-point-list{max-height:215px}}
+@media(max-width:620px){.electrical-toolbar{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-items:stretch}.electrical-toolbar label,.electrical-toolbar select,.electrical-toolbar input{min-width:0;width:100%}.electrical-toolbar label:nth-child(3),.electrical-view-switch{grid-column:1/-1}.electrical-view-switch button{flex:1;padding:5px 6px}.electrical-canvas{height:60vh;min-height:390px;max-height:620px}.electrical-room-name{font-size:19px}.electrical-marker circle{stroke-width:4}.electrical-dpad{left:10px;bottom:10px}}
