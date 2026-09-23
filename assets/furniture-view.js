@@ -70,8 +70,8 @@ window.FurnitureView = (() => {
           for(const part of [-1,0,1])box(2,Math.min(h,90)-10,2,part*w/3,Math.min(h,90)/2,d/2+1,dark);
           break;
         case 'kitchen_wall':
-          box(w,h,d,0,h/2,0,pale);
-          for(const part of [-1,0,1])box(1,h-5,1,part*w/3,h/2,d/2+1,dark);
+          box(w,h,d,0,175+h/2,0,pale);
+          for(const part of [-1,0,1])box(1,h-5,1,part*w/3,175+h/2,d/2+1,dark);
           break;
         case 'kitchen_sink':
           box(w,3,d,0,91,0,pale);box(w*.72,2,d*.56,0,94,0,0x889a9b);
