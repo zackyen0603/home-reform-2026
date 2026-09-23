@@ -52,6 +52,7 @@ window.ElectricalCircuitView = (() => {
     const checks=[];
     if(circuit.breaker_a==='to-confirm'||circuit.breaker_a==null)checks.push('斷路器額定未確認，無法核對負載與導線保護。');
     if(circuit.conductor_mm2==='to-confirm'||circuit.conductor_mm2==null)checks.push('導線截面積未確認。');
+    if(Number(circuit.conductor_mm2)===2)checks.push('資料寫作 2.0 mm²；應核對原報價是否指單線直徑 2.0 mm，並依實際線型、配管與斷路器重新選線。');
     if(unlinked.length)checks.push(`${unlinked.length} 件電器尚未對應實際插座／出線口；圖上的方形僅是預定位置。`);
     if(unreachable.length)checks.push(`${unreachable.length} 個端點在已建模門洞之間無法求得通路，應核對牆線、門洞與端點位置。`);
     const detours=ends.filter(e=>{const r=routes.get(e.id);return r&&r.straightCm>100&&r.lengthCm/r.straightCm>2.5;});
