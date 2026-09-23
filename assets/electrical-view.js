@@ -1,5 +1,14 @@
 'use strict';
 
+window.ElectricalPointOverrides = (() => {
+  const key='home-reform:electrical-points:v1';
+  const read=()=>{try{return JSON.parse(localStorage.getItem(key)||'{}')||{};}catch{return {};}};
+  const apply=data=>{const saved=read();return {...data,points:data.points.map(point=>{const position=saved[point.id];return Array.isArray(position)&&position.length===3&&position.every(Number.isFinite)?{...point,position:[...position]}:point;})};};
+  const save=(id,position)=>{const saved=read();saved[id]=[...position];localStorage.setItem(key,JSON.stringify(saved));};
+  const reset=id=>{const saved=read();delete saved[id];localStorage.setItem(key,JSON.stringify(saved));};
+  return {apply,save,reset};
+})();
+
 // This view reads electrical.yaml and floorplan.yaml; it never stores a second copy
 // of either the positions or the circuit assignments.
 window.renderElectricalExperience = function renderElectricalExperience(state) {
@@ -78,10 +87,16 @@ window.renderElectricalExperience = function renderElectricalExperience(state) {
         <div id="electricalCanvas" class="electrical-canvas" aria-label="四樓電力配置圖"></div>
         <div class="electrical-map-help">${view === 'circuits' ? '全室總覽先顯示插座；選擇迴路查看從主臥電箱計算的平面通達示意。' : view === 'walk' ? '桌面：WASD／方向鍵移動，拖曳轉向；手機：左側方向鍵移動、右半畫面拖曳轉向。點選標記查看資料。' : view === '3d' ? '拖曳旋轉；滾輪或右側 ＋／－ 按鈕縮放。點選標記查看資料。' : '點選標記查看資料；手機可左右滑動平面圖。座標為規劃示意，非施工放樣。'}${view !== 'circuits' && showRoutes ? ` <span class="route-legend"><i class="route-key-outlet"></i>插座／220V <i class="route-key-light"></i>電燈</span> 目前顯示${escapeHtml(routeRoomName)}的端點連線；路徑從主臥電箱出發，可能經過其他房間。僅供示意，非實際配管。` : ''}</div>
       </div>
-      <aside class="electrical-inspector"><div id="electricalDetails" aria-live="polite"></div>
+      <aside class="electrical-inspector electrical-floating-panel ${state.electricalPanelCollapsed?'is-collapsed':''}" id="electricalPreviewPanel">
+        <div class="electrical-preview-head"><strong>燈具與插座預覽</strong><span><button type="button" id="electricalPanelCollapse">收合</button><button type="button" id="electricalFullscreen">全螢幕</button></span></div>
+        <div class="electrical-preview-settings"><label>畫面<select id="electricalFloatingView"><option value="2d" ${view==='2d'?'selected':''}>2D</option><option value="3d" ${view==='3d'?'selected':''}>3D</option><option value="walk" ${view==='walk'?'selected':''}>第一人稱</option><option value="circuits" ${view==='circuits'?'selected':''}>迴路拓樸</option></select></label>
+        ${view!=='circuits'?`<label class="electrical-floating-route"><input type="checkbox" id="electricalFloatingRoutes" ${showRoutes?'checked':''}> 顯示迴路佈線</label>`:''}
+        <label>編輯點位<select id="electricalFloatingPoint">${points.map(point=>`<option value="${escapeHtml(point.id)}" ${point.id===selectedId?'selected':''}>${escapeHtml(point.id)} · ${escapeHtml(titleOf(point))}</option>`).join('')}</select></label>
+        <form id="electricalPointEditor" class="electrical-point-editor"><div class="electrical-coordinates"><label>X (cm)<input name="x" type="number" step="1"></label><label>Y (cm)<input name="y" type="number" step="1"></label><label>高度 (cm)<input name="z" type="number" step="1" min="0" max="${floor.ceiling_height}"></label></div><div><button type="submit">套用位置與高度</button><button type="button" id="electricalResetPoint">還原預設</button></div><small>2D 可直接拖曳點位；高度在這裡調整，重整後會保留。</small></form>
+        <details class="electrical-info"><summary>點位與迴路資訊</summary><div id="electricalDetails" aria-live="polite"></div>
         ${view === 'circuits' ? '<div id="circuitTopology"></div>' : ''}
         <h3>點位清單 <small>${visible.length}／${points.length}</small></h3>
-        <div class="electrical-point-list" id="electricalPointList">${visible.map(point => `<button type="button" class="electrical-list-item" data-point-id="${escapeHtml(point.id)}"><i style="background:${escapeHtml(colorOf(point))}"></i><span><b>${escapeHtml(point.id)}</b><small>${escapeHtml(rooms.get(point.space_id)?.name || point.space_id)} · ${escapeHtml(titleOf(point))}</small></span></button>`).join('') || '<p class="micro">此篩選條件沒有點位。</p>'}</div>
+        <div class="electrical-point-list" id="electricalPointList">${visible.map(point => `<button type="button" class="electrical-list-item" data-point-id="${escapeHtml(point.id)}"><i style="background:${escapeHtml(colorOf(point))}"></i><span><b>${escapeHtml(point.id)}</b><small>${escapeHtml(rooms.get(point.space_id)?.name || point.space_id)} · ${escapeHtml(titleOf(point))}</small></span></button>`).join('') || '<p class="micro">此篩選條件沒有點位。</p>'}</div></details></div>
       </aside>
     </div>
     <p class="electrical-caveat">${escapeHtml(electrical.metadata?.warning || '點位需現場覆核。')} 一般插座圖例為 26 點，辨識結果為 27 點，仍待逐點核對。</p>
@@ -91,10 +106,21 @@ window.renderElectricalExperience = function renderElectricalExperience(state) {
   const details = target.querySelector('#electricalDetails');
   const list = target.querySelector('#electricalPointList');
   const teardown = [];
+  const floating=target.querySelector('#electricalPreviewPanel');
+  window.bindFloatingPanel(target.querySelector('.electrical-workspace'),floating,floating.querySelector('.electrical-preview-head'),'home-reform:electrical-panel:v1');
+  floating.querySelector('#electricalFullscreen').addEventListener('click',async()=>{try{if(target.classList.contains('electrical-is-fullscreen')){target.classList.remove('electrical-is-fullscreen');return;}if(document.fullscreenElement){await document.exitFullscreen();return;}if(target.requestFullscreen)await target.requestFullscreen();else target.classList.add('electrical-is-fullscreen');}catch{target.classList.add('electrical-is-fullscreen');}});
+  floating.querySelector('#electricalPanelCollapse').addEventListener('click',()=>{state.electricalPanelCollapsed=!state.electricalPanelCollapsed;floating.classList.toggle('is-collapsed',state.electricalPanelCollapsed);});
+  floating.querySelector('#electricalFloatingView').addEventListener('change',event=>{state.electricalView=event.target.value;window.renderElectricalExperience(state);});
+  floating.querySelector('#electricalFloatingRoutes')?.addEventListener('change',event=>{state.electricalShowRoutes=event.target.checked;window.renderElectricalExperience(state);});
+  floating.querySelector('#electricalFloatingPoint').addEventListener('change',event=>selectPoint(event.target.value));
+  floating.addEventListener('submit',event=>{if(event.target.id!=='electricalPointEditor')return;event.preventDefault();const id=floating.querySelector('#electricalFloatingPoint').value,point=points.find(p=>p.id===id),position=['x','y','z'].map(name=>Number(event.target.elements.namedItem(name).value));if(!point||position.some(n=>!Number.isFinite(n))||position[0]<0||position[0]>floor.bounds.width||position[1]<0||position[1]>floor.bounds.depth||position[2]<0||position[2]>floor.ceiling_height){event.target.reportValidity();return;}try{point.position=position;window.ElectricalPointOverrides.save(id,position);window.renderElectricalExperience(state);if(typeof renderFloorplan==='function')renderFloorplan();}catch{alert('此瀏覽器無法儲存點位設定');}});
+  floating.querySelector('#electricalResetPoint').addEventListener('click',()=>{const id=floating.querySelector('#electricalFloatingPoint').value,original=state.builtinElectrical?.points.find(p=>p.id===id),point=points.find(p=>p.id===id);if(!point||!original)return;point.position=[...original.position];window.ElectricalPointOverrides.reset(id);window.renderElectricalExperience(state);if(typeof renderFloorplan==='function')renderFloorplan();});
   function selectPoint(id) {
     const point = points.find(item => item.id === id);
     if (!point) return;
     state.electricalSelectedId = id;
+    floating.querySelector('#electricalFloatingPoint').value=id;
+    const form=floating.querySelector('#electricalPointEditor');['x','y','z'].forEach((key,index)=>form.elements.namedItem(key).value=point.position[index]);
     const circuit = circuits.get(point.circuit_id);
     const height = Number(point.position[2]);
     details.innerHTML = `<div class="electrical-detail-heading"><span class="electrical-dot" style="background:${escapeHtml(colorOf(point))}"></span><div><small>${escapeHtml(point.id)}</small><h3>${escapeHtml(titleOf(point))}</h3></div></div>
@@ -171,7 +197,8 @@ window.renderElectricalExperience = function renderElectricalExperience(state) {
   if (view === 'circuits') window.ElectricalCircuitView.render(state,floor,canvas,target,selectPoint);
   else if (view === '2d') render2D();
   else render3D(view === 'walk');
-  if (view !== 'circuits') selectPoint(visible.some(point => point.id === selectedId) ? selectedId : visible[0]?.id);
+  if (view === '2d' || view === 'circuits') bindPointDrag();
+  selectPoint(visible.some(point => point.id === selectedId) ? selectedId : visible[0]?.id || selectedId);
   state.electricalCleanup = () => {state.electricalLightingController=null;teardown.splice(0).forEach(dispose => dispose());};
 
   function render2D() {
@@ -186,6 +213,16 @@ window.renderElectricalExperience = function renderElectricalExperience(state) {
     state.electricalLightingController=value=>{const base=canvas.querySelector('.electrical-scene-base');if(base)base.style.filter=`brightness(${lightingEnabled?lighting.ambientBrightness(value):1})`;};
     canvas.addEventListener('click', event => {const marker=event.target.closest('[data-point-id]');const furniture=event.target.closest('[data-furniture-id]');if(marker)selectPoint(marker.dataset.pointId);else if(furniture)selectFurniture(furniture.dataset.furnitureId);});
     canvas.addEventListener('keydown', event => {const node=event.target.closest('[data-point-id],[data-furniture-id]');if(node && ['Enter',' '].includes(event.key)){event.preventDefault();if(node.dataset.pointId)selectPoint(node.dataset.pointId);else selectFurniture(node.dataset.furnitureId);}});
+  }
+
+  function bindPointDrag() {
+    let drag=null, suppressClick=false;
+    const coordinates=event=>{const svg=canvas.querySelector('svg');if(!svg)return null;const p=svg.createSVGPoint();p.x=event.clientX;p.y=event.clientY;const result=p.matrixTransform(svg.getScreenCTM().inverse());return [result.x,result.y];};
+    canvas.addEventListener('pointerdown',event=>{const marker=event.target.closest('.electrical-marker,.lighting-fixture,.circuit-terminal');if(!marker||!marker.dataset.pointId)return;const point=points.find(item=>item.id===marker.dataset.pointId),start=coordinates(event);if(!point||!start)return;drag={id:event.pointerId,point,marker,start,position:[...point.position],moved:false};canvas.setPointerCapture(event.pointerId);event.preventDefault();});
+    canvas.addEventListener('pointermove',event=>{if(!drag||drag.id!==event.pointerId)return;const current=coordinates(event);if(!current)return;const dx=current[0]-drag.start[0],dy=current[1]-drag.start[1];if(!drag.moved&&Math.hypot(dx,dy)<2)return;drag.moved=true;const x=Math.round(Math.max(0,Math.min(floor.bounds.width,drag.position[0]+dx))),y=Math.round(Math.max(0,Math.min(floor.bounds.depth,drag.position[1]+dy)));drag.marker.setAttribute('transform',`translate(${x} ${y})`);drag.point.position=[x,y,drag.position[2]];});
+    const finish=event=>{if(!drag||drag.id!==event.pointerId)return;const {point,moved}=drag;drag=null;if(moved){suppressClick=true;try{window.ElectricalPointOverrides.save(point.id,point.position);}catch{alert('此瀏覽器無法儲存點位設定');}window.renderElectricalExperience(state);if(typeof renderFloorplan==='function')renderFloorplan();}else selectPoint(point.id);};
+    canvas.addEventListener('pointerup',finish);canvas.addEventListener('pointercancel',finish);
+    canvas.addEventListener('click',event=>{if(suppressClick){event.stopImmediatePropagation();suppressClick=false;}},true);
   }
 
   function render3D(walk) {
