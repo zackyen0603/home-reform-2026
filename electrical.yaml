@@ -9,6 +9,7 @@ metadata:
   source_of_truth: true
   data_status: drawing-extracted-needs-electrical-review
   warning: 點位座標依配置示意圖換算並對應floorplan.yaml；空間歸屬已依施工圖尺寸軸與家具排除後的牆面格局重算。回路分組為規劃案，施工前須由合格電工依負載、配電盤容量與現場管路確認。
+  lighting_reconciliation_note: 試算表「★燈具&插座智慧家庭規劃」合計吸頂燈5、吊燈3、嵌燈23，與目前點位圖的吸頂燈4、吊燈3、崁燈33不一致；本視圖以 electrical.yaml 的點位圖辨識資料為準，需現場核對版本。
 
 sources:
   - id: SRC-4F-OUTLETS
@@ -56,6 +57,35 @@ coordinate_system:
   z_axis: up
   accuracy: schematic
   edit_rule: 修改position的[x,y,z]即可同步更新網頁點位；x、y須位於reference_bounds內。
+
+distribution_panel:
+  id: DB-4F-01
+  name: 四樓房間電箱
+  room_id: 4f-main-bedroom
+  position: [24, 284, 150]
+  position_status: estimated-from-user-description
+  note: 使用者指出電箱在主臥床左側；靠西側實牆的圖面座標僅供預覽，現場位置及盤內空間待量測。
+
+route_preview:
+  method: planar-shortest-path-around-modeled-walls
+  status: schematic-only
+  note: 路徑依圖面牆段與門洞自動產生，只檢查平面連通與繞行；不是實際導線管、分線盒、天花或牆內走線，也不代表線徑、電壓降與斷路器設計通過。
+
+appliance_connections:
+  - {id: LOAD-4F-IH, name: IH 爐, circuit_id: C-220-IH, point_id: OUT-4F-V005, room_id: 4f-kitchen, position: [1169.8, 370, 90], source: "家具購買規劃總表!4", link_status: drawing-inferred}
+  - {id: LOAD-4F-BATH-MAIN-HEATER, name: 主浴暖風機, circuit_id: C-220-BATH-MAIN-HEATER, point_id: OUT-4F-V006, room_id: 4f-main-bathroom, position: [82.7, 430.8, 270], source: "家具購買規劃總表!27", link_status: drawing-inferred}
+  - {id: LOAD-4F-BATH-GUEST-HEATER, name: 客浴暖風機, circuit_id: C-220-BATH-GUEST-HEATER, point_id: OUT-4F-V002, room_id: 4f-guest-bathroom, position: [1094, 101.2, 270], source: "家具購買規劃總表!26", link_status: drawing-inferred}
+  - {id: LOAD-4F-AC-LIVING, name: 客餐廳冷氣, circuit_id: C-220-AC-LIVING, point_id: OUT-4F-V007, room_id: 4f-living-dining, position: [549.5, 581.9, 230], source: "electrical.yaml / intended_load", link_status: drawing-inferred}
+  - {id: LOAD-4F-AC-MAIN, name: 主臥冷氣, circuit_id: C-220-AC-BEDROOMS, point_id: OUT-4F-V004, room_id: 4f-main-bedroom, position: [12.9, 219.8, 230], source: "electrical.yaml / intended_load", link_status: drawing-inferred}
+  - {id: LOAD-4F-AC-SECONDARY, name: 次臥冷氣, circuit_id: C-220-AC-BEDROOMS, point_id: OUT-4F-V008, room_id: 4f-secondary-bedroom, position: [246.7, 583.3, 230], source: "electrical.yaml / intended_load", link_status: drawing-inferred}
+  - {id: LOAD-4F-DISHWASHER, name: 洗碗機, circuit_id: C-110-DISHWASHER, room_id: 4f-kitchen, position: [1150, 327, 70], source: "家具購買規劃總表!11", link_status: outlet-not-located}
+  - {id: LOAD-4F-WASHER-DRYER, name: 洗烘衣機, circuit_id: C-110-WASHER-DRYER, room_id: 4f-storage, position: [932, 62, 100], source: "家具購買規劃總表!45", link_status: outlet-not-located}
+  - {id: LOAD-4F-ISLAND, name: 中島電器, circuit_id: C-110-ISLAND, room_id: 4f-kitchen, position: [1015, 309, 90], source: "家具購買規劃總表!7", link_status: outlet-not-located}
+  - {id: LOAD-4F-DEHUMIDIFIER, name: 吊隱式除濕機, circuit_id: C-110-DEHUMIDIFIER, room_id: 4f-storage, position: [950, 112, 245], source: "家具購買規劃總表!8", link_status: outlet-not-located}
+  - {id: LOAD-4F-FRIDGE, name: 冰箱, circuit_id: C-OUT-4F-03, room_id: 4f-kitchen, position: [922, 223, 105], source: "家具購買規劃總表!10", link_status: circuit-candidate-point-unconfirmed}
+  - {id: LOAD-4F-HOOD, name: 抽油煙機, circuit_id: C-OUT-4F-03, room_id: 4f-kitchen, position: [1170, 300, 220], source: "家具購買規劃總表!47", link_status: circuit-candidate-point-unconfirmed}
+  - {id: LOAD-4F-WATER-HEATER-1, name: 熱水器 1, circuit_id: C-220-WATER-HEATER-1, room_id: 4f-storage, source: smart-home.yaml / water-heaters, link_status: location-and-outlet-unconfirmed}
+  - {id: LOAD-4F-WATER-HEATER-2, name: 熱水器 2, circuit_id: C-220-WATER-HEATER-2, room_id: 4f-storage, source: smart-home.yaml / water-heaters, link_status: location-and-outlet-unconfirmed}
 
 point_types:
   general_outlet:
@@ -241,6 +271,20 @@ circuits:
     conductor_mm2: to-confirm
     breaker_a: to-confirm
     status: planned
+  - id: C-220-WATER-HEATER-1
+    name: 熱水器 1 專用（待核）
+    category: dedicated-appliance
+    voltage: 220
+    conductor_mm2: to-confirm
+    breaker_a: to-confirm
+    status: needs-panel-review
+  - id: C-220-WATER-HEATER-2
+    name: 熱水器 2 專用（待核）
+    category: dedicated-appliance
+    voltage: 220
+    conductor_mm2: to-confirm
+    breaker_a: to-confirm
+    status: needs-panel-review
 
 points:
   - id: OUT-4F-S001
