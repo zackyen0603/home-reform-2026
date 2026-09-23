@@ -1515,6 +1515,71 @@ control_groups:
   neutral_required: true
   smart_control: module-or-smart-switch-to-confirm
   status: proposed
+switches:
+- id: SW-4F-ENTRY
+  name: 入口雙切開關
+  floor: 4F
+  space_id: 4f-entry
+  position: [725, 535, 110]
+  rotation_deg: 90
+  control_group_ids: [SG-LIVING-DINING-CEILING, SG-LIVING-DINING-DOWNLIGHT]
+  route_note: 由入口進入時先開啟客廳主照明；離開時可在入口關閉。
+- id: SW-4F-LIVING
+  name: 客餐廳生活動線開關
+  floor: 4F
+  space_id: 4f-living-dining
+  position: [452, 270, 110]
+  rotation_deg: 90
+  control_group_ids: [SG-LIVING-DINING-DOWNLIGHT, SG-LIVING-DINING-PENDANT, SG-LIVING-DINING-CEILING]
+  route_note: 客廳與餐桌交界處，控制客廳、餐桌及主燈。
+- id: SW-4F-KITCHEN
+  name: 廚房入口開關
+  floor: 4F
+  space_id: 4f-kitchen
+  position: [808, 230, 110]
+  rotation_deg: 90
+  control_group_ids: [SG-KITCHEN-DOWNLIGHT, SG-KITCHEN-PENDANT]
+  route_note: 從客餐廳進入廚房時可操作，避免進入暗廚房。
+- id: SW-4F-MASTER
+  name: 主臥入口開關
+  floor: 4F
+  space_id: 4f-main-bedroom
+  position: [430, 265, 110]
+  rotation_deg: 90
+  control_group_ids: [SG-MASTER-DOWNLIGHT, SG-MASTER-CEILING]
+  route_note: 位於主臥門側，控制主臥崁燈與吸頂燈。
+- id: SW-4F-SECONDARY
+  name: 次臥入口開關
+  floor: 4F
+  space_id: 4f-secondary-bedroom
+  position: [350, 350, 110]
+  rotation_deg: 0
+  control_group_ids: [SG-SECONDARY-DOWNLIGHT, SG-SECONDARY-CEILING]
+  route_note: 位於內凹走道門側，控制次臥主要照明。
+- id: SW-4F-MAIN-BATH
+  name: 主浴入口開關
+  floor: 4F
+  space_id: 4f-main-bathroom
+  position: [158, 334, 110]
+  rotation_deg: 90
+  control_group_ids: [SG-MAIN-BATH-DOWNLIGHT]
+  route_note: 設於主浴門外乾區側，避免濕區操作。
+- id: SW-4F-GUEST-BATH
+  name: 客浴入口開關
+  floor: 4F
+  space_id: 4f-guest-bathroom
+  position: [1000, 177, 110]
+  rotation_deg: 0
+  control_group_ids: [SG-GUEST-BATH-DOWNLIGHT]
+  route_note: 設於客浴入口側。
+- id: SW-4F-UTILITY
+  name: 家事前室開關
+  floor: 4F
+  space_id: 4f-utility-passage
+  position: [805, 177, 110]
+  rotation_deg: 90
+  control_group_ids: [SG-UTILITY-DOWNLIGHT, SG-UTILITY-PASSAGE-CEILING]
+  route_note: 由客餐廳通往家事區的入口操作。
 rendering:
   default_floor: 4F
   layers:
