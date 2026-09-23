@@ -134,6 +134,7 @@ window.renderElectricalExperience = function renderElectricalExperience(state) {
       ${floor.walls.map(wall => `<line x1="${wall.start[0]}" y1="${wall.start[1]}" x2="${wall.end[0]}" y2="${wall.end[1]}" stroke="#515750" stroke-width="${wall.thickness || 10}"/>`).join('')}
       ${state.showFurniture ? window.FurnitureView.svg(window.FurnitureView.itemsForFloor(state.furniture,floor.id),escapeHtml) : ''}
       ${routeSvg}
+      ${showRoutes ? `<g class="circuit-panel" transform="translate(${electrical.distribution_panel.position[0]} ${electrical.distribution_panel.position[1]})"><rect x="-17" y="-18" width="34" height="36" rx="5"/><text y="5">盤</text></g>` : ''}
       ${floor.rooms.map(room => {const [x,y] = centroid(room.polygon); return `<text class="electrical-room-name" x="${x}" y="${y}">${escapeHtml(room.name)}</text>`;}).join('')}
       ${visible.map(point => `<g class="electrical-marker" data-point-id="${escapeHtml(point.id)}" tabindex="0" role="button" aria-label="${escapeHtml(point.id + ' ' + titleOf(point))}" transform="translate(${point.position[0]} ${point.position[1]})"><circle r="13" fill="${escapeHtml(colorOf(point))}"/><text y=".5">${escapeHtml(symbolOf(point))}</text></g>`).join('')}
     </svg>`;
@@ -189,6 +190,9 @@ window.renderElectricalExperience = function renderElectricalExperience(state) {
         routeGroup.add(new THREE.LineSegments(geometry,new THREE.LineBasicMaterial({color,transparent:true,opacity:.68,depthTest:false})));
       });
       routeGroup.renderOrder=1;scene.add(routeGroup);
+      const panel=electrical.distribution_panel;
+      const panelMarker=new THREE.Mesh(new THREE.BoxGeometry(18,25,7),new THREE.MeshBasicMaterial({color:0x263e37,depthTest:false}));
+      panelMarker.position.set(panel.position[0],panel.position[2],panel.position[1]);panelMarker.renderOrder=2;scene.add(panelMarker);
     }
     const markerMeshes=[];
     visible.forEach(point => {
