@@ -10,6 +10,30 @@ window.ElectricalPointOverrides = (() => {
   return {apply,save,reset};
 })();
 
+// Shared 2D/3D symbols for wall outlets and the proposed switch plates.
+window.ElectricalPointModels = (() => {
+  const isLight = point => ['downlight','pendant','ceiling_light'].includes(point.type);
+  const style = type => ({general_outlet:{color:'#4a7b74',label:'S'},optional_outlet:{color:'#8b7a45',label:'S?'},high_level_outlet:{color:'#4c7790',label:'U'},planned_220v:{color:'#b3534f',label:'V'}}[type] || {color:'#69736d',label:'•'});
+  const wallRotation = (floor,point) => {
+    let best={distance:Infinity,angle:0};
+    for(const wall of floor.walls||[]){const [ax,az]=wall.start,[bx,bz]=wall.end,dx=bx-ax,dz=bz-az,t=Math.max(0,Math.min(1,((point.position[0]-ax)*dx+(point.position[1]-az)*dz)/(dx*dx+dz*dz||1))),x=ax+t*dx,z=az+t*dz,distance=Math.hypot(point.position[0]-x,point.position[1]-z);if(distance<best.distance)best={distance,angle:-Math.atan2(dz,dx)};}
+    return best.angle;
+  };
+  const svgOutlet = (point,esc) => {const s=style(point.type),w=point.type==='planned_220v'?18:14,h=point.type==='high_level_outlet'?17:14;return `<g class="electrical-outlet electrical-outlet-${point.type}" data-point-id="${esc(point.id)}" tabindex="0" role="button" aria-label="${esc(point.id+' '+s.label)}" transform="translate(${point.position[0]} ${point.position[1]})"><rect x="${-w/2}" y="${-h/2}" width="${w}" height="${h}" rx="2" fill="${s.color}" stroke="#fff" stroke-width="1.5"/><circle cx="-3" cy="0" r="1.5" fill="#fff"/><circle cx="3" cy="0" r="1.5" fill="#fff"/><text y="4" text-anchor="middle" font-size="7" font-weight="800" fill="#fff">${esc(s.label)}</text></g>`;};
+  const svgSwitches = (electrical,esc,showRoutes=false) => {const points=new Map((electrical.points||[]).map(p=>[p.id,p]));const groups=new Map((electrical.control_groups||[]).map(g=>[g.id,g]));return (electrical.switches||[]).map(sw=>{const controls=(sw.control_group_ids||[]).flatMap(id=>groups.get(id)?.point_ids||[]).map(id=>points.get(id)).filter(Boolean);const lines=showRoutes?controls.map(p=>`<line class="switch-route" x1="${sw.position[0]}" y1="${sw.position[1]}" x2="${p.position[0]}" y2="${p.position[1]}"/>`).join(''):'';const count=Math.max(1,(sw.control_group_ids||[]).length),w=18+count*7;return `${lines}<g class="electrical-switch" data-switch-id="${esc(sw.id)}" transform="translate(${sw.position[0]} ${sw.position[1]}) rotate(${sw.rotation_deg||0})"><rect x="${-w/2}" y="-10" width="${w}" height="20" rx="3"/><line x1="${-w/2+5}" y1="-7" x2="${w/2-5}" y2="-7"/><text y="4" text-anchor="middle">${count}切</text><title>${esc(sw.name)}：${esc(sw.route_note||'')}</title></g>`;}).join('');};
+  function add3D(scene,electrical,floor,points,THREE,options={}) {
+    const selectable=[];
+    const mat=(color,roughness=.55,metalness=0)=>new THREE.MeshStandardMaterial({color,roughness,metalness});
+    for(const point of points.filter(p=>!isLight(p))){const [x,z,rawHeight]=point.position,height=Number.isFinite(Number(rawHeight))?Number(rawHeight):105,s=style(point.type),group=new THREE.Group();group.position.set(x,height,z);group.rotation.y=wallRotation(floor,point);group.userData.pointId=point.id;const width=point.type==='planned_220v'?18:14,plate=new THREE.Mesh(new THREE.BoxGeometry(width,point.type==='high_level_outlet'?18:15,2.4),mat(s.color,.42,.08));plate.userData.pointId=point.id;plate.castShadow=true;group.add(plate);const sockets=point.type==='planned_220v'?1:2;for(let i=0;i<sockets;i++){const socket=new THREE.Mesh(new THREE.CylinderGeometry(1.7,1.7,.9,16),mat(0xf7f2e8,.3));socket.rotation.x=Math.PI/2;socket.position.set((i-(sockets-1)/2)*5,0,1.7);socket.userData.pointId=point.id;group.add(socket);}scene.add(group);selectable.push(plate);}
+    const groups=new Map((electrical.control_groups||[]).map(g=>[g.id,g])),allPoints=new Map((electrical.points||[]).map(p=>[p.id,p]));
+    for(const sw of electrical.switches||[]){const [x,z,rawHeight]=sw.position,height=Number(rawHeight)||110,count=Math.max(1,(sw.control_group_ids||[]).length),width=18+count*7,group=new THREE.Group();group.position.set(x,height,z);group.rotation.y=Number(sw.rotation_deg||0)*Math.PI/180;group.userData.switchId=sw.id;const plate=new THREE.Mesh(new THREE.BoxGeometry(width,20,2.8),mat(0x263d36,.48,.12));plate.castShadow=true;group.add(plate);for(let i=0;i<count;i++){const toggle=new THREE.Mesh(new THREE.BoxGeometry(5,10,2),mat(0xe7efe8,.28));toggle.position.set((i-(count-1)/2)*7,0,2.1);toggle.userData.switchId=sw.id;group.add(toggle);}scene.add(group);
+      if(options.showRoutes){const segments=[];for(const groupId of sw.control_group_ids||[]){for(const id of groups.get(groupId)?.point_ids||[]){const point=allPoints.get(id);if(!point)continue;const py=Number(point.position[2])||floor.ceiling_height-17;segments.push(x,height,z,point.position[0],py,point.position[1]);}}if(segments.length){const geometry=new THREE.BufferGeometry();geometry.setAttribute('position',new THREE.Float32BufferAttribute(segments,3));const lines=new THREE.LineSegments(geometry,new THREE.LineBasicMaterial({color:0xc9904b,transparent:true,opacity:.65,depthTest:false}));lines.renderOrder=2;scene.add(lines);}}
+    }
+    return selectable;
+  }
+  return {isLight,style,svgOutlet,svgSwitches,add3D};
+})();
+
 // This view reads electrical.yaml and floorplan.yaml; it never stores a second copy
 // of either the positions or the circuit assignments.
 window.renderElectricalExperience = function renderElectricalExperience(state) {
@@ -86,7 +110,7 @@ window.renderElectricalExperience = function renderElectricalExperience(state) {
     <div class="electrical-workspace">
       <div class="electrical-map-wrap">
         <div id="electricalCanvas" class="electrical-canvas" aria-label="四樓電力配置圖"></div>
-        <div class="electrical-map-help">${view === 'circuits' ? '全室總覽先顯示插座；選擇迴路查看從主臥電箱計算的平面通達示意。' : view === 'walk' ? '桌面：WASD／方向鍵移動，拖曳轉向；手機：左側方向鍵移動、右半畫面拖曳轉向。點選標記查看資料。' : view === '3d' ? '拖曳旋轉；滾輪或右側 ＋／－ 按鈕縮放。點選標記查看資料。' : '點選標記查看資料；手機可左右滑動平面圖。座標為規劃示意，非施工放樣。'}${view !== 'circuits' && showRoutes ? ` <span class="route-legend"><i class="route-key-outlet"></i>插座／220V <i class="route-key-light"></i>電燈</span> 目前顯示${escapeHtml(routeRoomName)}的端點連線；路徑從主臥電箱出發，可能經過其他房間。僅供示意，非實際配管。` : ''}</div>
+        <div class="electrical-map-help">${view === 'circuits' ? '全室總覽先顯示插座；選擇迴路查看從主臥電箱計算的平面通達示意。' : view === 'walk' ? '桌面：WASD／方向鍵移動，拖曳轉向；手機：左側方向鍵移動、右半畫面拖曳轉向。點選標記查看資料。' : view === '3d' ? '拖曳旋轉；滾輪或右側 ＋／－ 按鈕縮放。點選標記查看資料。' : `點選插座或開關模型查看位置；目前建立 ${(electrical.switches||[]).length} 組生活動線開關。手機可左右滑動平面圖。座標為規劃示意，非施工放樣。`}${view !== 'circuits' && showRoutes ? ` <span class="route-legend"><i class="route-key-outlet"></i>插座／220V <i class="route-key-light"></i>電燈 <i class="route-key-switch"></i>開關控制</span> 目前顯示${escapeHtml(routeRoomName)}的端點連線；路徑從主臥電箱出發，可能經過其他房間。開關至燈具的控制關係以琥珀色虛線表示，僅供配置示意。` : ''}</div>
       </div>
       <aside class="electrical-inspector electrical-floating-panel ${state.electricalPanelCollapsed?'is-collapsed':''}" id="electricalPreviewPanel">
         <div class="electrical-preview-head"><strong>燈具與插座預覽</strong><span><button type="button" id="electricalPanelCollapse">收合</button><button type="button" id="electricalFullscreen">全螢幕</button></span></div>
@@ -218,10 +242,10 @@ window.renderElectricalExperience = function renderElectricalExperience(state) {
     const routeSvg=routeItems.map(({route,kind})=>route?`<polyline class="circuit-route electrical-route-${kind}" points="${route.path.map(p=>p.join(',')).join(' ')}"/>`:'').join('');
     const fixtureSvg=visible.map(point=>lighting.isFixture(point)
       ? lighting.svgFixture(electrical,point,state,escapeHtml)
-      : `<g class="electrical-marker" data-point-id="${escapeHtml(point.id)}" tabindex="0" role="button" aria-label="${escapeHtml(point.id + ' ' + titleOf(point))}" transform="translate(${point.position[0]} ${point.position[1]})"><circle r="13" fill="${escapeHtml(colorOf(point))}"/><text y=".5">${escapeHtml(symbolOf(point))}</text></g>`).join('');
+      : window.ElectricalPointModels.svgOutlet(point,escapeHtml)).join('');
     canvas.classList.add('is-2d');
     const shared=window.RoomInteriors.svgBase(floor,{furniture:state.furniture,interiors:state.interiors,showFurniture:state.showFurniture,roomColor,labels:true,labelClass:'electrical-room-name',sceneClass:'electrical-scene-base',ariaLabel:'四樓插座與燈具平面圖'});
-    canvas.innerHTML=shared.replace('</svg>',`${lighting.svgWash(electrical,floor,state)}${routeSvg}${showRoutes?`<g class="circuit-panel" transform="translate(${electrical.distribution_panel.position[0]} ${electrical.distribution_panel.position[1]})"><rect x="-17" y="-18" width="34" height="36"/><text y="5">盤</text></g>`:''}${fixtureSvg}</svg>`);
+    canvas.innerHTML=shared.replace('</svg>',`${lighting.svgWash(electrical,floor,state)}${routeSvg}${showRoutes?`<g class="circuit-panel" transform="translate(${electrical.distribution_panel.position[0]} ${electrical.distribution_panel.position[1]})"><rect x="-17" y="-18" width="34" height="36"/><text y="5">盤</text></g>`:''}${window.ElectricalPointModels.svgSwitches(electrical,escapeHtml,showRoutes)}${fixtureSvg}</svg>`);
     state.electricalLightingController=value=>{const base=canvas.querySelector('.electrical-scene-base');if(base)base.style.filter=`brightness(${lightingEnabled?lighting.ambientBrightness(value):1})`;};
     canvas.addEventListener('click', event => {const marker=event.target.closest('[data-point-id]');const furniture=event.target.closest('[data-furniture-id]');if(marker)selectPoint(marker.dataset.pointId);else if(furniture)selectFurniture(furniture.dataset.furnitureId);});
     canvas.addEventListener('keydown', event => {const node=event.target.closest('[data-point-id],[data-furniture-id]');if(node && ['Enter',' '].includes(event.key)){event.preventDefault();if(node.dataset.pointId)selectPoint(node.dataset.pointId);else selectFurniture(node.dataset.furnitureId);}});
@@ -294,16 +318,7 @@ window.renderElectricalExperience = function renderElectricalExperience(state) {
       panelMarker.position.set(panel.position[0],panel.position[2],panel.position[1]);panelMarker.renderOrder=2;scene.add(panelMarker);
     }
     const markerMeshes=lighting.add3D(scene,electrical,floor,visible,state,THREE);
-    visible.filter(point=>!lighting.isFixture(point)).forEach(point => {
-      const color=new THREE.Color(colorOf(point));
-      const [x,z,rawHeight]=point.position;
-      const height=Number(rawHeight);
-      const y=Number.isFinite(height)?height:105;
-      const sphere=new THREE.Mesh(new THREE.SphereGeometry(9,12,8),new THREE.MeshBasicMaterial({color,depthTest:false}));
-      sphere.position.set(x,Math.max(10,Math.min(y,floor.ceiling_height-5)),z);sphere.renderOrder=2;sphere.userData.pointId=point.id;scene.add(sphere);markerMeshes.push(sphere);
-      const halo=new THREE.Mesh(new THREE.RingGeometry(12,15,16),new THREE.MeshBasicMaterial({color,side:THREE.DoubleSide,depthTest:false}));
-      halo.position.copy(sphere.position);halo.lookAt(walk?camera.position:new THREE.Vector3(x,900,z));halo.renderOrder=2;halo.userData.pointId=point.id;scene.add(halo);markerMeshes.push(halo);
-    });
+    markerMeshes.push(...window.ElectricalPointModels.add3D(scene,electrical,floor,visible.filter(point=>!lighting.isFixture(point)),THREE,{showRoutes}));
     const raycaster=new THREE.Raycaster(), mouse=new THREE.Vector2();
     const focusRoom=rooms.get(roomFilter);
     const boundsOfFocus=focusRoom ? {width:Math.max(...focusRoom.polygon.map(p=>p[0]))-Math.min(...focusRoom.polygon.map(p=>p[0])),depth:Math.max(...focusRoom.polygon.map(p=>p[1]))-Math.min(...focusRoom.polygon.map(p=>p[1]))} : floor.bounds;
