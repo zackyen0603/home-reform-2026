@@ -1,0 +1,11 @@
+.elevation-controls{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:0 0 12px}
+.elevation-controls label{display:flex;align-items:center;gap:7px;font-size:12px;color:#526056}
+.elevation-controls select{min-height:36px;border:1px solid var(--line);border-radius:8px;padding:5px 9px;background:#fffdf8;color:var(--ink)}
+.elevation-controls .button{min-height:36px;padding:6px 10px}
+.elevation-meta{margin:0 0 10px;color:var(--muted);font-size:11px;line-height:1.55}
+.plan-canvas.elevation-canvas{display:flex;flex-direction:column;justify-content:center;padding:clamp(12px,2vw,28px);background:#f3f1ea;overflow:auto}
+.plan-canvas.elevation-canvas .elevation-svg{display:block;flex:none;width:100%;height:auto;max-height:520px;min-height:0;background:#fffdf8;border:1px solid #dddcd4;box-shadow:0 12px 28px #25312818}
+.elevation-label{font-family:"Noto Sans TC","PingFang TC",sans-serif;font-size:10px;fill:#26342d;paint-order:stroke;stroke:#fffdf8;stroke-width:2px;stroke-linejoin:round}
+.elevation-dimension{font-family:"Noto Sans TC","PingFang TC",sans-serif;font-size:11px;fill:#56655a}
+.room-shape-select{cursor:pointer;outline:none}.room-shape-select:hover .room-shape,.room-shape-select:focus-visible .room-shape,.room-shape-select.is-selected .room-shape{stroke:#315943;stroke-width:4;vector-effect:non-scaling-stroke}
+@media(max-width:620px){.elevation-controls label{width:100%;justify-content:space-between}.elevation-controls select{flex:1}.plan-canvas.elevation-canvas{min-height:340px;height:auto;padding:10px}.plan-canvas.elevation-canvas .elevation-svg{width:100%;min-height:0;height:auto;max-width:100%}}
