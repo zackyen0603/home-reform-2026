@@ -3,8 +3,14 @@
 // Visual comparison only: fixture shape and falloff are deliberately schematic.
 window.LightingPreview = (() => {
   const types = new Set(['downlight', 'pendant', 'ceiling_light']);
+  const defaultLightingControls = {
+    downlight: {label:'崁燈', lumens:700, color_temperature_k:4000},
+    ceiling_light: {label:'吸頂燈', lumens:1800, color_temperature_k:4000},
+    pendant: {label:'吊燈', lumens:800, color_temperature_k:3000}
+  };
   const isFixture = point => types.has(point.type);
-  const settings = (data, point) => ({...(data.lighting_preview?.fixture_types?.[point.type] || {}), ...(point.fixture_visual || {})});
+  const controls = (data, state, type) => ({...(defaultLightingControls[type] || {}), ...(data.lighting_preview?.fixture_types?.[type] || {}), ...(state?.lightingControls?.[type] || {})});
+  const settings = (data, point, state) => ({...controls(data, state, point.type), ...(point.fixture_visual || {})});
   const isOn = (state, point) => state.lightingGroups?.[point.control_group_id] !== false;
   const ambient = (state, data) => Math.max(0, Math.min(100, Number(state.lightingAmbient ?? data.lighting_preview?.default_ambient_percent ?? 65)));
   const ambientBrightness = value => (.19 + .81 * value / 100).toFixed(3);
@@ -23,13 +29,14 @@ window.LightingPreview = (() => {
     const fixtures = data.points.filter(isFixture).filter(point => isOn(state, point));
     const clips = floor.rooms.map((room, i) => `<clipPath id="lighting-room-${i}"><polygon points="${room.polygon.map(p => p.join(',')).join(' ')}"/></clipPath>`).join('');
     const gradients = ['downlight','pendant','ceiling_light'].map(type => {
-      const color = kelvinColor(data.lighting_preview?.fixture_types?.[type]?.color_temperature_k);
-      return `<radialGradient id="lighting-wash-${type}"><stop offset="0" stop-color="${color}" stop-opacity=".8"/><stop offset=".48" stop-color="${color}" stop-opacity=".36"/><stop offset="1" stop-color="${color}" stop-opacity="0"/></radialGradient>`;
+      const config = controls(data, state, type), color = kelvinColor(config.color_temperature_k);
+      const intensity = Math.max(.35, Math.min(1, Number(config.lumens || 700) / 1800));
+      return `<radialGradient id="lighting-wash-${type}"><stop offset="0" stop-color="${color}" stop-opacity="${(.8*intensity).toFixed(2)}"/><stop offset=".48" stop-color="${color}" stop-opacity="${(.36*intensity).toFixed(2)}"/><stop offset="1" stop-color="${color}" stop-opacity="0"/></radialGradient>`;
     }).join('');
     const circles = fixtures.map(point => {
       const roomIndex = floor.rooms.findIndex(room => room.id === point.space_id);
       if (roomIndex < 0) return '';
-      const [x, y] = point.position, radius = Number(settings(data, point).beam_radius_cm) || 95;
+      const [x, y] = point.position, radius = Number(settings(data, point, state).beam_radius_cm) || 95;
       return `<circle cx="${x}" cy="${y}" r="${radius}" fill="url(#lighting-wash-${point.type})" clip-path="url(#lighting-room-${roomIndex})"/>`;
     }).join('');
     return `<defs>${clips}${gradients}</defs><g class="lighting-washes" aria-hidden="true">${circles}</g>`;
@@ -37,7 +44,7 @@ window.LightingPreview = (() => {
 
   function svgFixture(data, point, state, esc) {
     const on = isOn(state, point) && state.lightingPreviewEnabled !== false;
-    const config = settings(data, point), color = kelvinColor(config.color_temperature_k);
+    const config = settings(data, point, state), color = kelvinColor(config.color_temperature_k);
     const radius = Math.max(8, Math.min(23, Number(config.diameter_cm || 22) / 2));
     let shape;
     if (point.type === 'downlight') {
@@ -47,13 +54,13 @@ window.LightingPreview = (() => {
     } else {
       shape = `<circle r="${radius + 2}" fill="#68716a" stroke="#fff" stroke-width="2"/><circle r="${radius - 2}" fill="${on ? color : '#bdc3bf'}" stroke="#c9c4b5" stroke-width="2"/><circle r="${radius - 7}" fill="none" stroke="#fff8" stroke-width="2"/>`;
     }
-    return `<g class="lighting-fixture ${on ? 'is-lit' : 'is-off'}" data-point-id="${esc(point.id)}" tabindex="0" role="button" aria-label="${esc(point.id + ' ' + (data.point_types[point.type]?.label || point.type) + (on ? ' 已開啟' : ' 已關閉'))}" transform="translate(${point.position[0]} ${point.position[1]})"><title>${esc(data.point_types[point.type]?.label || point.type)} · ${on ? '開' : '關'} · ${Number(config.color_temperature_k) || 4000}K</title>${shape}</g>`;
+    return `<g class="lighting-fixture ${on ? 'is-lit' : 'is-off'}" data-point-id="${esc(point.id)}" tabindex="0" role="button" aria-label="${esc(point.id + ' ' + (data.point_types[point.type]?.label || point.type) + (on ? ' 已開啟' : ' 已關閉'))}" transform="translate(${point.position[0]} ${point.position[1]})"><title>${esc(data.point_types[point.type]?.label || point.type)} · ${on ? '開' : '關'} · ${Number(config.lumens) || 0} lm · ${Number(config.color_temperature_k) || 4000}K</title>${shape}</g>`;
   }
 
   function add3D(scene, data, floor, visible, state, THREE) {
     const selectable = [], active = state.lightingPreviewEnabled !== false;
-    const roomCounts = new Map();
-    for (const point of data.points.filter(isFixture)) if (active && isOn(state, point)) roomCounts.set(point.space_id, (roomCounts.get(point.space_id) || 0) + 1);
+    const roomLumens = new Map();
+    for (const point of data.points.filter(isFixture)) if (active && isOn(state, point)) roomLumens.set(point.space_id, (roomLumens.get(point.space_id) || 0) + Number(settings(data, point, state).lumens || 0));
     const poolMaterial = new THREE.ShaderMaterial({
       uniforms: {tint:{value:new THREE.Color('#fff0c7')}, opacity:{value:.38}},
       vertexShader:'varying vec2 vUv; void main(){vUv=uv; gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}',
@@ -62,15 +69,15 @@ window.LightingPreview = (() => {
     });
     for (const point of data.points.filter(isFixture)) {
       if (!active || !isOn(state, point)) continue;
-      const config = settings(data,point), radius = Math.max(30, Number(config.beam_radius_cm) || 95);
+      const config = settings(data,point,state), radius = Math.max(30, Number(config.beam_radius_cm) || 95);
       const material = poolMaterial.clone();material.uniforms.tint.value = new THREE.Color(kelvinColor(config.color_temperature_k));
-      material.uniforms.opacity.value = point.type === 'ceiling_light' ? .43 : point.type === 'pendant' ? .34 : .26;
+      material.uniforms.opacity.value = Math.max(.12, Math.min(.62, Number(config.lumens || 700) / 3000));
       const pool = new THREE.Mesh(new THREE.PlaneGeometry(radius * 2, radius * 2), material);
       pool.rotation.x = -Math.PI/2;pool.position.set(point.position[0],1,point.position[1]);pool.renderOrder=1;scene.add(pool);
     }
     poolMaterial.dispose();
     for (const point of visible.filter(isFixture)) {
-      const config = settings(data,point), on = active && isOn(state,point), color = new THREE.Color(kelvinColor(config.color_temperature_k));
+      const config = settings(data,point,state), on = active && isOn(state,point), color = new THREE.Color(kelvinColor(config.color_temperature_k));
       const x=point.position[0], z=point.position[1], ceiling=floor.ceiling_height || 280;
       const diameter=Math.max(10,Number(config.diameter_cm)||18), radius=diameter/2;
       const group = new THREE.Group();group.position.set(x,0,z);group.userData.pointId=point.id;
@@ -94,14 +101,14 @@ window.LightingPreview = (() => {
       scene.add(group);
     }
     for (const room of floor.rooms) {
-      const count=roomCounts.get(room.id)||0;if(!count)continue;
+      const lumens=roomLumens.get(room.id)||0;if(!lumens)continue;
       const x=room.polygon.reduce((sum,p)=>sum+p[0],0)/room.polygon.length;
       const z=room.polygon.reduce((sum,p)=>sum+p[1],0)/room.polygon.length;
-      const roomLight=new THREE.PointLight(0xffe6bf,Math.min(1.05,.25+count*.08),Math.min(360,180+count*11),2);
+      const roomLight=new THREE.PointLight(0xffe6bf,Math.min(1.4,.12+lumens/3200),Math.min(420,180+lumens/20),2);
       roomLight.position.set(x,Math.max(160,(floor.ceiling_height||280)-45),z);scene.add(roomLight);
     }
     return selectable;
   }
 
-  return {isFixture,isOn,settings,ambient,ambientBrightness,kelvinColor,svgFixture,svgWash,add3D};
+  return {isFixture,isOn,settings,controls,defaultLightingControls,ambient,ambientBrightness,kelvinColor,svgFixture,svgWash,add3D};
 })();
