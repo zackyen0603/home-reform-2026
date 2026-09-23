@@ -4,6 +4,8 @@ metadata:
   floor_id: 4F
   source_workbook: 巧新新家規劃.xlsx
   source_sheet: ★家具購買規劃總表
+  visual_reference: B0D6BD31-CC23-4FFD-8FA8-EA68836B0B40.jpeg
+  visual_reference_note: 依參考圖建立白色上櫃、木紋下櫃、白色檯面、黑色抽油煙機、前側中島與冰箱的配置示意；不代表最終立面或施工尺寸。
   coordinate_reference: floorplan.yaml / 4F
   coordinate_unit: cm
   origin: 四樓平面圖左上角；x 向右、y 向下、z 向上
