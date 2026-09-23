@@ -55,6 +55,8 @@ window.ElectricalCircuitView = (() => {
     if(Number(circuit.conductor_mm2)===2)checks.push('資料寫作 2.0 mm²；應核對原報價是否指單線直徑 2.0 mm，並依實際線型、配管與斷路器重新選線。');
     if(circuit.id.startsWith('C-220-WATER-HEATER')&&circuit.rcd_required==null)checks.push('熱水器迴路的漏電保護、接地與手動隔離方式尚未記錄。');
     if(['C-OUT-4F-02','C-OUT-4F-03'].includes(circuit.id))checks.push('請核對廚房／餐廳小型電器插座的專用分路與額定；目前僅標示一般插座，斷路器尚未定案。');
+    if(circuit.id==='C-220-IH')checks.push('IH 型號 KZ-J1H6AST 的銘牌電壓、額定電流與規劃 220V 迴路相容性，須依原廠資料及現場供電確認。');
+    if(circuit.id==='C-220-AC-BEDROOMS')checks.push('一對二冷氣目前列兩個 220V 點位；應依室外機供電方式確認是否都需要獨立出線。');
     if(unlinked.length)checks.push(`${unlinked.length} 件電器尚未對應實際插座／出線口；圖上的方形僅是預定位置。`);
     if(unreachable.length)checks.push(`${unreachable.length} 個端點在已建模門洞之間無法求得通路，應核對牆線、門洞與端點位置。`);
     const detours=ends.filter(e=>{const r=routes.get(e.id);return r&&r.straightCm>100&&r.lengthCm/r.straightCm>2.5;});
