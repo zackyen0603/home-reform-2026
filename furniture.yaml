@@ -228,8 +228,8 @@ items:
     name: 廚房中島／電器櫃
     kind: island
     room_id: 4f-kitchen
-    position: [1015, 309, 0]
-    size: [130, 80, 90]
+    position: [1000, 330, 0]
+    size: [245, 80, 90]
     rotation_deg: 0
     dimension_basis: spreadsheet-width-depth; estimated-height
     procurement_status: 不需購買
@@ -238,6 +238,104 @@ items:
     source_row: 7
     source_item_number: 24
     note: 統包製作；列入模型以顯示家具佔用空間。
+  - id: FUR-4F-KIT-BASE-RUN
+    name: 廚房一字型下櫃與檯面
+    kind: kitchen_base
+    room_id: 4f-kitchen
+    position: [1000, 210, 0]
+    size: [330, 60, 90]
+    rotation_deg: 0
+    dimension_basis: spreadsheet; image-reference
+    procurement_status: 統包規劃
+    brand: 耘得系統櫃
+    budget_twd: 0
+    source_row: 59
+    source_item_number: 22
+    note: 依圖片建立靠牆一字型下櫃；實際分割以水槽、洗碗機、IH 及檯面開孔圖校正。
+  - id: FUR-4F-KIT-WALL-CABINET
+    name: 廚房霧面白上櫃
+    kind: kitchen_wall
+    room_id: 4f-kitchen
+    position: [920, 210, 0]
+    size: [220, 38, 70]
+    rotation_deg: 0
+    dimension_basis: image-reference; spreadsheet
+    procurement_status: 統包規劃
+    brand: 耘得系統櫃
+    budget_twd: 0
+    source_row: 59
+    source_item_number: 22
+    note: 依圖片配置在水槽與備料區上方；抽油煙機上方保留獨立黑色機體。
+  - id: FUR-4F-KIT-SINK
+    name: 廚房水槽
+    kind: kitchen_sink
+    room_id: 4f-kitchen
+    position: [865, 210, 0]
+    size: [70, 55, 95]
+    rotation_deg: 0
+    dimension_basis: spreadsheet; image-reference
+    procurement_status: 待確認型號
+    brand: 大吉熊
+    budget_twd: 12000
+    source_row: 18
+    source_item_number: 17
+  - id: FUR-4F-KIT-DISHWASHER
+    name: 抽屜式洗碗機
+    kind: kitchen_dishwasher
+    room_id: 4f-kitchen
+    position: [945, 210, 0]
+    size: [57, 60, 82]
+    rotation_deg: 0
+    dimension_basis: spreadsheet
+    procurement_status: 尚未購買
+    brand: fisher & paykel
+    model: DD60DHI9
+    budget_twd: 62000
+    source_row: 11
+    source_item_number: 19
+  - id: FUR-4F-KIT-COOKTOP
+    name: IH 爐與爐連烤
+    kind: kitchen_cooktop
+    room_id: 4f-kitchen
+    position: [1080, 210, 0]
+    size: [60, 56, 95]
+    rotation_deg: 0
+    dimension_basis: spreadsheet; image-reference
+    procurement_status: 已購買
+    brand: Panasonic
+    model: KZ-J1H6AST
+    budget_twd: 16400
+    source_row: 4
+    source_item_number: 21
+  - id: FUR-4F-KIT-HOOD
+    name: 黑色近吸式抽油煙機
+    kind: kitchen_hood
+    room_id: 4f-kitchen
+    position: [1080, 202, 0]
+    size: [80, 45, 220]
+    rotation_deg: 0
+    dimension_basis: spreadsheet; image-reference
+    procurement_status: 待確認型號
+    brand: SAKURA
+    model: DR7396HL
+    budget_twd: 23000
+    source_row: 47
+    source_item_number: 23
+  - id: FUR-4F-KIT-FRIDGE
+    name: 廚房冰箱
+    kind: kitchen_fridge
+    room_id: 4f-kitchen
+    position: [1165, 270, 0]
+    size: [60.1, 65.3, 179]
+    rotation_deg: 0
+    dimension_basis: spreadsheet; image-reference
+    procurement_status: 尚未購買
+    brand: Panasonic
+    model: NR-B331VG
+    budget_twd: 25000
+    source_row: 10
+    source_item_number: 28
+    note: 靠廚房東側牆配置；須保留開門、散熱及搬運路徑。
   - id: FUR-4F-STO-SHELF
     name: 儲藏室收納架
     kind: shelf
