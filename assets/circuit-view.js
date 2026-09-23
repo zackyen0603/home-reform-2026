@@ -10,7 +10,7 @@ window.ElectricalCircuitView = (() => {
   function router(floor, panel) {
     const step=12, nx=Math.floor(floor.bounds.width/step)+1, ny=Math.floor(floor.bounds.depth/step)+1, count=nx*ny;
     const xOf=i=>(i%nx)*step, yOf=i=>Math.floor(i/nx)*step;
-    const passable=(x,y)=>x>8&&y>8&&x<floor.bounds.width-8&&y<floor.bounds.depth-8&&floor.walls.every(w=>distanceToWall(x,y,w)>(w.thickness||10)/2+3);
+    const passable=(x,y)=>x>8&&y>8&&x<floor.bounds.width-8&&y<floor.bounds.depth-8&&(!floor.outline||inRoom(x,y,{polygon:floor.outline}))&&floor.walls.every(w=>distanceToWall(x,y,w)>(w.thickness||10)/2+3);
     const open=new Uint8Array(count);for(let i=0;i<count;i++)open[i]=Number(passable(xOf(i),yOf(i)));
     const nearest=(x,y,room,limit=65)=>{let best=-1,score=Infinity;for(let i=0;i<count;i++){if(!open[i])continue;const dx=xOf(i)-x,dy=yOf(i)-y,d=dx*dx+dy*dy;if(d<score&&(!room||inRoom(xOf(i),yOf(i),room))){best=i;score=d;}}return score<=limit*limit?best:-1;};
     const start=nearest(panel.position[0],panel.position[1],floor.rooms.find(r=>r.id===panel.room_id));
@@ -104,3 +104,4 @@ window.ElectricalCircuitView = (() => {
   }
   return {render,router,previewRoutes};
 })();
+
