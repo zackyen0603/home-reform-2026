@@ -31,7 +31,32 @@ window.ElectricalCircuitView = (() => {
     return {route,gridCount:count};
   }
 
+  // One route source for the topology map and the 2D/3D overlays.
+  function previewRoutes(data,floor,filter='all') {
+    const circuits=new Map(data.circuits.map(c=>[c.id,c]));
+    const isLighting=p=>['downlight','pendant','ceiling_light'].includes(p.type);
+    const selected=p=>filter==='all'||(filter==='outlets'&&!isLighting(p))||(filter==='lighting'&&isLighting(p))||p.circuit_id===filter;
+    const finder=router(floor,data.distribution_panel);
+    return data.points.filter(selected).map(point=>({point,circuit:circuits.get(point.circuit_id),route:finder.route(point.position,point.space_id),kind:isLighting(point)?'lighting':'outlets'}));
+  }
+
+  function renderOverview(state,floor,canvas,target,selectPoint) {
+    const data=state.electrical,panel=data.distribution_panel,pad=35,b=floor.bounds;
+    const outlets=data.points.filter(p=>!['downlight','pendant','ceiling_light'].includes(p.type));
+    const rooms=new Map(floor.rooms.map(r=>[r.id,r]));
+    const roomNames=floor.rooms.map(r=>{const x=r.polygon.reduce((n,p)=>n+p[0],0)/r.polygon.length,y=r.polygon.reduce((n,p)=>n+p[1],0)/r.polygon.length;return `<text x="${x}" y="${y}" class="circuit-room">${esc(r.name)}</text>`;}).join('');
+    canvas.classList.add('is-2d','is-circuit');
+    canvas.innerHTML=`<svg viewBox="${-pad} ${-pad} ${b.width+2*pad} ${b.depth+2*pad}" role="img" aria-label="四樓全室插座總覽"><rect x="${-pad}" y="${-pad}" width="${b.width+2*pad}" height="${b.depth+2*pad}" fill="#f4f0e7"/>${floor.rooms.map(r=>`<polygon points="${r.polygon.map(p=>p.join(',')).join(' ')}" fill="${roomColor(r.category)}" opacity=".7"/>`).join('')}${state.showFurniture?window.FurnitureView.svg(window.FurnitureView.itemsForFloor(state.furniture,floor.id),esc):''}${floor.walls.map(w=>`<line x1="${w.start[0]}" y1="${w.start[1]}" x2="${w.end[0]}" y2="${w.end[1]}" stroke="#535850" stroke-width="${w.thickness||10}"/>`).join('')}${roomNames}${outlets.map(p=>`<g class="circuit-terminal" data-point-id="${esc(p.id)}" tabindex="0" role="button" aria-label="${esc(p.id)} ${esc(rooms.get(p.space_id)?.name)}" transform="translate(${p.position[0]} ${p.position[1]})"><circle r="13" fill="${esc(data.point_types[p.type]?.render_color||'#4a7b74')}"/><text y="4">${esc(data.point_types[p.type]?.symbol||'S')}</text></g>`).join('')}<g class="circuit-panel" transform="translate(${panel.position[0]} ${panel.position[1]})"><rect x="-17" y="-18" width="34" height="36" rx="5"/><text y="5">盤</text></g></svg>`;
+    target.querySelector('#circuitTopology').innerHTML=`<div class="circuit-title"><b>全室插座總覽</b><span>${outlets.length} 個圖面插座／220V 點位 · ${floor.rooms.length} 個空間</span></div><p class="micro">圖面依原始插座配置分布。選擇下方迴路可查看各點和電箱的示意連線；燈具可在 2D／3D 開啟佈線或選擇照明迴路。</p><div class="circuit-picker-overview">${data.circuits.map(c=>`<button type="button" data-circuit-id="${esc(c.id)}">${esc(c.name)} <small>${data.points.filter(p=>p.circuit_id===c.id).length} 點</small></button>`).join('')}</div>`;
+    const pick=e=>{const button=e.target.closest('[data-circuit-id]');if(button){state.selectedCircuitId=button.dataset.circuitId;window.renderElectricalExperience(state);}};
+    target.querySelector('#circuitTopology').addEventListener('click',pick);
+    canvas.addEventListener('click',e=>{const point=e.target.closest('[data-point-id]');if(point)selectPoint(point.dataset.pointId);});
+    canvas.addEventListener('keydown',e=>{const point=e.target.closest('[data-point-id]');if(point&&['Enter',' '].includes(e.key)){e.preventDefault();selectPoint(point.dataset.pointId);}});
+    target.querySelector('#electricalDetails').innerHTML='<h3>全室插座配置</h3><p>先顯示所有房間的插座位置；選擇迴路後可查看拓樸及走線檢查。</p>';
+  }
+
   function render(state,floor,canvas,target,selectPoint) {
+    if(state.selectedCircuitId==='all'||!state.selectedCircuitId){renderOverview(state,floor,canvas,target,selectPoint);return;}
     const data=state.electrical,circuit=data.circuits.find(c=>c.id===state.selectedCircuitId)||data.circuits[0];
     const panel=data.distribution_panel,points=data.points.filter(p=>p.circuit_id===circuit.id),loads=(data.appliance_connections||[]).filter(a=>a.circuit_id===circuit.id);
     const rooms=new Map(floor.rooms.map(r=>[r.id,r])),linked=new Map();for(const load of loads)if(load.point_id){const a=linked.get(load.point_id)||[];a.push(load);linked.set(load.point_id,a);}
@@ -69,12 +94,12 @@ window.ElectricalCircuitView = (() => {
     topology.innerHTML=`<div class="circuit-title"><b>${esc(panel.name)} → ${esc(circuit.name)}</b><span>${esc(circuit.voltage)} V · ${typeof circuit.conductor_mm2==='number'?`${esc(circuit.conductor_mm2)} mm²`:'線徑待確認'}</span></div><p class="micro">${points.length} 個圖面點位 · ${loads.length} 件電器 · 最遠圖面路徑：${distance}</p>
       <div class="circuit-tree"><div class="tree-root">配電箱 ${esc(panel.id)}<small>主臥床左側，座標待量測</small></div><div class="tree-branch">分路 ${esc(circuit.id)}<small>${esc(circuit.status)} · ${typeof circuit.breaker_a==='number'?`斷路器 ${esc(circuit.breaker_a)} A`:'斷路器待確認'}</small></div>${[...grouped].map(([roomId,pp])=>`<details open><summary>${esc(rooms.get(roomId)?.name||roomId)} · ${pp.length} 點</summary>${pp.map(p=>`<button type="button" data-point-id="${esc(p.id)}">${esc(p.id)} · ${esc(data.point_types[p.type]?.label||p.type)}${linked.has(p.id)?`<small>→ ${esc(linked.get(p.id).map(a=>a.name).join('、'))}（圖面推定）</small>`:''}</button>`).join('')}</details>`).join('')}${unlinked.length?`<details open><summary>尚無實際出線點 · ${unlinked.length} 件</summary>${unlinked.map(a=>`<button type="button" data-load-id="${esc(a.id)}">${esc(a.name)}<small>${esc(a.link_status)}</small></button>`).join('')}</details>`:''}${controlGroups.length?`<details><summary>燈控群組 · ${controlGroups.length} 組</summary>${controlGroups.map(g=>`<div class="tree-control">${esc(g.id)} · ${g.point_ids.filter(id=>points.some(p=>p.id===id)).length} 燈</div>`).join('')}</details>`:''}</div>
       <div class="circuit-audit"><h4>走線檢查</h4><p class="micro">${esc(data.route_preview.note)}</p>${checks.length?`<ul>${checks.map(v=>`<li>${esc(v)}</li>`).join('')}</ul>`:'<p>資料未發現可自動判定的缺口，仍須按實際管路與負載覆核。</p>'}<p>電箱及未定點位先依示意座標標示。線徑、壓降、漏電與斷路器匹配均需現場資料才能審核。參考：<a href="https://law.moea.gov.tw/LawContent.aspx?id=FL011045" target="_blank" rel="noopener noreferrer">經濟部用戶用電設備裝置規則</a>。</p></div>
-      <details class="circuit-picker"><summary>切換其他迴路（共 ${data.circuits.length} 組）</summary>${data.circuits.map(c=>`<button type="button" data-circuit-id="${esc(c.id)}" class="${c.id===circuit.id?'is-current':''}">${esc(c.name)} <small>${data.points.filter(p=>p.circuit_id===c.id).length} 點</small></button>`).join('')}</details>`;
+      <details class="circuit-picker"><summary>切換其他迴路（共 ${data.circuits.length} 組）</summary><button type="button" data-circuit-id="all">全室插座總覽</button>${data.circuits.map(c=>`<button type="button" data-circuit-id="${esc(c.id)}" class="${c.id===circuit.id?'is-current':''}">${esc(c.name)} <small>${data.points.filter(p=>p.circuit_id===c.id).length} 點</small></button>`).join('')}</details>`;
     const showLoad=id=>{const a=loads.find(v=>v.id===id);if(!a)return;target.querySelector('#electricalDetails').innerHTML=`<h3>${esc(a.name)}</h3><dl><div><dt>迴路</dt><dd>${esc(circuit.name)}</dd></div><div><dt>定位</dt><dd>${esc(a.link_status)}</dd></div><div><dt>點位</dt><dd>${esc(a.point_id||'尚未對應')}</dd></div><div><dt>來源</dt><dd>${esc(a.source)}</dd></div></dl>`;};
     canvas.addEventListener('click',e=>{const point=e.target.closest('[data-point-id]'),load=e.target.closest('[data-load-id]');if(point)selectPoint(point.dataset.pointId);else if(load)showLoad(load.dataset.loadId);});
     canvas.addEventListener('keydown',e=>{if(!['Enter',' '].includes(e.key))return;const node=e.target.closest('[data-point-id],[data-load-id]');if(node){e.preventDefault();if(node.dataset.pointId)selectPoint(node.dataset.pointId);else showLoad(node.dataset.loadId);}});
     topology.addEventListener('click',e=>{const circuitButton=e.target.closest('[data-circuit-id]'),point=e.target.closest('[data-point-id]'),load=e.target.closest('[data-load-id]');if(circuitButton){state.selectedCircuitId=circuitButton.dataset.circuitId;window.renderElectricalExperience(state);}else if(point)selectPoint(point.dataset.pointId);else if(load)showLoad(load.dataset.loadId);});
     target.querySelector('#electricalDetails').innerHTML=`<h3>迴路拓樸</h3><p>${esc(circuit.name)}由 ${esc(panel.name)} 出線。點選圖面端點、下方點位或負載查看詳情。</p>`;
   }
-  return {render,router};
+  return {render,router,previewRoutes};
 })();
