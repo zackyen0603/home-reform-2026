@@ -502,8 +502,8 @@ points:
   space_id: 4f-main-bedroom
   circuit_id: C-OUT-4F-01
   position:
-  - 410.0
-  - 76.7
+  - 414
+  - 81
   - 30
   source_id: SRC-4F-OUTLETS
   status: needs-point-verification
@@ -535,8 +535,8 @@ points:
   space_id: 4f-main-bedroom
   circuit_id: C-OUT-4F-01
   position:
-  - 410.3
-  - 144.5
+  - 408
+  - 137
   - 30
   source_id: SRC-4F-OUTLETS
   status: needs-point-verification
@@ -601,8 +601,8 @@ points:
   space_id: 4f-kitchen
   circuit_id: C-OUT-4F-03
   position:
-  - 1018.9
-  - 332.1
+  - 1035
+  - 329
   - 30
   source_id: SRC-4F-OUTLETS
   status: needs-point-verification
@@ -895,8 +895,8 @@ points:
   space_id: 4f-main-bedroom
   circuit_id: C-LGT-4F-01
   position:
-  - 332.6
-  - 45.6
+  - 397
+  - 45
   - 280
   source_id: SRC-4F-LIGHTS
   status: drawing-extracted
@@ -907,8 +907,8 @@ points:
   space_id: 4f-main-bedroom
   circuit_id: C-LGT-4F-01
   position:
-  - 415.8
-  - 64.0
+  - 468
+  - 58
   - 280
   source_id: SRC-4F-LIGHTS
   status: drawing-extracted
@@ -919,8 +919,8 @@ points:
   space_id: 4f-main-bedroom
   circuit_id: C-LGT-4F-01
   position:
-  - 57.5
-  - 68.4
+  - 67
+  - 81
   - 280
   source_id: SRC-4F-LIGHTS
   status: drawing-extracted
@@ -979,8 +979,8 @@ points:
   space_id: 4f-main-bedroom
   circuit_id: C-LGT-4F-01
   position:
-  - 332.7
-  - 118.2
+  - 336
+  - 44
   - 280
   source_id: SRC-4F-LIGHTS
   status: drawing-extracted
@@ -991,8 +991,8 @@ points:
   space_id: 4f-main-bedroom
   circuit_id: C-LGT-4F-01
   position:
-  - 416.1
-  - 124.2
+  - 470
+  - 126
   - 280
   source_id: SRC-4F-LIGHTS
   status: drawing-extracted
@@ -1003,8 +1003,8 @@ points:
   space_id: 4f-main-bedroom
   circuit_id: C-LGT-4F-01
   position:
-  - 57.4
-  - 137.7
+  - 65
+  - 167
   - 280
   source_id: SRC-4F-LIGHTS
   status: drawing-extracted
@@ -1015,8 +1015,8 @@ points:
   space_id: 4f-main-bedroom
   circuit_id: C-LGT-4F-01
   position:
-  - 332.8
-  - 179.6
+  - 355
+  - 206
   - 280
   source_id: SRC-4F-LIGHTS
   status: drawing-extracted
@@ -1027,8 +1027,8 @@ points:
   space_id: 4f-main-bedroom
   circuit_id: C-LGT-4F-01
   position:
-  - 416.1
-  - 183.8
+  - 466
+  - 211
   - 280
   source_id: SRC-4F-LIGHTS
   status: drawing-extracted
@@ -1051,8 +1051,8 @@ points:
   space_id: 4f-main-bedroom
   circuit_id: C-LGT-4F-01
   position:
-  - 57.6
-  - 207.1
+  - 45
+  - 284
   - 280
   source_id: SRC-4F-LIGHTS
   status: drawing-extracted
@@ -1111,8 +1111,8 @@ points:
   space_id: 4f-living-dining
   circuit_id: C-LGT-4F-02
   position:
-  - 533.7
-  - 305.3
+  - 537
+  - 304
   - 280
   source_id: SRC-4F-LIGHTS
   status: drawing-extracted
@@ -1135,8 +1135,8 @@ points:
   space_id: 4f-main-bedroom
   circuit_id: C-LGT-4F-01
   position:
-  - 325
-  - 281.3
+  - 392
+  - 303
   - 280
   source_id: SRC-4F-LIGHTS
   status: drawing-extracted
@@ -1196,8 +1196,8 @@ points:
   space_id: 4f-secondary-bedroom
   circuit_id: C-LGT-4F-01
   position:
-  - 424.0
-  - 424.5
+  - 471
+  - 401
   - 280
   source_id: SRC-4F-LIGHTS
   status: drawing-extracted
@@ -1232,8 +1232,8 @@ points:
   space_id: 4f-secondary-bedroom
   circuit_id: C-LGT-4F-01
   position:
-  - 423.9
-  - 522.6
+  - 468
+  - 509
   - 280
   source_id: SRC-4F-LIGHTS
   status: drawing-extracted
@@ -1280,8 +1280,8 @@ points:
   space_id: 4f-secondary-bedroom
   circuit_id: C-LGT-4F-01
   position:
-  - 325.9
-  - 562.5
+  - 327
+  - 566
   - 280
   source_id: SRC-4F-LIGHTS
   status: drawing-extracted
@@ -1328,8 +1328,8 @@ points:
   space_id: 4f-main-bedroom
   circuit_id: C-LGT-4F-01
   position:
-  - 194.0
-  - 104.0
+  - 214
+  - 181
   - 280
   source_id: SRC-4F-LIGHTS
   status: drawing-extracted
@@ -1340,8 +1340,8 @@ points:
   space_id: 4f-living-dining
   circuit_id: C-LGT-4F-02
   position:
-  - 595.4
-  - 154.7
+  - 606
+  - 127
   - 280
   source_id: SRC-4F-LIGHTS
   status: drawing-extracted
@@ -1352,8 +1352,8 @@ points:
   space_id: 4f-secondary-bedroom
   circuit_id: C-LGT-4F-01
   position:
-  - 255.1
-  - 492.5
+  - 300
+  - 461
   - 280
   source_id: SRC-4F-LIGHTS
   status: drawing-extracted
