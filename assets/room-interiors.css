@@ -1,0 +1,10 @@
+.interior-object{cursor:pointer;outline:none;filter:drop-shadow(0 2px 2px #24292642)}
+.interior-object:hover,.interior-object:focus-visible{filter:drop-shadow(0 0 5px #294c37)}
+.interior-sidebar{margin-top:17px;border-top:1px solid var(--line);padding-top:12px}
+.interior-sidebar h4{margin:0 0 8px;font-size:14px}
+.interior-materials{display:grid;gap:5px;margin-bottom:10px;font-size:11px;color:#526057}
+.interior-materials div{display:flex;align-items:center;gap:7px}
+.interior-materials i{width:16px;height:16px;flex:none;border:1px solid #9f9b92;border-radius:3px}
+.interior-entry{display:flex;justify-content:space-between;gap:6px;padding:5px 0;border-top:1px solid #e2ded5;font-size:11px}
+.interior-entry small{color:var(--muted);white-space:nowrap}
+.interior-sidebar .micro{margin:9px 0 0;line-height:1.5}
