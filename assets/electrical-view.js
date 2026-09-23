@@ -23,10 +23,11 @@ window.renderElectricalExperience = function renderElectricalExperience(state) {
   const escapeHtml = value => String(value ?? '').replace(/[&<>"']/g, char => ({'&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;'}[char]));
   const selectedId = state.electricalSelectedId || points[0]?.id;
   const view = state.electricalView || '2d';
+  const selectedCircuitId = state.selectedCircuitId || electrical.circuits[0].id;
   const roomFilter = state.electricalRoom || 'all';
   const kindFilter = state.electricalKind || 'all';
   const search = state.electricalSearch || '';
-  const matching = point => (roomFilter === 'all' || point.space_id === roomFilter)
+  const matching = point => view === 'circuits' ? point.circuit_id === selectedCircuitId : (roomFilter === 'all' || point.space_id === roomFilter)
     && (kindFilter === 'all' || typeOf(point) === kindFilter || point.type === kindFilter)
     && (!state.electricalSearch || [point.id, titleOf(point), rooms.get(point.space_id)?.name, circuits.get(point.circuit_id)?.name]
       .some(value => String(value || '').toLocaleLowerCase().includes(state.electricalSearch.toLocaleLowerCase())));
@@ -39,22 +40,24 @@ window.renderElectricalExperience = function renderElectricalExperience(state) {
     <div class="section-heading"><div><h2>四樓燈具與插座</h2><p>按空間與種類查找；點選平面圖或清單可查看點位、回路與高度。</p></div></div>
     <div class="electrical-summary" aria-label="各類點位數量">${stats}</div>
     <div class="electrical-toolbar">
-      <label>空間<select id="electricalRoom"><option value="all">全部空間</option>${roomOptions}</select></label>
+      ${view === 'circuits' ? `<label>預覽迴路<select id="electricalCircuit">${electrical.circuits.map(c=>`<option value="${escapeHtml(c.id)}" ${c.id===selectedCircuitId?'selected':''}>${escapeHtml(c.name)}</option>`).join('')}</select></label>` : `<label>空間<select id="electricalRoom"><option value="all">全部空間</option>${roomOptions}</select></label>
       <label>種類<select id="electricalKind"><option value="all">全部點位</option><option value="outlets">全部插座</option><option value="general_outlet">一般插座</option><option value="optional_outlet">選配插座</option><option value="high_level_outlet">高位插座</option><option value="planned_220v">220V 規劃</option><option value="lighting">全部燈具</option><option value="downlight">崁燈</option><option value="pendant">吊燈</option><option value="ceiling_light">吸頂燈</option></select></label>
-      <label>搜尋點位<input id="electricalSearch" type="search" placeholder="ID、空間或回路" value="${escapeHtml(search)}"></label>
+      <label>搜尋點位<input id="electricalSearch" type="search" placeholder="ID、空間或回路" value="${escapeHtml(search)}"></label>`}
       <label class="furniture-toggle"><input id="electricalFurnitureToggle" type="checkbox" ${state.showFurniture ? 'checked' : ''}> 顯示家具</label>
       <div class="electrical-view-switch" role="group" aria-label="視圖模式">
         <button type="button" data-electrical-view="2d" aria-pressed="${view === '2d'}">2D</button>
         <button type="button" data-electrical-view="3d" aria-pressed="${view === '3d'}">3D 俯瞰</button>
         <button type="button" data-electrical-view="walk" aria-pressed="${view === 'walk'}">第一人稱</button>
+        <button type="button" data-electrical-view="circuits" aria-pressed="${view === 'circuits'}">迴路拓樸</button>
       </div>
     </div>
     <div class="electrical-workspace">
       <div class="electrical-map-wrap">
         <div id="electricalCanvas" class="electrical-canvas" aria-label="四樓電力配置圖"></div>
-        <div class="electrical-map-help">${view === 'walk' ? '桌面：WASD／方向鍵移動，拖曳轉向；手機：左側方向鍵移動、右半畫面拖曳轉向。點選標記查看資料。' : view === '3d' ? '拖曳旋轉；滾輪或右側 ＋／－ 按鈕縮放。點選標記查看資料。' : '點選標記查看資料；手機可左右滑動平面圖。座標為規劃示意，非施工放樣。'}</div>
+        <div class="electrical-map-help">${view === 'circuits' ? '從主臥電箱計算平面通達示意。彩線不代表實際管路或導線長度；選擇迴路及端點查看檢查結果。' : view === 'walk' ? '桌面：WASD／方向鍵移動，拖曳轉向；手機：左側方向鍵移動、右半畫面拖曳轉向。點選標記查看資料。' : view === '3d' ? '拖曳旋轉；滾輪或右側 ＋／－ 按鈕縮放。點選標記查看資料。' : '點選標記查看資料；手機可左右滑動平面圖。座標為規劃示意，非施工放樣。'}</div>
       </div>
       <aside class="electrical-inspector"><div id="electricalDetails" aria-live="polite"></div>
+        ${view === 'circuits' ? '<div id="circuitTopology"></div>' : ''}
         <h3>點位清單 <small>${visible.length}／${points.length}</small></h3>
         <div class="electrical-point-list" id="electricalPointList">${visible.map(point => `<button type="button" class="electrical-list-item" data-point-id="${escapeHtml(point.id)}"><i style="background:${escapeHtml(colorOf(point))}"></i><span><b>${escapeHtml(point.id)}</b><small>${escapeHtml(rooms.get(point.space_id)?.name || point.space_id)} · ${escapeHtml(titleOf(point))}</small></span></button>`).join('') || '<p class="micro">此篩選條件沒有點位。</p>'}</div>
       </aside>
@@ -84,12 +87,15 @@ window.renderElectricalExperience = function renderElectricalExperience(state) {
     target.querySelectorAll('[data-point-id]').forEach(el=>el.classList.remove('is-selected'));
     target.querySelectorAll('[data-furniture-id]').forEach(el=>el.classList.toggle('is-selected',el.dataset.furnitureId===id));
   }
-  target.querySelector('#electricalRoom').value = roomFilter;
-  target.querySelector('#electricalKind').value = kindFilter;
-  target.querySelector('#electricalRoom').addEventListener('change', event => {state.electricalRoom = event.target.value; window.renderElectricalExperience(state);});
-  target.querySelector('#electricalKind').addEventListener('change', event => {state.electricalKind = event.target.value; window.renderElectricalExperience(state);});
+  if (view === 'circuits') target.querySelector('#electricalCircuit').addEventListener('change',event=>{state.selectedCircuitId=event.target.value;window.renderElectricalExperience(state);});
+  else {
+    target.querySelector('#electricalRoom').value = roomFilter;
+    target.querySelector('#electricalKind').value = kindFilter;
+    target.querySelector('#electricalRoom').addEventListener('change', event => {state.electricalRoom = event.target.value; window.renderElectricalExperience(state);});
+    target.querySelector('#electricalKind').addEventListener('change', event => {state.electricalKind = event.target.value; window.renderElectricalExperience(state);});
+  }
   target.querySelector('#electricalFurnitureToggle').addEventListener('change', event => {state.showFurniture = event.target.checked; window.renderElectricalExperience(state); if (typeof renderFloorplan === 'function') renderFloorplan();});
-  target.querySelector('#electricalSearch').addEventListener('input', event => {
+  target.querySelector('#electricalSearch')?.addEventListener('input', event => {
     state.electricalSearch = event.target.value;
     // Keep the map and list in sync without stealing focus from the search box.
     const cursor = event.target.selectionStart;
@@ -103,9 +109,10 @@ window.renderElectricalExperience = function renderElectricalExperience(state) {
   }));
   list.addEventListener('click', event => {const button = event.target.closest('[data-point-id]'); if (button) selectPoint(button.dataset.pointId);});
 
-  if (view === '2d') render2D();
+  if (view === 'circuits') window.ElectricalCircuitView.render(state,floor,canvas,target,selectPoint);
+  else if (view === '2d') render2D();
   else render3D(view === 'walk');
-  selectPoint(visible.some(point => point.id === selectedId) ? selectedId : visible[0]?.id);
+  if (view !== 'circuits') selectPoint(visible.some(point => point.id === selectedId) ? selectedId : visible[0]?.id);
   state.electricalCleanup = () => teardown.splice(0).forEach(dispose => dispose());
 
   function render2D() {
