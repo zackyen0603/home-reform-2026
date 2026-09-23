@@ -1,0 +1,19 @@
+.electrical-canvas.is-circuit{background:#f4f0e7}
+.circuit-route{fill:none;stroke-width:3.2;stroke-linecap:round;stroke-linejoin:round;opacity:.5;vector-effect:non-scaling-stroke;pointer-events:none}
+.circuit-room{fill:#636b61;font-size:13px;text-anchor:middle;pointer-events:none}
+.circuit-terminal,.circuit-load{cursor:pointer;outline:none}
+.circuit-terminal circle,.circuit-load rect{stroke:#fff;stroke-width:2.5;vector-effect:non-scaling-stroke;filter:drop-shadow(0 1px 2px #40423f66)}
+.circuit-terminal text,.circuit-load text,.circuit-panel text{fill:#fff;font-size:10px;font-weight:800;text-anchor:middle;pointer-events:none}
+.circuit-load text{fill:#3e2e1f}
+.circuit-terminal:hover circle,.circuit-terminal:focus-visible circle,.circuit-terminal.is-selected circle,.circuit-load:hover rect,.circuit-load:focus-visible rect{stroke:#152b23;stroke-width:5}
+.circuit-panel rect{fill:#263e37;stroke:#fff;stroke-width:2;vector-effect:non-scaling-stroke}
+.circuit-title{display:grid;gap:5px;margin:16px 0 4px;padding:12px;border-radius:10px;background:#e8eee8;font-size:13px}
+.circuit-title span{color:#53675a;font-size:12px}
+.circuit-tree{display:grid;gap:7px;margin:12px 0}.circuit-tree .tree-root,.circuit-tree .tree-branch{padding:9px 11px;border-radius:9px;background:#eff1ea;border-left:4px solid #647967;font-size:12px;font-weight:700}
+.circuit-tree .tree-branch{margin-left:12px;border-color:#b27d49}.circuit-tree small{display:block;color:#68736c;font-size:10px;font-weight:400}
+.circuit-tree details{margin-left:23px;padding:5px 7px;border-left:2px solid #c2c9bb}.circuit-tree summary{cursor:pointer;font-size:12px;font-weight:700}
+.circuit-tree button{display:block;width:100%;margin:5px 0;padding:5px 7px;border:1px solid #e1e1d9;border-radius:7px;background:#fff;text-align:left;font-size:11px;cursor:pointer;overflow-wrap:anywhere}
+.circuit-tree button:hover,.circuit-tree button.is-selected{background:#eaf2e8}.tree-control{margin:4px 0 4px 8px;font-size:11px;color:#596860}
+.circuit-audit{margin:14px 0;padding:11px;border:1px solid #dfd4bd;border-radius:10px;background:#faf5e9;font-size:11px;color:#4c493e}.circuit-audit h4{margin:0 0 6px;font-size:14px}.circuit-audit p{margin:6px 0}.circuit-audit ul{margin:8px 0;padding-left:18px}.circuit-audit li{margin:5px 0}
+.circuit-picker{margin:12px 0}.circuit-picker summary{cursor:pointer;font-weight:700;font-size:12px}.circuit-picker button{display:flex;justify-content:space-between;gap:8px;width:100%;padding:7px;margin:4px 0;border:1px solid #e0e2db;border-radius:7px;background:#fff;text-align:left;font-size:11px;cursor:pointer}.circuit-picker button.is-current{background:#e5efe6;border-color:#95ac98}.circuit-picker small{white-space:nowrap;color:#64716a}
+@media(max-width:620px){.electrical-view-switch{width:100%}.electrical-view-switch button{font-size:12px}.circuit-room{font-size:18px}}
