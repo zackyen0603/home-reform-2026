@@ -20,7 +20,9 @@ window.FurnitureView = (() => {
   };
   const svg = (items, escapeHtml) => items.map(item => {
     const [x,y] = item.position, [w,d] = item.size;
-    const stripe = ['bed','sofa'].includes(item.kind)
+    const stripe = item.kind === 'television'
+      ? `<rect x="${-w/2}" y="${-d/2}" width="${w}" height="${d}" rx="3" fill="#15191c" stroke="#68716d" stroke-width="2"/><rect x="${-w*.45}" y="${-d/2-1}" width="${w*.9}" height="${Math.max(1,d*.18)}" fill="#6f8b88" opacity=".65"/><text y="4" text-anchor="middle" font-size="12" fill="#dbe8e2">75\"</text>`
+      : ['bed','sofa'].includes(item.kind)
       ? `<rect x="${-w*.42}" y="${-d*.36}" width="${w*.84}" height="${d*.21}" rx="5" fill="#fbf8ed" opacity=".8"/>`
       : ['kitchen_base','kitchen_wall'].includes(item.kind)
         ? `<line x1="${-w/2+w*.32}" y1="${-d/2}" x2="${-w/2+w*.32}" y2="${d/2}" stroke="#8a6a4b" stroke-width="2"/><line x1="${w/2-w*.32}" y1="${-d/2}" x2="${w/2-w*.32}" y2="${d/2}" stroke="#8a6a4b" stroke-width="2"/>`
@@ -57,6 +59,11 @@ window.FurnitureView = (() => {
       };
       const legs = (top, offset=9) => {for(const a of [-1,1])for(const b of [-1,1])box(5,top,5,a*(w/2-offset),top/2,b*(d/2-offset),dark);};
       switch(item.kind) {
+        case 'television':
+          box(w,h,d,0,h/2,0,0x171b1e);
+          box(w-6,h-6,1.2,0,h/2,d/2+1,0x0b1013);
+          box(w*.18,3,4,0,-1,0,dark);
+          break;
         case 'bed':
           box(w,16,d,0,18,0);box(w-7,17,d-13,0,35,0,linen);
           box(w-15,27,8,0,49,-d/2+4,wood);
