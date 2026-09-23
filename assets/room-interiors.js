@@ -6,7 +6,7 @@ window.RoomInteriors = (() => {
   const roomStyle = (data,id) => (data?.rooms || []).find(room=>room.room_id===id);
   const color = (data,id,fallback='#d9d2c5') => materials(data)[id]?.color || fallback;
   const opacity = (data,id) => Number(materials(data)[id]?.opacity ?? 1);
-  const objects = (data,floorId) => (data?.rooms||[]).filter(r=>r.floor_id===floorId).flatMap(r=>(r.objects||[]).map(o=>({...o,room_id:r.room_id})));
+  const objects = (data,floorId) => {const items=(data?.rooms||[]).filter(r=>r.floor_id===floorId).flatMap(r=>(r.objects||[]).map(o=>({...o,room_id:r.room_id})));return window.FurnitureView?.applyOverrides?window.FurnitureView.applyOverrides(items):items;};
   const footprint = o => {const [w,d]=o.size,rotated=Math.abs(o.rotation_deg||0)%180===90;return [rotated?d:w,rotated?w:d];};
   const esc = value => String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
@@ -72,7 +72,7 @@ window.RoomInteriors = (() => {
         :t==='vanity'?`<rect x="${-w/2}" y="${-d/2}" width="${w}" height="${d}" rx="2" fill="${fill}" stroke="#8b796b" stroke-width="2"/><ellipse cx="0" cy="0" rx="${w*.29}" ry="${d*.27}" fill="#cad5d2" stroke="#9ca5a0"/>`
         :t==='mirror_cabinet'?`<rect x="${-w/2}" y="${-d/2}" width="${w}" height="${d}" fill="${fill}" stroke="#7e8986" stroke-width="2"/><line x1="0" y1="${-d/2}" x2="0" y2="${d/2}" stroke="#fff"/>`
         :`<rect x="${-w/2}" y="${-d/2}" width="${w}" height="${d}" rx="2" fill="${fill}" stroke="#5d625c" stroke-width="1.5"/>`;
-      return `<g class="interior-object kind-${esc(t)}" data-interior-id="${esc(o.id)}" tabindex="0" role="button" aria-label="${esc(o.name)}" transform="translate(${x} ${y}) rotate(${o.rotation_deg||0})"><title>${esc(o.name)} · ${o.size.join(' × ')} cm</title>${shape}</g>`;
+      return `<g class="interior-object kind-${esc(t)}" data-interior-id="${esc(o.id)}" data-furniture-id="${esc(o.id)}" tabindex="0" role="button" aria-label="${esc(o.name)}" transform="translate(${x} ${y}) rotate(${o.rotation_deg||0})"><title>${esc(o.name)} · ${o.size.join(' × ')} cm</title>${shape}</g>`;
     }).join('');
   }
 
@@ -88,7 +88,7 @@ window.RoomInteriors = (() => {
       const mesh=new THREE.Mesh(new THREE.ShapeGeometry(shape),material3D(THREE,data,zone.material));mesh.rotation.x=Math.PI/2;mesh.position.y=1;parent.add(mesh);
     }
     for(const o of objects(data,floor.id)){
-      const [w,d,h]=o.size,[x,z,base]=o.position,group=new THREE.Group();group.position.set(x,0,z);group.rotation.y=-(o.rotation_deg||0)*Math.PI/180;group.userData.interiorId=o.id;parent.add(group);
+      const [w,d,h]=o.size,[x,z,base]=o.position,group=new THREE.Group();group.position.set(x,0,z);group.rotation.y=-(o.rotation_deg||0)*Math.PI/180;group.userData.interiorId=o.id;group.userData.furnitureId=o.id;parent.add(group);
       const main=material3D(THREE,data,o.material),frame=material3D(THREE,data,o.frame_material||o.material);
       const part=(bw,bh,bd,bx,by,bz,mat=main)=>{const mesh=box(group,THREE,bw,bh,bd,bx,by,bz,mat,o.id);selectable.push(mesh);return mesh;};
       switch(o.kind){
