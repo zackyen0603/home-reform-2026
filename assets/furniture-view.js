@@ -2,7 +2,14 @@
 
 // Rendering helpers only. All identities, dimensions and placement live in furniture.yaml.
 window.FurnitureView = (() => {
-  const itemsForFloor = (data, floorId) => floorId === data?.metadata?.floor_id ? data.items || [] : [];
+  const overrideKey='home-reform:furniture-overrides:v1';
+  const readOverrides=()=>{try{return JSON.parse(localStorage.getItem(overrideKey)||'{}')||{};}catch{return {};}};
+  const applyOverrides=items=>{const overrides=readOverrides();return (items||[]).map(item=>{const patch=overrides[item.id];return patch?{...item,...patch,position:patch.position||item.position,size:patch.size||item.size}:item;});};
+  const itemsForFloor = (data, floorId) => floorId === data?.metadata?.floor_id ? applyOverrides(data.items||[]) : [];
+  const saveOverride=(id,patch)=>{const all=readOverrides();all[id]={...(all[id]||{}),...patch};localStorage.setItem(overrideKey,JSON.stringify(all));};
+  const resetOverride=id=>{const all=readOverrides();delete all[id];localStorage.setItem(overrideKey,JSON.stringify(all));};
+  const resetOverrides=()=>localStorage.removeItem(overrideKey);
+  const overrideCount=()=>Object.keys(readOverrides()).length;
   const footprint = item => {
     const [x, y] = item.position;
     const [width, depth] = item.size;
@@ -107,9 +114,10 @@ window.FurnitureView = (() => {
   const detailHtml = (item,escape) => {const [w,d,h]=item.size;return `<strong>${escape(item.name)}</strong><dl><div><dt>尺寸</dt><dd>${w} × ${d} × ${h} cm</dd></div><div><dt>採購</dt><dd>${escape(item.procurement_status)}</dd></div><div><dt>品牌</dt><dd>${escape(item.brand)}</dd></div><div><dt>預算</dt><dd>NT$ ${Number(item.budget_twd || 0).toLocaleString()}</dd></div><div><dt>座標</dt><dd>${item.position.join(', ')} cm；旋轉 ${item.rotation_deg || 0}°</dd></div><div><dt>尺寸依據</dt><dd>${escape(item.dimension_basis)}</dd></div><div><dt>來源</dt><dd>家具購買規劃總表，第 ${item.source_row} 列</dd></div></dl>${item.note ? `<p>${escape(item.note)}</p>` : ''}`;};
   function bind(state, root) {
     const select = id => {
-      const item = itemsForFloor(state.furniture, state.floorId).find(value => value.id === id);
+      const item = [...itemsForFloor(state.furniture,state.floorId),...(window.RoomInteriors?.objects(state.interiors,state.floorId)||[])].find(value => value.id === id);
       if (!item) return;
       state.selectedFurnitureId = id;
+      state.onFurnitureSelected?.(item);
       const escape = value => String(value ?? '').replace(/[&<>"']/g,char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
       const detail = root.querySelector('#furnitureDetail');
       if (detail) detail.innerHTML = detailHtml(item,escape);
@@ -120,5 +128,5 @@ window.FurnitureView = (() => {
     if (state.selectedFurnitureId) select(state.selectedFurnitureId);
     return select;
   }
-  return {itemsForFloor,footprint,svg,add3D,sidebar,bind,detailHtml};
+  return {itemsForFloor,applyOverrides,footprint,svg,add3D,sidebar,bind,detailHtml,saveOverride,resetOverride,resetOverrides,overrideCount};
 })();
