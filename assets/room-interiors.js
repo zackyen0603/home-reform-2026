@@ -28,6 +28,24 @@ window.RoomInteriors = (() => {
     return `<g fill="#56655a" stroke="#879187" stroke-width=".7"><path d="M0 -12 V-26 M0 -20 H${w} M${w} -12 V-26 M-12 0 H-28 M-20 0 V${d} M-12 ${d} H-28"/><text x="${w/2}" y="-24" text-anchor="middle" font-size="11" stroke="none">${w} cm</text><text transform="translate(-25 ${d/2}) rotate(-90)" text-anchor="middle" font-size="11" stroke="none">${d} cm</text></g>`;
   }
 
+  // Single source for every 2D floor canvas: room polygons, furniture, finishes,
+  // wall segments, dimensions, doors, windows and open passages.
+  function svgBase(floor,options={}) {
+    const pad=options.pad??35,b=floor.bounds,rooms=(floor.rooms||[]).map(room=>{
+      const points=room.polygon.map(p=>p.join(',')).join(' '),xs=room.polygon.map(p=>p[0]),ys=room.polygon.map(p=>p[1]),area=room.polygon.reduce((sum,p,i)=>sum+p[0]*room.polygon[(i+1)%room.polygon.length][1]-room.polygon[(i+1)%room.polygon.length][0]*p[1],0);
+      const cx=xs.reduce((a,v)=>a+v,0)/xs.length,cy=ys.reduce((a,v)=>a+v,0)/ys.length,fill=color(options.interiors,roomStyle(options.interiors,room.id)?.surfaces?.floor,'')||options.roomColor?.(room.category)||'#ded5c6';
+      const label=options.labels?`<text class="${esc(options.labelClass||'floor-room-label')}" x="${cx}" y="${cy-3}" text-anchor="middle">${esc(room.name)}${options.areaLabels?`<tspan x="${cx}" dy="14">${(Math.abs(area)/20000).toFixed(1)} m²</tspan>`:''}</text>`:'';
+      const select=options.selectRooms?`<g class="room-shape-select ${options.selectedRoomId===room.id?'is-selected':''}" data-room-id="${esc(room.id)}" tabindex="0" role="button" aria-label="選擇${esc(room.name)}立面圖">`:'';
+      return `${select}<polygon points="${points}" fill="${fill}" ${options.selectRooms?'class="room-shape"':''}/>${label}${options.selectRooms?'</g>':''}`;
+    }).join('');
+    const walls=(floor.walls||[]).map(w=>`<line class="wall-line" x1="${w.start[0]}" y1="${w.start[1]}" x2="${w.end[0]}" y2="${w.end[1]}" stroke="#535850" stroke-width="${w.thickness||10}"/>`).join('');
+    const furniture=options.showFurniture===false?'':(window.FurnitureView?.svg(window.FurnitureView.itemsForFloor(options.furniture||{items:[]},floor.id),esc)||'');
+    const fixtures=options.showFurniture===false?'':svgObjects(floor,options.interiors);
+    const zones=svgFloorZones(floor,options.interiors);
+    const roomLabels=options.labels?rooms.replace(/<polygon[^>]*\/>/g,''):'';
+    return `<svg viewBox="${-pad} ${-pad} ${b.width+pad*2} ${b.depth+pad*2}" role="img" aria-label="${esc(options.ariaLabel||floor.name||'樓層平面圖')}" ${options.preserveAspectRatio?'preserveAspectRatio="xMidYMid meet"':''}><rect x="${-pad}" y="${-pad}" width="${b.width+pad*2}" height="${b.depth+pad*2}" fill="${options.background||'#f4f0e7'}"/><g${options.sceneClass?` class="${esc(options.sceneClass)}"`:''}>${rooms}<g style="pointer-events:none">${zones}</g>${furniture}<g style="pointer-events:none">${fixtures}</g>${walls}${svgOpenings(floor)}${roomLabels}${svgDimensions(floor)}</g>${options.children||''}</svg>`;
+  }
+
   function validate(data,plan) {
     if(!data || !Array.isArray(data.rooms) || !data.materials)throw new Error('室內配置缺少 rooms 或 materials');
     const known=new Set(plan.floors.flatMap(f=>f.rooms.map(r=>`${f.id}/${r.id}`))), ids=new Set();
@@ -152,5 +170,5 @@ window.RoomInteriors = (() => {
     const finishes=[['地面',surface.floor],['一般牆面',wall.upper],['腰牆',wall.lower],...Object.entries(surface.walls||{}).filter(([side])=>side!=='default').flatMap(([side,value])=>[[`${names[side]||side}上部`,value.upper],[`${names[side]||side}下部`,value.lower]])];
     return `<div class="interior-sidebar"><h4>室內材質與設備</h4><div class="interior-materials">${finishes.filter(([,id])=>id).map(([title,id])=>`<div><i style="background:${color(data,id)}"></i>${esc(title)}：${esc(materials(data)[id]?.name||id)}</div>`).join('')}</div>${(style.objects||[]).map(o=>`<div class="interior-entry">${esc(o.name)}<small>${o.size.join(' × ')} cm</small></div>`).join('')}<p class="micro">${esc(style.reference_view?.note||'設備位置為規劃示意，請依現場確認。')}</p></div>`;
   }
-  return {validate,roomStyle,objects,color,footprint,svgFloorZones,svgObjects,svgOpenings,svgDimensions,add3D,addWalls3D,sidebar};
+  return {validate,roomStyle,objects,color,footprint,svgFloorZones,svgObjects,svgOpenings,svgDimensions,svgBase,add3D,addWalls3D,sidebar};
 })();
