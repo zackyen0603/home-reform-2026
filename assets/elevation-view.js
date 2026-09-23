@@ -41,7 +41,7 @@ window.ElevationView = (() => {
       const left=Math.max(0,side.at(o.center)-o.width/2), right=Math.min(side.length,side.at(o.center)+o.width/2);
       const sill=Math.max(0,Number(o.sill_height)||0), h=Math.max(1,Math.min(height-sill,Number(o.height)||210));
       const window=o.type==='window', stroke=window?'#698b95':'#9b765a';
-      return `<g><title>${escape(o.id)} · ${fmt(right-left)} × ${h} cm</title><rect x="${x(left)}" y="${y(sill+h)}" width="${fmt(right-left)}" height="${h}" fill="${window?'#c6d9d9':'#fffdf8'}" stroke="${stroke}" stroke-width="2"/>${window?`<line x1="${x((left+right)/2)}" y1="${y(sill)}" x2="${x((left+right)/2)}" y2="${y(sill+h)}" stroke="${stroke}"/>`:''}<text x="${x((left+right)/2)}" y="${y(sill+h/2)}" text-anchor="middle" class="elevation-label">${window?'窗':'門'}</text></g>`;
+      return `<g><title>${escape(o.id)} · ${fmt(right-left)} × ${h} cm</title><rect x="${x(left)}" y="${y(sill+h)}" width="${fmt(right-left)}" height="${h}" fill="${window?'#c6d9d9':'#fffdf8'}" stroke="${stroke}" stroke-width="2"/>${window?`<line x1="${x((left+right)/2)}" y1="${y(sill)}" x2="${x((left+right)/2)}" y2="${y(sill+h)}" stroke="${stroke}"/>`:''}<text x="${x((left+right)/2)}" y="${y(sill+h/2)}" text-anchor="middle" class="elevation-label">${window?'窗':o.type==='passage'?'無門開口':'門'}</text></g>`;
     }).join('');
     const allItems=[...items,...(window.RoomInteriors?.objects(interiors,floor.id)||[])];
     const furniture=showFurniture?allItems.filter(item=>item.room_id===room.id).map(item=>{
