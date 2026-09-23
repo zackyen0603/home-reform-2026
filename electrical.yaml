@@ -96,18 +96,18 @@ lighting_preview:
         model: flush-diffuser
 
 appliance_connections:
-  - {id: LOAD-4F-IH, name: IH 爐, circuit_id: C-220-IH, point_id: OUT-4F-V005, room_id: 4f-kitchen, position: [1169.8, 370, 90], source: "家具購買規劃總表!4", link_status: drawing-inferred}
+  - {id: LOAD-4F-IH, name: IH 爐, circuit_id: C-220-IH, point_id: OUT-4F-V005, room_id: 4f-kitchen, position: [1170, 350, 90], source: "家具購買規劃總表!4 + furniture.yaml kitchen rotation", link_status: furniture-aligned-estimate}
   - {id: LOAD-4F-BATH-MAIN-HEATER, name: 主浴暖風機, circuit_id: C-220-BATH-MAIN-HEATER, point_id: OUT-4F-V006, room_id: 4f-main-bathroom, position: [82.7, 430.8, 270], source: "家具購買規劃總表!27", link_status: drawing-inferred}
   - {id: LOAD-4F-BATH-GUEST-HEATER, name: 客浴暖風機, circuit_id: C-220-BATH-GUEST-HEATER, point_id: OUT-4F-V002, room_id: 4f-guest-bathroom, position: [1094, 101.2, 270], source: "家具購買規劃總表!26", link_status: drawing-inferred}
   - {id: LOAD-4F-AC-LIVING, name: 客餐廳冷氣, circuit_id: C-220-AC-LIVING, point_id: OUT-4F-V007, room_id: 4f-living-dining, position: [549.5, 581.9, 230], source: "electrical.yaml / intended_load", link_status: drawing-inferred}
   - {id: LOAD-4F-AC-MAIN, name: 主臥冷氣, circuit_id: C-220-AC-BEDROOMS, point_id: OUT-4F-V004, room_id: 4f-main-bedroom, position: [12.9, 219.8, 230], source: "electrical.yaml / intended_load", link_status: drawing-inferred}
   - {id: LOAD-4F-AC-SECONDARY, name: 次臥冷氣, circuit_id: C-220-AC-BEDROOMS, point_id: OUT-4F-V008, room_id: 4f-secondary-bedroom, position: [246.7, 583.3, 230], source: "electrical.yaml / intended_load", link_status: drawing-inferred}
-  - {id: LOAD-4F-DISHWASHER, name: 洗碗機, circuit_id: C-110-DISHWASHER, room_id: 4f-kitchen, position: [1150, 327, 70], source: "家具購買規劃總表!11", link_status: outlet-not-located}
+  - {id: LOAD-4F-DISHWASHER, name: 洗碗機, circuit_id: C-110-DISHWASHER, room_id: 4f-kitchen, position: [1170, 275, 70], source: "家具購買規劃總表!11 + furniture.yaml kitchen rotation", link_status: furniture-aligned-estimate}
   - {id: LOAD-4F-WASHER-DRYER, name: 洗烘衣機, circuit_id: C-110-WASHER-DRYER, room_id: 4f-storage, position: [932, 62, 100], source: "家具購買規劃總表!45", link_status: outlet-not-located}
-  - {id: LOAD-4F-ISLAND, name: 中島電器, circuit_id: C-110-ISLAND, room_id: 4f-kitchen, position: [1015, 309, 90], source: "家具購買規劃總表!7", link_status: outlet-not-located}
+  - {id: LOAD-4F-ISLAND, name: 中島電器, circuit_id: C-110-ISLAND, room_id: 4f-kitchen, position: [1000, 293, 90], source: "家具購買規劃總表!7 + furniture.yaml kitchen rotation", link_status: furniture-aligned-estimate}
   - {id: LOAD-4F-DEHUMIDIFIER, name: 吊隱式除濕機, circuit_id: C-110-DEHUMIDIFIER, room_id: 4f-storage, position: [950, 112, 245], source: "家具購買規劃總表!8", link_status: outlet-not-located}
-  - {id: LOAD-4F-FRIDGE, name: 冰箱, circuit_id: C-OUT-4F-03, room_id: 4f-kitchen, position: [922, 223, 105], source: "家具購買規劃總表!10", link_status: circuit-candidate-point-unconfirmed}
-  - {id: LOAD-4F-HOOD, name: 抽油煙機, circuit_id: C-OUT-4F-03, room_id: 4f-kitchen, position: [1170, 300, 220], source: "家具購買規劃總表!47", link_status: circuit-candidate-point-unconfirmed}
+  - {id: LOAD-4F-FRIDGE, name: 冰箱, circuit_id: C-OUT-4F-03, room_id: 4f-kitchen, position: [850, 215, 105], source: "家具購買規劃總表!10 + furniture.yaml kitchen rotation", link_status: furniture-aligned-estimate}
+  - {id: LOAD-4F-HOOD, name: 抽油煙機, circuit_id: C-OUT-4F-03, room_id: 4f-kitchen, position: [1170, 350, 220], source: "家具購買規劃總表!47 + furniture.yaml kitchen rotation", link_status: furniture-aligned-estimate}
   - {id: LOAD-4F-WATER-HEATER-1, name: 熱水器 1, circuit_id: C-220-WATER-HEATER-1, room_id: 4f-storage, source: smart-home.yaml / water-heaters, link_status: location-and-outlet-unconfirmed}
   - {id: LOAD-4F-WATER-HEATER-2, name: 熱水器 2, circuit_id: C-220-WATER-HEATER-2, room_id: 4f-storage, source: smart-home.yaml / water-heaters, link_status: location-and-outlet-unconfirmed}
 
@@ -616,7 +616,7 @@ points:
     floor: 4F
     space_id: 4f-kitchen
     circuit_id: C-220-IH
-    position: [1169.8, 370, to-confirm]
+    position: [1170, 350, to-confirm]
     source_id: SRC-4F-OUTLETS
     status: needs-load-confirmation
     intended_load: ih-cooktop
