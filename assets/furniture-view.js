@@ -45,8 +45,13 @@ window.FurnitureView = (() => {
       group.rotation.y = -(item.rotation_deg || 0) * Math.PI / 180;
       parent.add(group);
       const wood = 0xad8563, pale = 0xe6d9be, linen = 0xb4aaa0, dark = 0x6f604f;
+      const finishes=new Map();
       const box = (bw,bh,bd,bx,by,bz,color=wood) => {
-        const mesh = new THREE.Mesh(new THREE.BoxGeometry(bw,bh,bd),new THREE.MeshStandardMaterial({color,roughness:.86}));
+        const finish=color===linen||(color===pale&&['bed','sofa'].includes(item.kind))?'fabric':color===wood||color===0x9d7a55?'woodgrain':color===dark||color===0x889a9b||color===0x9ca9a5?'brushed-metal':color===0x202325?'satin':color===pale&&item.kind==='island'?'matte-stone':'satin';
+        const repeat=[Math.max(1,Math.round(bw/55)),Math.max(1,Math.round(bh/55))];
+        const key=`${color}/${finish}/${repeat.join('/')}`;
+        if(!finishes.has(key))finishes.set(key,window.RoomInteriors.surfaceMaterial(THREE,{color,finish,repeat}));
+        const mesh = new THREE.Mesh(new THREE.BoxGeometry(bw,bh,bd),finishes.get(key));
         mesh.position.set(bx,by,bz);mesh.castShadow=mesh.receiveShadow=true;mesh.userData.furnitureId=item.id;group.add(mesh);
       };
       const legs = (top, offset=9) => {for(const a of [-1,1])for(const b of [-1,1])box(5,top,5,a*(w/2-offset),top/2,b*(d/2-offset),dark);};
