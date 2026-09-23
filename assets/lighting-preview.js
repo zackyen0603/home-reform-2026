@@ -4,16 +4,20 @@
 window.LightingPreview = (() => {
   const types = new Set(['downlight', 'pendant', 'ceiling_light']);
   const defaultLightingControls = {
-    downlight: {label:'崁燈', lumens:700, color_temperature_k:4000},
+    downlight: {label:'崁燈', lumens:700, color_temperature_k:4000, beam_angle_deg:40},
     ceiling_light: {label:'吸頂燈', lumens:1800, color_temperature_k:4000},
     pendant: {label:'吊燈', lumens:800, color_temperature_k:3000}
   };
   const isFixture = point => types.has(point.type);
   const controls = (data, state, type) => ({...(defaultLightingControls[type] || {}), ...(data.lighting_preview?.fixture_types?.[type] || {}), ...(state?.lightingControls?.[type] || {})});
-  const settings = (data, point, state) => ({...controls(data, state, point.type), ...(point.fixture_visual || {})});
+  const settings = (data, point, state) => ({...(defaultLightingControls[point.type]||{}),...(data.lighting_preview?.fixture_types?.[point.type]||{}),...(point.fixture_visual||{}),...(state?.lightingControls?.[point.type]||{})});
   const isOn = (state, point) => state.lightingGroups?.[point.control_group_id] !== false;
   const ambient = (state, data) => Math.max(0, Math.min(100, Number(state.lightingAmbient ?? data.lighting_preview?.default_ambient_percent ?? 65)));
   const ambientBrightness = value => (.19 + .81 * value / 100).toFixed(3);
+  // Beam angle is the full cone angle; the footprint is projected to the floor.
+  const beamRadius = (config, point, floor) => point.type === 'downlight'
+    ? Math.max(20, Math.min(600, (Number(point.position[2]) || floor.ceiling_height || 280) * Math.tan(Math.max(10,Math.min(120,Number(config.beam_angle_deg)||40))*Math.PI/360)))
+    : Math.max(30,Number(config.beam_radius_cm)||95);
 
   // Approximate black-body color for visual preview; actual lamp spectrum is unknown.
   function kelvinColor(kelvin) {
@@ -30,13 +34,13 @@ window.LightingPreview = (() => {
     const clips = floor.rooms.map((room, i) => `<clipPath id="lighting-room-${i}"><polygon points="${room.polygon.map(p => p.join(',')).join(' ')}"/></clipPath>`).join('');
     const gradients = ['downlight','pendant','ceiling_light'].map(type => {
       const config = controls(data, state, type), color = kelvinColor(config.color_temperature_k);
-      const intensity = Math.max(.35, Math.min(1, Number(config.lumens || 700) / 1800));
-      return `<radialGradient id="lighting-wash-${type}"><stop offset="0" stop-color="${color}" stop-opacity="${(.8*intensity).toFixed(2)}"/><stop offset=".48" stop-color="${color}" stop-opacity="${(.36*intensity).toFixed(2)}"/><stop offset="1" stop-color="${color}" stop-opacity="0"/></radialGradient>`;
+      const intensity = Math.max(.2, Math.min(1, Math.sqrt((Number(config.lumens)||700)/4000)));
+      return `<radialGradient id="lighting-wash-${type}"><stop offset="0" stop-color="${color}" stop-opacity="${(.85*intensity).toFixed(2)}"/><stop offset=".48" stop-color="${color}" stop-opacity="${(.43*intensity).toFixed(2)}"/><stop offset="1" stop-color="${color}" stop-opacity="0"/></radialGradient>`;
     }).join('');
     const circles = fixtures.map(point => {
       const roomIndex = floor.rooms.findIndex(room => room.id === point.space_id);
       if (roomIndex < 0) return '';
-      const [x, y] = point.position, radius = Number(settings(data, point, state).beam_radius_cm) || 95;
+      const [x, y] = point.position, radius = beamRadius(settings(data, point, state),point,floor);
       return `<circle cx="${x}" cy="${y}" r="${radius}" fill="url(#lighting-wash-${point.type})" clip-path="url(#lighting-room-${roomIndex})"/>`;
     }).join('');
     return `<defs>${clips}${gradients}</defs><g class="lighting-washes" aria-hidden="true">${circles}</g>`;
@@ -54,13 +58,16 @@ window.LightingPreview = (() => {
     } else {
       shape = `<circle r="${radius + 2}" fill="#68716a" stroke="#fff" stroke-width="2"/><circle r="${radius - 2}" fill="${on ? color : '#bdc3bf'}" stroke="#c9c4b5" stroke-width="2"/><circle r="${radius - 7}" fill="none" stroke="#fff8" stroke-width="2"/>`;
     }
-    return `<g class="lighting-fixture ${on ? 'is-lit' : 'is-off'}" data-point-id="${esc(point.id)}" tabindex="0" role="button" aria-label="${esc(point.id + ' ' + (data.point_types[point.type]?.label || point.type) + (on ? ' 已開啟' : ' 已關閉'))}" transform="translate(${point.position[0]} ${point.position[1]})"><title>${esc(data.point_types[point.type]?.label || point.type)} · ${on ? '開' : '關'} · ${Number(config.lumens) || 0} lm · ${Number(config.color_temperature_k) || 4000}K</title>${shape}</g>`;
+    return `<g class="lighting-fixture ${on ? 'is-lit' : 'is-off'}" data-point-id="${esc(point.id)}" tabindex="0" role="button" aria-label="${esc(point.id + ' ' + (data.point_types[point.type]?.label || point.type) + (on ? ' 已開啟' : ' 已關閉'))}" transform="translate(${point.position[0]} ${point.position[1]})"><title>${esc(data.point_types[point.type]?.label || point.type)} · ${on ? '開' : '關'} · ${Number(config.lumens) || 0} lm · ${Number(config.color_temperature_k) || 4000}K${point.type==='downlight'?' · '+Number(config.beam_angle_deg||40)+'°':''}</title>${shape}</g>`;
   }
 
   function add3D(scene, data, floor, visible, state, THREE) {
     const selectable = [], active = state.lightingPreviewEnabled !== false;
-    const roomLumens = new Map();
-    for (const point of data.points.filter(isFixture)) if (active && isOn(state, point)) roomLumens.set(point.space_id, (roomLumens.get(point.space_id) || 0) + Number(settings(data, point, state).lumens || 0));
+    const roomLightData = new Map();
+    for (const point of data.points.filter(isFixture)) if (active && isOn(state, point)) {
+      const config=settings(data,point,state),lumens=Math.max(0,Number(config.lumens)||0),current=roomLightData.get(point.space_id)||{lumens:0,color:new THREE.Color(0,0,0)};
+      current.lumens+=lumens;current.color.add(new THREE.Color(kelvinColor(config.color_temperature_k)).multiplyScalar(lumens));roomLightData.set(point.space_id,current);
+    }
     const poolMaterial = new THREE.ShaderMaterial({
       uniforms: {tint:{value:new THREE.Color('#fff0c7')}, opacity:{value:.38}},
       vertexShader:'varying vec2 vUv; void main(){vUv=uv; gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}',
@@ -69,9 +76,9 @@ window.LightingPreview = (() => {
     });
     for (const point of data.points.filter(isFixture)) {
       if (!active || !isOn(state, point)) continue;
-      const config = settings(data,point,state), radius = Math.max(30, Number(config.beam_radius_cm) || 95);
+      const config = settings(data,point,state), radius = beamRadius(config,point,floor);
       const material = poolMaterial.clone();material.uniforms.tint.value = new THREE.Color(kelvinColor(config.color_temperature_k));
-      material.uniforms.opacity.value = Math.max(.12, Math.min(.62, Number(config.lumens || 700) / 3000));
+      material.uniforms.opacity.value = Math.max(.08, Math.min(.8, Math.sqrt(Math.max(100,Number(config.lumens)||100))/92));
       const pool = new THREE.Mesh(new THREE.PlaneGeometry(radius * 2, radius * 2), material);
       pool.rotation.x = -Math.PI/2;pool.position.set(point.position[0],1,point.position[1]);pool.renderOrder=1;scene.add(pool);
     }
@@ -82,7 +89,7 @@ window.LightingPreview = (() => {
       const diameter=Math.max(10,Number(config.diameter_cm)||18), radius=diameter/2;
       const group = new THREE.Group();group.position.set(x,0,z);group.userData.pointId=point.id;
       const metal=new THREE.MeshStandardMaterial({color:0x646b62,metalness:.35,roughness:.6});
-      const diffuser=new THREE.MeshStandardMaterial({color:on?0xfff5d9:0xb5bab6,emissive:color,emissiveIntensity:on?.88:0,roughness:.68,side:THREE.DoubleSide});
+      const diffuser=new THREE.MeshStandardMaterial({color:on?0xfff5d9:0xb5bab6,emissive:color,emissiveIntensity:on?Math.min(2.4,.25+(Number(config.lumens)||700)/1100):0,roughness:.46,side:THREE.DoubleSide});
       const piece=(geometry,material,y)=>{const mesh=new THREE.Mesh(geometry,material);mesh.position.y=y;mesh.userData.pointId=point.id;group.add(mesh);selectable.push(mesh);return mesh;};
       if (point.type === 'downlight') {
         piece(new THREE.CylinderGeometry(radius+2,radius+2,2,20),metal,ceiling-2);
@@ -101,14 +108,14 @@ window.LightingPreview = (() => {
       scene.add(group);
     }
     for (const room of floor.rooms) {
-      const lumens=roomLumens.get(room.id)||0;if(!lumens)continue;
+      const info=roomLightData.get(room.id);if(!info?.lumens)continue;
       const x=room.polygon.reduce((sum,p)=>sum+p[0],0)/room.polygon.length;
       const z=room.polygon.reduce((sum,p)=>sum+p[1],0)/room.polygon.length;
-      const roomLight=new THREE.PointLight(0xffe6bf,Math.min(1.4,.12+lumens/3200),Math.min(420,180+lumens/20),2);
+      const roomLight=new THREE.PointLight(info.color.multiplyScalar(1/info.lumens),Math.min(3.6,.08+Math.sqrt(info.lumens)/57),Math.min(580,180+info.lumens/28),2);
       roomLight.position.set(x,Math.max(160,(floor.ceiling_height||280)-45),z);scene.add(roomLight);
     }
     return selectable;
   }
 
-  return {isFixture,isOn,settings,controls,defaultLightingControls,ambient,ambientBrightness,kelvinColor,svgFixture,svgWash,add3D};
+  return {isFixture,isOn,settings,controls,defaultLightingControls,ambient,ambientBrightness,beamRadius,kelvinColor,svgFixture,svgWash,add3D};
 })();
