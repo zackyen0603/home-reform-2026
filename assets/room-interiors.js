@@ -79,13 +79,34 @@ window.RoomInteriors = (() => {
   function box(parent,THREE,w,h,d,x,y,z,material,id) {
     const mesh=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),material);mesh.position.set(x,y,z);mesh.userData.interiorId=id;mesh.castShadow=true;mesh.receiveShadow=true;parent.add(mesh);return mesh;
   }
-  const material3D=(THREE,data,id,options={})=>{const finish=materials(data)[id]?.finish;return new THREE.MeshStandardMaterial({color:color(data,id),roughness:finish==='reflective'?.18:.82,metalness:finish==='reflective'?.45:0,transparent:opacity(data,id)<1,opacity:opacity(data,id),side:THREE.DoubleSide,...options});};
+  const textureCache=new Map();
+  function surfaceTexture(THREE,finish,scaleCm=1,repeat=[1,1]){
+    if(!['woodgrain','matte-stone','matte-anti-slip-tile','vertical-fluted-tile','fabric','plaster'].includes(finish))return null;
+    const key=`${finish}/${scaleCm}/${repeat.join('/')}`;if(textureCache.has(key))return textureCache.get(key);
+    const canvas=document.createElement('canvas');canvas.width=canvas.height=128;const ctx=canvas.getContext('2d');if(!ctx)return null;
+    ctx.fillStyle='#f5f3ef';ctx.fillRect(0,0,128,128);
+    let seed=17;const random=()=>{seed=(seed*1664525+1013904223)>>>0;return seed/4294967296;};
+    for(let i=0;i<420;i++){const v=Math.floor(random()*90);ctx.fillStyle=`rgba(${v},${v},${v},${finish==='fabric'?.035:.025})`;ctx.fillRect(random()*128,random()*128,random()*3+1,random()*3+1);}
+    if(finish==='woodgrain'){for(let i=0;i<27;i++){const x=i*5+random()*4;ctx.beginPath();ctx.moveTo(x,0);ctx.bezierCurveTo(x-3,42,x+5,86,x+random()*5,128);ctx.strokeStyle=`rgba(65,43,24,${.035+random()*.085})`;ctx.lineWidth=random()*1.5+.4;ctx.stroke();}}
+    if(finish==='matte-stone'||finish==='matte-anti-slip-tile'){for(let i=0;i<48;i++){ctx.beginPath();ctx.ellipse(random()*128,random()*128,random()*18+3,random()*7+2,random()*6,0,Math.PI*2);ctx.fillStyle=`rgba(84,78,72,${random()*.025})`;ctx.fill();}}
+    if(finish==='matte-anti-slip-tile'){ctx.strokeStyle='rgba(94,87,80,.26)';ctx.lineWidth=2;ctx.strokeRect(1,1,126,126);}
+    if(finish==='vertical-fluted-tile'){for(let x=0;x<128;x+=16){ctx.fillStyle='rgba(25,25,25,.13)';ctx.fillRect(x,0,2,128);ctx.fillStyle='rgba(255,255,255,.14)';ctx.fillRect(x+3,0,2,128);}}
+    if(finish==='fabric'){for(let i=0;i<128;i+=4){ctx.fillStyle='rgba(62,55,49,.045)';ctx.fillRect(i,0,1,128);ctx.fillRect(0,i,128,1);}}
+    const texture=new THREE.CanvasTexture(canvas);texture.encoding=THREE.sRGBEncoding;texture.wrapS=texture.wrapT=THREE.RepeatWrapping;texture.repeat.set(repeat[0]/scaleCm,repeat[1]/scaleCm);texture.anisotropy=4;textureCache.set(key,texture);return texture;
+  }
+  function surfaceMaterial(THREE,spec={}){
+    const finish=spec.finish||'plaster',texture=surfaceTexture(THREE,finish,spec.scaleCm||1,spec.repeat||[1,1]);
+    const style={color:spec.color??'#d9d2c5',map:texture,roughness:spec.roughness??({woodgrain:.76,'matte-stone':.85,'matte-anti-slip-tile':.91,'vertical-fluted-tile':.83,reflective:.12,'clear-glass':.08,'brushed-metal':.37,satin:.46,fabric:.96,plaster:.9}[finish]||.82),metalness:spec.metalness??({reflective:.68,'brushed-metal':.68}[finish]||0),transparent:Number(spec.opacity??1)<1,opacity:Number(spec.opacity??1),depthWrite:Number(spec.opacity??1)>=1,side:THREE.DoubleSide};
+    if(finish==='satin'||finish==='matte-stone'||finish==='matte-anti-slip-tile')return new THREE.MeshPhysicalMaterial({...style,clearcoat:finish==='satin'?.38:.08,clearcoatRoughness:.32});
+    return new THREE.MeshStandardMaterial(style);
+  }
+  const material3D=(THREE,data,id,options={})=>surfaceMaterial(THREE,{color:color(data,id),finish:materials(data)[id]?.finish,opacity:opacity(data,id),...options});
 
   function add3D(parent,floor,data,THREE) {
     const selectable=[];
     for(const r of (data?.rooms||[]).filter(r=>r.floor_id===floor.id))for(const zone of r.surfaces?.floor_zones||[]){
       const shape=new THREE.Shape();zone.polygon.forEach((p,i)=>i?shape.lineTo(...p):shape.moveTo(...p));
-      const mesh=new THREE.Mesh(new THREE.ShapeGeometry(shape),material3D(THREE,data,zone.material));mesh.rotation.x=Math.PI/2;mesh.position.y=1;parent.add(mesh);
+      const mesh=new THREE.Mesh(new THREE.ShapeGeometry(shape),material3D(THREE,data,zone.material,{scaleCm:60}));mesh.rotation.x=Math.PI/2;mesh.position.y=1;mesh.receiveShadow=true;parent.add(mesh);
     }
     for(const o of objects(data,floor.id)){
       const [w,d,h]=o.size,[x,z,base]=o.position,group=new THREE.Group();group.position.set(x,0,z);group.rotation.y=-(o.rotation_deg||0)*Math.PI/180;group.userData.interiorId=o.id;group.userData.furnitureId=o.id;parent.add(group);
@@ -145,7 +166,7 @@ window.RoomInteriors = (() => {
             const split=Math.max(0,Number(surfaces.lower_height_cm)||0);
             for(const [start,end,mat] of [[lo,Math.min(hi,split),surfaces.lower],[Math.max(lo,split),hi,surfaces.upper]]){
               if(end-start<.1||!mat)continue;
-              const mesh=box(parent,THREE,b-a,end-start,.7,cx+normal[0]*inset*sign,(start+end)/2,cz+normal[1]*inset*sign,material3D(THREE,data,mat));mesh.rotation.y=angle;
+              const mesh=box(parent,THREE,b-a,end-start,.7,cx+normal[0]*inset*sign,(start+end)/2,cz+normal[1]*inset*sign,material3D(THREE,data,mat,{repeat:[Math.max(1,(b-a)/60),Math.max(1,(end-start)/60)]}));mesh.rotation.y=angle;
               const spacing=Number(materials(data)[mat]?.stripe_spacing_cm)||0;
               if(spacing && end>start){for(let t=a+spacing;t<b;t+=spacing){const stripe=box(parent,THREE,.6,end-start,.9,ax+ux*t+normal[0]*(inset+.6)*sign,(start+end)/2,az+uz*t+normal[1]*(inset+.6)*sign,new THREE.MeshStandardMaterial({color:0x4b4b49}));stripe.rotation.y=angle;}}
             }
@@ -170,5 +191,5 @@ window.RoomInteriors = (() => {
     const finishes=[['地面',surface.floor],['一般牆面',wall.upper],['腰牆',wall.lower],...Object.entries(surface.walls||{}).filter(([side])=>side!=='default').flatMap(([side,value])=>[[`${names[side]||side}上部`,value.upper],[`${names[side]||side}下部`,value.lower]])];
     return `<div class="interior-sidebar"><h4>室內材質與設備</h4><div class="interior-materials">${finishes.filter(([,id])=>id).map(([title,id])=>`<div><i style="background:${color(data,id)}"></i>${esc(title)}：${esc(materials(data)[id]?.name||id)}</div>`).join('')}</div>${(style.objects||[]).map(o=>`<div class="interior-entry">${esc(o.name)}<small>${o.size.join(' × ')} cm</small></div>`).join('')}<p class="micro">${esc(style.reference_view?.note||'設備位置為規劃示意，請依現場確認。')}</p></div>`;
   }
-  return {validate,roomStyle,objects,color,footprint,svgFloorZones,svgObjects,svgOpenings,svgDimensions,svgBase,add3D,addWalls3D,sidebar};
+  return {validate,roomStyle,objects,color,footprint,svgFloorZones,svgObjects,svgOpenings,svgDimensions,svgBase,add3D,addWalls3D,surfaceMaterial,sidebar};
 })();
