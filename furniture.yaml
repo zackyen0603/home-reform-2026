@@ -182,7 +182,21 @@ items:
     budget_twd: 10000
     source_row: 36
     source_item_number: 37
-    note: 來源列為餐桌／餐椅合計，椅子數量與尺寸尚未定案，僅先呈現餐桌。
+    note: 來源列為餐桌／餐椅合計預算，椅子數量與尺寸尚未定案。
+  - id: FUR-4F-DIN-CHAIR-SAMPLE
+    name: 餐椅／數量待定
+    kind: chair
+    room_id: 4f-living-dining
+    position: [645, 555, 0]
+    size: [45, 45, 90]
+    rotation_deg: 180
+    dimension_basis: estimated
+    procurement_status: 待確認型號
+    brand: 源氏木語
+    budget_twd: 0
+    source_row: 36
+    source_item_number: 37
+    note: 餐桌／餐椅來源列合計預算 NT$10,000；椅數未定，預覽暫放一張作尺度示意，預算已記於餐桌。
   - id: FUR-4F-DIN-SIDEBOARD
     name: 餐邊櫃／電器櫃
     kind: sideboard
