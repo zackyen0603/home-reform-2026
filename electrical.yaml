@@ -71,6 +71,27 @@ route_preview:
   status: schematic-only
   note: 路徑依圖面牆段與門洞自動產生，只檢查平面連通與繞行；不是實際導線管、分線盒、天花或牆內走線，也不代表線徑、電壓降與斷路器設計通過。
 
+lighting_preview:
+  status: visual-estimate-only
+  note: 燈具外形、色溫與照射範圍為辨識配置用的示意值，並非選定型號、照度計算或施工規格；可在各點位增設 fixture_visual 欄位覆寫同類預設。
+  default_ambient_percent: 65
+  fixture_types:
+    downlight:
+      diameter_cm: 12
+      beam_radius_cm: 95
+      color_temperature_k: 4000
+      model: recessed-round
+    pendant:
+      diameter_cm: 29
+      beam_radius_cm: 120
+      color_temperature_k: 3000
+      model: hanging-shade
+    ceiling_light:
+      diameter_cm: 44
+      beam_radius_cm: 185
+      color_temperature_k: 4000
+      model: flush-diffuser
+
 appliance_connections:
   - {id: LOAD-4F-IH, name: IH 爐, circuit_id: C-220-IH, point_id: OUT-4F-V005, room_id: 4f-kitchen, position: [1169.8, 370, 90], source: "家具購買規劃總表!4", link_status: drawing-inferred}
   - {id: LOAD-4F-BATH-MAIN-HEATER, name: 主浴暖風機, circuit_id: C-220-BATH-MAIN-HEATER, point_id: OUT-4F-V006, room_id: 4f-main-bathroom, position: [82.7, 430.8, 270], source: "家具購買規劃總表!27", link_status: drawing-inferred}
