@@ -13,6 +13,7 @@ window.renderElectricalExperience = function renderElectricalExperience(state) {
   }
 
   const typeLabels = electrical.point_types || {};
+  const lighting = window.LightingPreview;
   const rooms = new Map(floor.rooms.map(room => [room.id, room]));
   const circuits = new Map(electrical.circuits.map(circuit => [circuit.id, circuit]));
   const points = electrical.points;
@@ -35,6 +36,13 @@ window.renderElectricalExperience = function renderElectricalExperience(state) {
     && (!state.electricalSearch || [point.id, titleOf(point), rooms.get(point.space_id)?.name, circuits.get(point.circuit_id)?.name]
       .some(value => String(value || '').toLocaleLowerCase().includes(state.electricalSearch.toLocaleLowerCase())));
   const visible = points.filter(matching);
+  const lightingGroups = (electrical.control_groups || []).filter(group => group.point_ids.some(id => points.some(point => point.id === id && (roomFilter === 'all' || point.space_id === roomFilter))));
+  const ambientPercent = lighting.ambient(state,electrical);
+  const lightingEnabled = state.lightingPreviewEnabled !== false;
+  const lightingGroupLabel = group => {
+    const point=points.find(item=>group.point_ids.includes(item.id));
+    return `${rooms.get(point?.space_id)?.name || '四樓'} · ${typeLabels[point?.type]?.label || '燈具'}`;
+  };
 
   const roomOptions = floor.rooms.map(room => `<option value="${escapeHtml(room.id)}">${escapeHtml(room.name)}</option>`).join('');
   const routeRoomOptions = floor.rooms.filter(room => points.some(point => point.space_id === room.id))
@@ -58,6 +66,12 @@ window.renderElectricalExperience = function renderElectricalExperience(state) {
         <button type="button" data-electrical-view="circuits" aria-pressed="${view === 'circuits'}">迴路拓樸</button>
       </div>
     </div>
+    ${view !== 'circuits' ? `<section class="lighting-preview-panel" aria-label="燈光情境預覽">
+      <div class="lighting-preview-heading"><div><h3>燈光情境預覽</h3><p>依 40 個圖面燈具與 13 組開關模擬，外形及照射範圍可從 electrical.yaml 調整。</p></div><label class="lighting-enable"><input id="lightingPreviewEnabled" type="checkbox" ${lightingEnabled?'checked':''}> 啟用光照</label></div>
+      <div class="lighting-preview-actions"><label class="lighting-ambient">環境亮度 <input id="lightingAmbient" type="range" min="0" max="100" step="5" value="${ambientPercent}"><output id="lightingAmbientValue">${ambientPercent}%</output></label><div class="lighting-presets" role="group" aria-label="環境亮度情境"><button type="button" data-light-preset="85">白天</button><button type="button" data-light-preset="45">傍晚</button><button type="button" data-light-preset="10">夜間</button></div><button type="button" data-light-bulk="on">${roomFilter==='all'?'全部':'此空間'}開燈</button><button type="button" data-light-bulk="off">${roomFilter==='all'?'全部':'此空間'}關燈</button></div>
+      <details class="lighting-groups" ${state.lightingGroupsOpen===false?'':'open'}><summary>燈具開關群組（${lightingGroups.length} 組）</summary><div class="lighting-group-grid">${lightingGroups.map(group=>`<label><input type="checkbox" data-light-group="${escapeHtml(group.id)}" ${state.lightingGroups?.[group.id]===false?'':'checked'}><span>${escapeHtml(lightingGroupLabel(group))}<small>${group.point_ids.length} 盞 · ${escapeHtml(group.id)}</small></span></label>`).join('')}</div></details>
+      <p class="lighting-disclaimer">亮度與光暈為配置比較示意，未包含燈具光通量、配光曲線、反射率或日照，不能當作照度驗收結果。牆上開關仍只規劃開／關。</p>
+    </section>` : ''}
     <div class="electrical-workspace">
       <div class="electrical-map-wrap">
         <div id="electricalCanvas" class="electrical-canvas" aria-label="四樓電力配置圖"></div>
@@ -83,7 +97,7 @@ window.renderElectricalExperience = function renderElectricalExperience(state) {
     const circuit = circuits.get(point.circuit_id);
     const height = Number(point.position[2]);
     details.innerHTML = `<div class="electrical-detail-heading"><span class="electrical-dot" style="background:${escapeHtml(colorOf(point))}"></span><div><small>${escapeHtml(point.id)}</small><h3>${escapeHtml(titleOf(point))}</h3></div></div>
-      <dl><div><dt>空間</dt><dd>${escapeHtml(rooms.get(point.space_id)?.name || point.space_id)}</dd></div><div><dt>回路</dt><dd>${escapeHtml(circuit?.name || point.circuit_id)}<small>${escapeHtml(point.circuit_id)}</small></dd></div><div><dt>電壓</dt><dd>${escapeHtml(circuit?.voltage || typeLabels[point.type]?.voltage || '待確認')} V</dd></div><div><dt>安裝高度</dt><dd>${Number.isFinite(height) ? height + ' cm' : '待確認'}</dd></div><div><dt>平面座標</dt><dd>${escapeHtml(point.position[0])}, ${escapeHtml(point.position[1])} cm</dd></div><div><dt>狀態</dt><dd>${escapeHtml(point.status)}</dd></div>${point.control_group_id ? `<div><dt>燈控群組</dt><dd>${escapeHtml(point.control_group_id)}</dd></div>` : ''}${point.intended_load ? `<div><dt>預定負載</dt><dd>${escapeHtml(point.intended_load)}</dd></div>` : ''}</dl>`;
+      <dl><div><dt>空間</dt><dd>${escapeHtml(rooms.get(point.space_id)?.name || point.space_id)}</dd></div><div><dt>回路</dt><dd>${escapeHtml(circuit?.name || point.circuit_id)}<small>${escapeHtml(point.circuit_id)}</small></dd></div><div><dt>電壓</dt><dd>${escapeHtml(circuit?.voltage || typeLabels[point.type]?.voltage || '待確認')} V</dd></div><div><dt>安裝高度</dt><dd>${Number.isFinite(height) ? height + ' cm' : '待確認'}</dd></div><div><dt>平面座標</dt><dd>${escapeHtml(point.position[0])}, ${escapeHtml(point.position[1])} cm</dd></div><div><dt>狀態</dt><dd>${escapeHtml(point.status)}</dd></div>${point.control_group_id ? `<div><dt>燈控群組</dt><dd>${escapeHtml(point.control_group_id)}</dd></div>` : ''}${lighting.isFixture(point) ? `<div><dt>模型示意</dt><dd>${escapeHtml(lighting.settings(electrical,point).diameter_cm)} cm · ${escapeHtml(lighting.settings(electrical,point).color_temperature_k)}K<br><small>${lighting.isOn(state,point)?'開燈':'關燈'}</small></dd></div>` : ''}${point.intended_load ? `<div><dt>預定負載</dt><dd>${escapeHtml(point.intended_load)}</dd></div>` : ''}</dl>`;
     target.querySelectorAll('[data-point-id]').forEach(el => el.classList.toggle('is-selected', el.dataset.pointId === id));
     list.querySelector(`[data-point-id="${CSS.escape(id)}"]`)?.scrollIntoView({block:'nearest'});
   }
@@ -108,6 +122,30 @@ window.renderElectricalExperience = function renderElectricalExperience(state) {
     target.querySelector('#electricalRouteFilter').addEventListener('change',event=>{state.electricalRouteFilter=event.target.value;state.electricalShowRoutes=true;window.renderElectricalExperience(state);});
     target.querySelector('#electricalRouteRoom').addEventListener('change',event=>{state.electricalRouteRoom=event.target.value;state.electricalShowRoutes=true;window.renderElectricalExperience(state);});
   }
+  if(view !== 'circuits') {
+    const panel=target.querySelector('.lighting-preview-panel');
+    const rerender=()=>window.renderElectricalExperience(state);
+    panel.querySelector('#lightingPreviewEnabled').addEventListener('change',event=>{state.lightingPreviewEnabled=event.target.checked;rerender();});
+    panel.querySelector('#lightingAmbient').addEventListener('input',event=>{
+      state.lightingAmbient=Number(event.target.value);
+      panel.querySelector('#lightingAmbientValue').textContent=event.target.value+'%';
+      state.electricalLightingController?.(state.lightingAmbient);
+    });
+    panel.querySelectorAll('[data-light-preset]').forEach(button=>button.addEventListener('click',()=>{
+      state.lightingAmbient=Number(button.dataset.lightPreset);panel.querySelector('#lightingAmbient').value=state.lightingAmbient;
+      panel.querySelector('#lightingAmbientValue').textContent=state.lightingAmbient+'%';
+      state.electricalLightingController?.(state.lightingAmbient);
+    }));
+    panel.querySelectorAll('[data-light-bulk]').forEach(button=>button.addEventListener('click',()=>{
+      state.lightingGroups ??={};
+      lightingGroups.forEach(group=>{state.lightingGroups[group.id]=button.dataset.lightBulk==='on';});
+      rerender();
+    }));
+    panel.querySelectorAll('[data-light-group]').forEach(input=>input.addEventListener('change',()=>{
+      state.lightingGroups ??={};state.lightingGroups[input.dataset.lightGroup]=input.checked;rerender();
+    }));
+    panel.querySelector('.lighting-groups').addEventListener('toggle',event=>{state.lightingGroupsOpen=event.target.open;});
+  }
   target.querySelector('#electricalFurnitureToggle').addEventListener('change', event => {state.showFurniture = event.target.checked; window.renderElectricalExperience(state); if (typeof renderFloorplan === 'function') renderFloorplan();});
   target.querySelector('#electricalSearch')?.addEventListener('input', event => {
     state.electricalSearch = event.target.value;
@@ -127,23 +165,30 @@ window.renderElectricalExperience = function renderElectricalExperience(state) {
   else if (view === '2d') render2D();
   else render3D(view === 'walk');
   if (view !== 'circuits') selectPoint(visible.some(point => point.id === selectedId) ? selectedId : visible[0]?.id);
-  state.electricalCleanup = () => teardown.splice(0).forEach(dispose => dispose());
+  state.electricalCleanup = () => {state.electricalLightingController=null;teardown.splice(0).forEach(dispose => dispose());};
 
   function render2D() {
     const pad = 35, b = floor.bounds;
     const routeItems=showRoutes?window.ElectricalCircuitView.previewRoutes(electrical,floor,routeFilter,routeRoom):[];
     const routeSvg=routeItems.map(({route,kind})=>route?`<polyline class="circuit-route electrical-route-${kind}" points="${route.path.map(p=>p.join(',')).join(' ')}"/>`:'').join('');
+    const fixtureSvg=visible.map(point=>lighting.isFixture(point)
+      ? lighting.svgFixture(electrical,point,state,escapeHtml)
+      : `<g class="electrical-marker" data-point-id="${escapeHtml(point.id)}" tabindex="0" role="button" aria-label="${escapeHtml(point.id + ' ' + titleOf(point))}" transform="translate(${point.position[0]} ${point.position[1]})"><circle r="13" fill="${escapeHtml(colorOf(point))}"/><text y=".5">${escapeHtml(symbolOf(point))}</text></g>`).join('');
     canvas.classList.add('is-2d');
     canvas.innerHTML = `<svg viewBox="${-pad} ${-pad} ${b.width + 2*pad} ${b.depth + 2*pad}" role="img" aria-label="四樓插座與燈具平面圖">
+      <g class="electrical-scene-base" style="filter:brightness(${lightingEnabled?lighting.ambientBrightness(ambientPercent):1})">
       <rect x="${-pad}" y="${-pad}" width="${b.width + 2*pad}" height="${b.depth + 2*pad}" fill="#f4f0e7"/>
       ${floor.rooms.map(room => `<polygon points="${room.polygon.map(pair => pair.join(',')).join(' ')}" fill="${roomColor(room.category)}" opacity=".75"/>`).join('')}
       ${floor.walls.map(wall => `<line x1="${wall.start[0]}" y1="${wall.start[1]}" x2="${wall.end[0]}" y2="${wall.end[1]}" stroke="#515750" stroke-width="${wall.thickness || 10}"/>`).join('')}
       ${state.showFurniture ? window.FurnitureView.svg(window.FurnitureView.itemsForFloor(state.furniture,floor.id),escapeHtml) : ''}
+      </g>
+      ${lighting.svgWash(electrical,floor,state)}
       ${routeSvg}
       ${showRoutes ? `<g class="circuit-panel" transform="translate(${electrical.distribution_panel.position[0]} ${electrical.distribution_panel.position[1]})"><rect x="-17" y="-18" width="34" height="36" rx="5"/><text y="5">盤</text></g>` : ''}
       ${floor.rooms.map(room => {const [x,y] = centroid(room.polygon); return `<text class="electrical-room-name" x="${x}" y="${y}">${escapeHtml(room.name)}</text>`;}).join('')}
-      ${visible.map(point => `<g class="electrical-marker" data-point-id="${escapeHtml(point.id)}" tabindex="0" role="button" aria-label="${escapeHtml(point.id + ' ' + titleOf(point))}" transform="translate(${point.position[0]} ${point.position[1]})"><circle r="13" fill="${escapeHtml(colorOf(point))}"/><text y=".5">${escapeHtml(symbolOf(point))}</text></g>`).join('')}
+      ${fixtureSvg}
     </svg>`;
+    state.electricalLightingController=value=>{const base=canvas.querySelector('.electrical-scene-base');if(base)base.style.filter=`brightness(${lightingEnabled?lighting.ambientBrightness(value):1})`;};
     canvas.addEventListener('click', event => {const marker=event.target.closest('[data-point-id]');const furniture=event.target.closest('[data-furniture-id]');if(marker)selectPoint(marker.dataset.pointId);else if(furniture)selectFurniture(furniture.dataset.furnitureId);});
     canvas.addEventListener('keydown', event => {const node=event.target.closest('[data-point-id],[data-furniture-id]');if(node && ['Enter',' '].includes(event.key)){event.preventDefault();if(node.dataset.pointId)selectPoint(node.dataset.pointId);else selectFurniture(node.dataset.furnitureId);}});
   }
@@ -158,9 +203,15 @@ window.renderElectricalExperience = function renderElectricalExperience(state) {
     renderer.setSize(canvas.clientWidth, canvas.clientHeight);
     renderer.domElement.style.touchAction = 'none';
     canvas.appendChild(renderer.domElement);
-    const scene = new THREE.Scene();scene.background = new THREE.Color('#ece8df');
-    scene.add(new THREE.HemisphereLight(0xffffff,0x777866,1.65));
+    const scene = new THREE.Scene();
+    const hemi=new THREE.HemisphereLight(0xffffff,0x777866,1.65);scene.add(hemi);
     const sun = new THREE.DirectionalLight(0xffffff,.65);sun.position.set(200,550,100);scene.add(sun);
+    state.electricalLightingController=value=>{
+      const fraction=lightingEnabled?Math.max(0,Math.min(1,value/100)):1;
+      hemi.intensity=.18+1.47*fraction;sun.intensity=.05+.6*fraction;
+      scene.background=new THREE.Color('#ece8df').multiplyScalar(.23+.77*fraction);
+    };
+    state.electricalLightingController(ambientPercent);
     const camera = new THREE.PerspectiveCamera(walk ? 76 : 48,canvas.clientWidth/canvas.clientHeight,.5,4000);
     const floorMeshes = [];
     floor.rooms.forEach(room => {
@@ -200,22 +251,24 @@ window.renderElectricalExperience = function renderElectricalExperience(state) {
       const panelMarker=new THREE.Mesh(new THREE.BoxGeometry(18,25,7),new THREE.MeshBasicMaterial({color:0x263e37,depthTest:false}));
       panelMarker.position.set(panel.position[0],panel.position[2],panel.position[1]);panelMarker.renderOrder=2;scene.add(panelMarker);
     }
-    const markerMeshes=[];
-    visible.forEach(point => {
+    const markerMeshes=lighting.add3D(scene,electrical,floor,visible,state,THREE);
+    visible.filter(point=>!lighting.isFixture(point)).forEach(point => {
       const color=new THREE.Color(colorOf(point));
       const [x,z,rawHeight]=point.position;
-      const isLight=typeOf(point)==='lighting';
       const height=Number(rawHeight);
-      const y=Number.isFinite(height)?height:(isLight?floor.ceiling_height-15:105);
-      const sphere=new THREE.Mesh(new THREE.SphereGeometry(isLight?10:9,12,8),new THREE.MeshBasicMaterial({color,depthTest:false}));
+      const y=Number.isFinite(height)?height:105;
+      const sphere=new THREE.Mesh(new THREE.SphereGeometry(9,12,8),new THREE.MeshBasicMaterial({color,depthTest:false}));
       sphere.position.set(x,Math.max(10,Math.min(y,floor.ceiling_height-5)),z);sphere.renderOrder=2;sphere.userData.pointId=point.id;scene.add(sphere);markerMeshes.push(sphere);
       const halo=new THREE.Mesh(new THREE.RingGeometry(12,15,16),new THREE.MeshBasicMaterial({color,side:THREE.DoubleSide,depthTest:false}));
       halo.position.copy(sphere.position);halo.lookAt(walk?camera.position:new THREE.Vector3(x,900,z));halo.renderOrder=2;halo.userData.pointId=point.id;scene.add(halo);markerMeshes.push(halo);
     });
     const raycaster=new THREE.Raycaster(), mouse=new THREE.Vector2();
-    let yaw=0,pitch=0,radius=Math.max(floor.bounds.width,floor.bounds.depth)*1.1,orbitPhi=.85;
-    const center=new THREE.Vector3(floor.bounds.width/2,80,floor.bounds.depth/2);
-    const spawn=floor.rooms.find(room=>room.id==='4f-living-dining') || floor.rooms[0];
+    const focusRoom=rooms.get(roomFilter);
+    const boundsOfFocus=focusRoom ? {width:Math.max(...focusRoom.polygon.map(p=>p[0]))-Math.min(...focusRoom.polygon.map(p=>p[0])),depth:Math.max(...focusRoom.polygon.map(p=>p[1]))-Math.min(...focusRoom.polygon.map(p=>p[1]))} : floor.bounds;
+    let yaw=0,pitch=0,radius=Math.max(boundsOfFocus.width,boundsOfFocus.depth)*(focusRoom?1.65:1.1),orbitPhi=.85;
+    const focus=focusRoom?centroid(focusRoom.polygon):[floor.bounds.width/2,floor.bounds.depth/2];
+    const center=new THREE.Vector3(focus[0],80,focus[1]);
+    const spawn=focusRoom || floor.rooms.find(room=>room.id==='4f-living-dining') || floor.rooms[0];
     const spawnPoint=centroid(spawn.polygon);
     if (walk) camera.position.set(spawnPoint[0],155,spawnPoint[1]);
     function updateCamera() {
