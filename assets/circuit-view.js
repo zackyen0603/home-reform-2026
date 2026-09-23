@@ -32,10 +32,11 @@ window.ElectricalCircuitView = (() => {
   }
 
   // One route source for the topology map and the 2D/3D overlays.
-  function previewRoutes(data,floor,filter='all') {
+  function previewRoutes(data,floor,filter='all',roomId='all') {
     const circuits=new Map(data.circuits.map(c=>[c.id,c]));
     const isLighting=p=>['downlight','pendant','ceiling_light'].includes(p.type);
-    const selected=p=>filter==='all'||(filter==='outlets'&&!isLighting(p))||(filter==='lighting'&&isLighting(p))||p.circuit_id===filter;
+    const selected=p=>(roomId==='all'||p.space_id===roomId)
+      && (filter==='all'||(filter==='outlets'&&!isLighting(p))||(filter==='lighting'&&isLighting(p))||p.circuit_id===filter);
     const finder=router(floor,data.distribution_panel);
     return data.points.filter(selected).map(point=>({point,circuit:circuits.get(point.circuit_id),route:finder.route(point.position,point.space_id),kind:isLighting(point)?'lighting':'outlets'}));
   }
