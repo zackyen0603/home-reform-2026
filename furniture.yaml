@@ -1,0 +1,239 @@
+schema_version: 1.0.0
+metadata:
+  title: 四樓家具配置
+  floor_id: 4F
+  source_workbook: 巧新新家規劃.xlsx
+  source_sheet: ★家具購買規劃總表
+  coordinate_reference: floorplan.yaml / 4F
+  coordinate_unit: cm
+  origin: 四樓平面圖左上角；x 向右、y 向下、z 向上
+  placement_note: 家具中心點與朝向均為依現有格局暫擬；尺寸欠缺者為預覽估值，施工及採購前須依型號與動線校正。
+  rotation_note: rotation_deg 是平面圖中繞中心順時針旋轉的角度；3D 中繞垂直軸對應旋轉。
+items:
+  - id: FUR-4F-MBR-BED
+    name: 主臥雙人床 Queen
+    kind: bed
+    room_id: 4f-main-bedroom
+    position: [250, 160, 0]
+    size: [188, 182, 52]
+    rotation_deg: 0
+    dimension_basis: spreadsheet-width-depth; estimated-height
+    procurement_status: 待確認型號
+    brand: 源氏木語
+    budget_twd: 40000
+    source_row: 39
+    source_item_number: 47
+  - id: FUR-4F-MBR-DESK
+    name: 主臥書桌
+    kind: desk
+    room_id: 4f-main-bedroom
+    position: [420, 65, 0]
+    size: [120, 60, 75]
+    rotation_deg: 0
+    dimension_basis: spreadsheet
+    procurement_status: 待確認型號
+    brand: 淘寶待定
+    budget_twd: 10000
+    source_row: 33
+    source_item_number: 46
+  - id: FUR-4F-MBR-WARDROBE
+    name: 主臥衣櫃
+    kind: wardrobe
+    room_id: 4f-main-bedroom
+    position: [240, 310, 0]
+    size: [240, 60, 240]
+    rotation_deg: 0
+    dimension_basis: design-note; estimated-depth
+    procurement_status: 待確認型號
+    brand: 耘得
+    budget_twd: 0
+    source_row: 25
+    source_item_number: 49
+    note: 240 × 240 cm 來自既有主臥衣櫃需求；深度暫估。
+  - id: FUR-4F-MBR-NIGHTSTAND-L
+    name: 主臥左床頭櫃
+    kind: nightstand
+    room_id: 4f-main-bedroom
+    position: [128, 170, 0]
+    size: [40, 40, 48]
+    rotation_deg: 0
+    dimension_basis: estimated
+    procurement_status: 待確認型號
+    brand: 源氏木語
+    budget_twd: 5000
+    source_row: 40
+    source_item_number: 48
+    note: 來源為兩件床頭櫃合計預算 NT$10,000。
+  - id: FUR-4F-MBR-NIGHTSTAND-R
+    name: 主臥右床頭櫃
+    kind: nightstand
+    room_id: 4f-main-bedroom
+    position: [372, 170, 0]
+    size: [40, 40, 48]
+    rotation_deg: 0
+    dimension_basis: estimated
+    procurement_status: 待確認型號
+    brand: 源氏木語
+    budget_twd: 5000
+    source_row: 40
+    source_item_number: 48
+    note: 來源為兩件床頭櫃合計預算 NT$10,000。
+  - id: FUR-4F-SBR-BED
+    name: 次臥雙人床／既有床架
+    kind: bed
+    room_id: 4f-secondary-bedroom
+    position: [355, 513, 0]
+    size: [188, 152, 50]
+    rotation_deg: 0
+    dimension_basis: spreadsheet-width-depth; estimated-height
+    procurement_status: 沿用舊的
+    brand: 既有家具
+    budget_twd: 0
+    source_row: 22
+    source_item_number: 55
+  - id: FUR-4F-SBR-DESK
+    name: 次臥書桌
+    kind: desk
+    room_id: 4f-secondary-bedroom
+    position: [280, 385, 0]
+    size: [120, 60, 75]
+    rotation_deg: 0
+    dimension_basis: spreadsheet
+    procurement_status: 沿用舊的
+    brand: 既有家具
+    budget_twd: 0
+    source_row: 23
+    source_item_number: 56
+  - id: FUR-4F-SBR-CHAIR
+    name: 次臥辦公椅
+    kind: chair
+    room_id: 4f-secondary-bedroom
+    position: [420, 387, 0]
+    size: [55, 55, 95]
+    rotation_deg: 0
+    dimension_basis: estimated
+    procurement_status: 沿用舊的
+    brand: 既有家具
+    budget_twd: 0
+    source_row: 24
+    source_item_number: 57
+  - id: FUR-4F-SBR-WARDROBE
+    name: 次臥衣櫃／既有
+    kind: wardrobe
+    room_id: 4f-secondary-bedroom
+    position: [201, 517, 0]
+    size: [180, 60, 210]
+    rotation_deg: 90
+    dimension_basis: estimated
+    procurement_status: 沿用舊的
+    brand: 既有家具
+    budget_twd: 0
+    source_row: 21
+    source_item_number: 54
+  - id: FUR-4F-LIV-SOFA
+    name: 客廳沙發
+    kind: sofa
+    room_id: 4f-living-dining
+    position: [721, 174, 0]
+    size: [240, 90, 82]
+    rotation_deg: 90
+    dimension_basis: spreadsheet-width-depth; estimated-height
+    procurement_status: 待確認型號
+    brand: 待挑選
+    budget_twd: 50000
+    source_row: 19
+    source_item_number: 43
+  - id: FUR-4F-LIV-COFFEE
+    name: 客廳茶几
+    kind: coffee_table
+    room_id: 4f-living-dining
+    position: [633, 174, 0]
+    size: [90, 55, 40]
+    rotation_deg: 90
+    dimension_basis: estimated
+    procurement_status: 待確認型號
+    brand: 源氏木語
+    budget_twd: 5000
+    source_row: 38
+    source_item_number: 44
+  - id: FUR-4F-LIV-TV-CABINET
+    name: 電視／投影設備櫃
+    kind: media_console
+    room_id: 4f-living-dining
+    position: [519, 173, 0]
+    size: [260, 40, 50]
+    rotation_deg: 90
+    dimension_basis: spreadsheet-width; estimated-depth-height
+    procurement_status: 待確認型號
+    brand: 源氏木語
+    budget_twd: 20000
+    source_row: 37
+    source_item_number: 42
+  - id: FUR-4F-DIN-TABLE
+    name: 餐桌
+    kind: dining_table
+    room_id: 4f-living-dining
+    position: [645, 447, 0]
+    size: [140, 80, 75]
+    rotation_deg: 90
+    dimension_basis: spreadsheet
+    procurement_status: 待確認型號
+    brand: 源氏木語
+    budget_twd: 10000
+    source_row: 36
+    source_item_number: 37
+    note: 來源列為餐桌／餐椅合計，椅子數量與尺寸尚未定案，僅先呈現餐桌。
+  - id: FUR-4F-DIN-SIDEBOARD
+    name: 餐邊櫃／電器櫃
+    kind: sideboard
+    room_id: 4f-living-dining
+    position: [517, 477, 0]
+    size: [190, 37, 90]
+    rotation_deg: 90
+    dimension_basis: spreadsheet-width; design-note-depth; estimated-height
+    procurement_status: 待確認型號
+    brand: IKEA METOD
+    budget_twd: 25000
+    source_row: 43
+    source_item_number: 35
+  - id: FUR-4F-ENTRY-CABINET
+    name: 玄關櫃
+    kind: entry_cabinet
+    room_id: 4f-living-dining
+    position: [754, 509, 0]
+    size: [150, 35, 100]
+    rotation_deg: 90
+    dimension_basis: spreadsheet-width; estimated-depth-height
+    procurement_status: 待確認型號
+    brand: 源氏木語
+    budget_twd: 15000
+    source_row: 35
+    source_item_number: 34
+    note: 暫置於客餐廳靠入口側；須確認門片與入口動線。
+  - id: FUR-4F-KIT-ISLAND
+    name: 廚房中島／電器櫃
+    kind: island
+    room_id: 4f-kitchen
+    position: [1015, 309, 0]
+    size: [130, 80, 90]
+    rotation_deg: 0
+    dimension_basis: spreadsheet-width-depth; estimated-height
+    procurement_status: 不需購買
+    brand: 耘得系統櫃
+    budget_twd: 0
+    source_row: 7
+    source_item_number: 24
+    note: 統包製作；列入模型以顯示家具佔用空間。
+  - id: FUR-4F-STO-SHELF
+    name: 儲藏室收納架
+    kind: shelf
+    room_id: 4f-storage
+    position: [952, 120, 0]
+    size: [60, 40, 200]
+    rotation_deg: 0
+    dimension_basis: spreadsheet-depth; estimated-width-height
+    procurement_status: 待確認型號
+    brand: IKEA BOAXEL
+    budget_twd: 5000
+    source_row: 41
+    source_item_number: 30
