@@ -16,4 +16,4 @@
 .furniture-detail dl{margin:8px 0 0}.furniture-detail dl div{display:grid;grid-template-columns:62px 1fr;gap:6px;padding:3px 0}.furniture-detail dt{color:var(--muted)}.furniture-detail dd{margin:0;overflow-wrap:anywhere}
 .furniture-detail p{margin:8px 0 0;color:var(--muted)}
 .electrical-canvas .furniture-item>rect:first-of-type{opacity:.88}
-@media(max-width:620px){.electrical-toolbar label.furniture-toggle{grid-column:1/-1}.furniture-list{max-height:190px}.furniture-list-button{min-height:40px;align-items:center}}
+@media(max-width:620px){.electrical-toolbar label.furniture-toggle{grid-column:1/-1}.furniture-list{max-height:190px}.furniture-list-button{min-height:40px;align-items:center}.plan-canvas{overflow:auto;touch-action:pan-x pan-y}.plan-canvas svg{width:850px;max-width:none;height:480px;min-height:480px;touch-action:pan-x pan-y}}
