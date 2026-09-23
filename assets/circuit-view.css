@@ -1,5 +1,6 @@
 .electrical-canvas.is-circuit{background:#f4f0e7}
 .circuit-route{fill:none;stroke-width:3.2;stroke-linecap:round;stroke-linejoin:round;opacity:.5;vector-effect:non-scaling-stroke;pointer-events:none}
+.circuit-route.is-provisional{stroke-dasharray:7 6}
 .circuit-room{fill:#636b61;font-size:13px;text-anchor:middle;pointer-events:none}
 .circuit-terminal,.circuit-load{cursor:pointer;outline:none}
 .circuit-terminal circle,.circuit-load rect{stroke:#fff;stroke-width:2.5;vector-effect:non-scaling-stroke;filter:drop-shadow(0 1px 2px #40423f66)}
