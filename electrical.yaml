@@ -76,21 +76,24 @@ lighting_preview:
   note: 燈具外形、色溫與照射範圍為辨識配置用的示意值，並非選定型號、照度計算或施工規格；可在各點位增設 fixture_visual 欄位覆寫同類預設。
   default_ambient_percent: 65
   fixture_types:
-    downlight:
-      diameter_cm: 12
-      beam_radius_cm: 95
-      color_temperature_k: 4000
-      model: recessed-round
-    pendant:
-      diameter_cm: 29
-      beam_radius_cm: 120
-      color_temperature_k: 3000
-      model: hanging-shade
-    ceiling_light:
-      diameter_cm: 44
-      beam_radius_cm: 185
-      color_temperature_k: 4000
-      model: flush-diffuser
+      downlight:
+        diameter_cm: 12
+        beam_radius_cm: 95
+        lumens: 700
+        color_temperature_k: 4000
+        model: recessed-round
+      pendant:
+        diameter_cm: 29
+        beam_radius_cm: 120
+        lumens: 800
+        color_temperature_k: 3000
+        model: hanging-shade
+      ceiling_light:
+        diameter_cm: 44
+        beam_radius_cm: 185
+        lumens: 1800
+        color_temperature_k: 4000
+        model: flush-diffuser
 
 appliance_connections:
   - {id: LOAD-4F-IH, name: IH 爐, circuit_id: C-220-IH, point_id: OUT-4F-V005, room_id: 4f-kitchen, position: [1169.8, 370, 90], source: "家具購買規劃總表!4", link_status: drawing-inferred}
