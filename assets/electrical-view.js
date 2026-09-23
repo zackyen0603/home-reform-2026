@@ -1,7 +1,8 @@
 'use strict';
 
 window.ElectricalPointOverrides = (() => {
-  const key='home-reform:electrical-points:v1';
+  // v2 invalidates old interactive overrides so the revised YAML defaults are visible.
+  const key='home-reform:electrical-points:v2';
   const read=()=>{try{return JSON.parse(localStorage.getItem(key)||'{}')||{};}catch{return {};}};
   const apply=data=>{const saved=read();return {...data,points:data.points.map(point=>{const position=saved[point.id];return Array.isArray(position)&&position.length===3&&position.every(Number.isFinite)?{...point,position:[...position]}:point;})};};
   const save=(id,position)=>{const saved=read();saved[id]=[...position];localStorage.setItem(key,JSON.stringify(saved));};
