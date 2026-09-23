@@ -51,7 +51,7 @@ window.renderElectricalExperience = function renderElectricalExperience(state) {
     <div class="electrical-workspace">
       <div class="electrical-map-wrap">
         <div id="electricalCanvas" class="electrical-canvas" aria-label="四樓電力配置圖"></div>
-        <div class="electrical-map-help">${view === 'walk' ? '桌面：WASD／方向鍵移動，拖曳轉向；手機：左側方向鍵移動、右半畫面拖曳轉向。點選標記查看資料。' : view === '3d' ? '拖曳旋轉；滾輪或右側 ＋／－ 按鈕縮放。點選標記查看資料。' : '點選標記查看資料。座標為規劃示意，非施工放樣。'}</div>
+        <div class="electrical-map-help">${view === 'walk' ? '桌面：WASD／方向鍵移動，拖曳轉向；手機：左側方向鍵移動、右半畫面拖曳轉向。點選標記查看資料。' : view === '3d' ? '拖曳旋轉；滾輪或右側 ＋／－ 按鈕縮放。點選標記查看資料。' : '點選標記查看資料；手機可左右滑動平面圖。座標為規劃示意，非施工放樣。'}</div>
       </div>
       <aside class="electrical-inspector"><div id="electricalDetails" aria-live="polite"></div>
         <h3>點位清單 <small>${visible.length}／${points.length}</small></h3>
@@ -101,6 +101,7 @@ window.renderElectricalExperience = function renderElectricalExperience(state) {
 
   function render2D() {
     const pad = 35, b = floor.bounds;
+    canvas.classList.add('is-2d');
     canvas.innerHTML = `<svg viewBox="${-pad} ${-pad} ${b.width + 2*pad} ${b.depth + 2*pad}" role="img" aria-label="四樓插座與燈具平面圖">
       <rect x="${-pad}" y="${-pad}" width="${b.width + 2*pad}" height="${b.depth + 2*pad}" fill="#f4f0e7"/>
       ${floor.rooms.map(room => `<polygon points="${room.polygon.map(pair => pair.join(',')).join(' ')}" fill="${roomColor(room.category)}" opacity=".75"/>`).join('')}
