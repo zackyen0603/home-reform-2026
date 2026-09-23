@@ -68,3 +68,14 @@ nav{display:grid;gap:4px;margin-top:38px}nav a{display:flex;align-items:center;g
 #planLayout:fullscreen .plan-canvas svg,#planLayout:fullscreen .plan-canvas canvas,#planLayout.preview-is-fullscreen .plan-canvas svg,#planLayout.preview-is-fullscreen .plan-canvas canvas{height:100dvh;min-height:0}
 .furniture-item{touch-action:manipulation}
 @media(max-width:700px){.plan-canvas{height:70dvh;min-height:460px}.plan-sidebar.preview-panel{top:auto;right:10px;bottom:10px;left:10px;width:auto;max-height:min(52dvh,480px);padding:12px;border-radius:16px}.preview-panel-head{top:-12px;margin:-12px -12px 10px;padding:10px 12px}.preview-panel.is-collapsed{left:auto;right:10px;width:auto}.preview-panel.is-collapsed .preview-panel-head{margin:0}.furniture-edit-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}.furniture-edit-grid input{font-size:16px;padding:8px}.preview-editor-actions .button{min-height:40px}.preview-panel .device-list{max-height:120px}#planLayout:fullscreen .preview-panel,#planLayout.preview-is-fullscreen .preview-panel{bottom:8px;max-height:58dvh}}
+/* Direct manipulation of furniture on the shared floor canvas. */
+.furniture-selection{pointer-events:none}.furniture-selection .edit-handle{pointer-events:all;fill:#f5f8ed;stroke:#207451;stroke-width:3;cursor:grab;touch-action:none;filter:drop-shadow(0 1px 3px #102c2744)}
+.furniture-selection .edit-handle[data-edit-action="resize"]{cursor:nwse-resize}.furniture-selection .edit-handle[data-edit-action="rotate"]{cursor:crosshair}
+.plan-canvas .furniture-item,.plan-canvas .interior-object{touch-action:none;cursor:move}
+.preview-panel-head{cursor:grab;touch-action:none;user-select:none}.preview-panel-head:active{cursor:grabbing}.preview-panel-head button{cursor:pointer}
+.preview-mode{margin-bottom:10px}.preview-panel.is-collapsed .preview-mode{display:none}
+#floorplan:fullscreen,#floorplan.floorplan-is-fullscreen{position:fixed;inset:0;z-index:1000;box-sizing:border-box;width:100vw;height:100dvh;overflow:hidden;margin:0;padding:0;background:#eee9df}
+#floorplan:fullscreen>.section-heading,#floorplan:fullscreen>.elevation-controls,#floorplan:fullscreen>.elevation-meta,#floorplan.floorplan-is-fullscreen>.section-heading,#floorplan.floorplan-is-fullscreen>.elevation-controls,#floorplan.floorplan-is-fullscreen>.elevation-meta{display:none}
+#floorplan:fullscreen .plan-layout,#floorplan.floorplan-is-fullscreen .plan-layout{height:100dvh;min-height:0;border:0;border-radius:0}
+#floorplan:fullscreen .plan-canvas,#floorplan.floorplan-is-fullscreen .plan-canvas{height:100dvh;min-height:0}
+#floorplan:fullscreen .plan-canvas svg,#floorplan:fullscreen .plan-canvas canvas,#floorplan.floorplan-is-fullscreen .plan-canvas svg,#floorplan.floorplan-is-fullscreen .plan-canvas canvas{height:100dvh;min-height:0}
