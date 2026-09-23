@@ -1,5 +1,4 @@
-schema_version: "1.0.0"
-
+schema_version: 1.0.0
 metadata:
   project_id: home-reform-2026
   dataset: electrical-layout
@@ -9,37 +8,36 @@ metadata:
   source_of_truth: true
   data_status: drawing-extracted-needs-electrical-review
   warning: 點位座標依配置示意圖換算並對應floorplan.yaml；空間歸屬已依施工圖尺寸軸與家具排除後的牆面格局重算。回路分組為規劃案，施工前須由合格電工依負載、配電盤容量與現場管路確認。
-  lighting_reconciliation_note: 試算表「★燈具&插座智慧家庭規劃」合計吸頂燈5、吊燈3、嵌燈23，與目前點位圖的吸頂燈4、吊燈3、崁燈33不一致；本視圖以 electrical.yaml 的點位圖辨識資料為準，需現場核對版本。
-
+  lighting_reconciliation_note: 試算表「★燈具&插座智慧家庭規劃」合計吸頂燈5、吊燈3、嵌燈23，與目前點位圖的吸頂燈4、吊燈3、崁燈33不一致；本視圖以
+    electrical.yaml 的點位圖辨識資料為準，需現場核對版本。
 sources:
-  - id: SRC-4F-OUTLETS
-    file: IMG_3159.jpeg
-    subject: 四樓插座配置
-    declared_counts:
-      high_level_outlet: 3
-      planned_220v: 8
-      general_outlet: 26
-      optional_outlet: 3
-    extracted_counts:
-      high_level_outlet: 3
-      planned_220v: 8
-      general_outlet: 27
-      optional_outlet: 3
-    qa_status: count-mismatch
-    qa_note: 圖例標示一般插座26處，但依色塊辨識得到27處；各點均保留並標示待逐點覆核，避免誤刪。
-  - id: SRC-4F-LIGHTS
-    file: IMG_3160.jpeg
-    subject: 四樓燈具配置
-    declared_counts:
-      downlight: 33
-      pendant: 3
-      ceiling_light: 4
-    extracted_counts:
-      downlight: 33
-      pendant: 3
-      ceiling_light: 4
-    qa_status: matched
-
+- id: SRC-4F-OUTLETS
+  file: IMG_3159.jpeg
+  subject: 四樓插座配置
+  declared_counts:
+    high_level_outlet: 3
+    planned_220v: 8
+    general_outlet: 26
+    optional_outlet: 3
+  extracted_counts:
+    high_level_outlet: 3
+    planned_220v: 8
+    general_outlet: 27
+    optional_outlet: 3
+  qa_status: count-mismatch
+  qa_note: 圖例標示一般插座26處，但依色塊辨識得到27處；各點均保留並標示待逐點覆核，避免誤刪。
+- id: SRC-4F-LIGHTS
+  file: IMG_3160.jpeg
+  subject: 四樓燈具配置
+  declared_counts:
+    downlight: 33
+    pendant: 3
+    ceiling_light: 4
+  extracted_counts:
+    downlight: 33
+    pendant: 3
+    ceiling_light: 4
+  qa_status: matched
 coordinate_system:
   units: cm
   floor_id: 4F
@@ -57,1080 +55,1489 @@ coordinate_system:
   z_axis: up
   accuracy: schematic
   edit_rule: 修改position的[x,y,z]即可同步更新網頁點位；x、y須位於reference_bounds內。
-
 distribution_panel:
   id: DB-4F-01
   name: 四樓房間電箱
   room_id: 4f-main-bedroom
-  position: [24, 284, 150]
+  position:
+  - 21.4
+  - 261.3
+  - 150
   position_status: estimated-from-user-description
   note: 使用者指出電箱在主臥床左側；靠西側實牆的圖面座標僅供預覽，現場位置及盤內空間待量測。
-
 route_preview:
   method: planar-shortest-path-around-modeled-walls
   status: schematic-only
   note: 路徑依圖面牆段與門洞自動產生，只檢查平面連通與繞行；不是實際導線管、分線盒、天花或牆內走線，也不代表線徑、電壓降與斷路器設計通過。
-
 lighting_preview:
   status: visual-estimate-only
   note: 燈具外形、色溫與照射範圍為辨識配置用的示意值，並非選定型號、照度計算或施工規格；可在各點位增設 fixture_visual 欄位覆寫同類預設。
   default_ambient_percent: 65
   fixture_types:
-      downlight:
-        diameter_cm: 12
-        beam_radius_cm: 95
-        lumens: 700
-        color_temperature_k: 4000
-        model: recessed-round
-      pendant:
-        diameter_cm: 29
-        beam_radius_cm: 120
-        lumens: 800
-        color_temperature_k: 3000
-        model: hanging-shade
-      ceiling_light:
-        diameter_cm: 44
-        beam_radius_cm: 185
-        lumens: 1800
-        color_temperature_k: 4000
-        model: flush-diffuser
-
+    downlight:
+      diameter_cm: 12
+      beam_radius_cm: 95
+      lumens: 700
+      color_temperature_k: 4000
+      model: recessed-round
+    pendant:
+      diameter_cm: 29
+      beam_radius_cm: 120
+      lumens: 800
+      color_temperature_k: 3000
+      model: hanging-shade
+    ceiling_light:
+      diameter_cm: 44
+      beam_radius_cm: 185
+      lumens: 1800
+      color_temperature_k: 4000
+      model: flush-diffuser
 appliance_connections:
-  - {id: LOAD-4F-IH, name: IH 爐, circuit_id: C-220-IH, point_id: OUT-4F-V005, room_id: 4f-kitchen, position: [1170, 350, 90], source: "家具購買規劃總表!4 + furniture.yaml kitchen rotation", link_status: furniture-aligned-estimate}
-  - {id: LOAD-4F-BATH-MAIN-HEATER, name: 主浴暖風機, circuit_id: C-220-BATH-MAIN-HEATER, point_id: OUT-4F-V006, room_id: 4f-main-bathroom, position: [82.7, 430.8, 270], source: "家具購買規劃總表!27", link_status: drawing-inferred}
-  - {id: LOAD-4F-BATH-GUEST-HEATER, name: 客浴暖風機, circuit_id: C-220-BATH-GUEST-HEATER, point_id: OUT-4F-V002, room_id: 4f-guest-bathroom, position: [1094, 101.2, 270], source: "家具購買規劃總表!26", link_status: drawing-inferred}
-  - {id: LOAD-4F-AC-LIVING, name: 客餐廳冷氣, circuit_id: C-220-AC-LIVING, point_id: OUT-4F-V007, room_id: 4f-living-dining, position: [549.5, 581.9, 230], source: "electrical.yaml / intended_load", link_status: drawing-inferred}
-  - {id: LOAD-4F-AC-MAIN, name: 主臥冷氣, circuit_id: C-220-AC-BEDROOMS, point_id: OUT-4F-V004, room_id: 4f-main-bedroom, position: [12.9, 219.8, 230], source: "electrical.yaml / intended_load", link_status: drawing-inferred}
-  - {id: LOAD-4F-AC-SECONDARY, name: 次臥冷氣, circuit_id: C-220-AC-BEDROOMS, point_id: OUT-4F-V008, room_id: 4f-secondary-bedroom, position: [246.7, 583.3, 230], source: "electrical.yaml / intended_load", link_status: drawing-inferred}
-  - {id: LOAD-4F-DISHWASHER, name: 洗碗機, circuit_id: C-110-DISHWASHER, room_id: 4f-kitchen, position: [1170, 275, 70], source: "家具購買規劃總表!11 + furniture.yaml kitchen rotation", link_status: furniture-aligned-estimate}
-  - {id: LOAD-4F-WASHER-DRYER, name: 洗烘衣機, circuit_id: C-110-WASHER-DRYER, room_id: 4f-storage, position: [932, 62, 100], source: "家具購買規劃總表!45", link_status: outlet-not-located}
-  - {id: LOAD-4F-ISLAND, name: 中島電器, circuit_id: C-110-ISLAND, room_id: 4f-kitchen, position: [1000, 293, 90], source: "家具購買規劃總表!7 + furniture.yaml kitchen rotation", link_status: furniture-aligned-estimate}
-  - {id: LOAD-4F-DEHUMIDIFIER, name: 吊隱式除濕機, circuit_id: C-110-DEHUMIDIFIER, room_id: 4f-storage, position: [950, 112, 245], source: "家具購買規劃總表!8", link_status: outlet-not-located}
-  - {id: LOAD-4F-FRIDGE, name: 冰箱, circuit_id: C-OUT-4F-03, room_id: 4f-kitchen, position: [850, 215, 105], source: "家具購買規劃總表!10 + furniture.yaml kitchen rotation", link_status: furniture-aligned-estimate}
-  - {id: LOAD-4F-HOOD, name: 抽油煙機, circuit_id: C-OUT-4F-03, room_id: 4f-kitchen, position: [1170, 350, 220], source: "家具購買規劃總表!47 + furniture.yaml kitchen rotation", link_status: furniture-aligned-estimate}
-  - {id: LOAD-4F-WATER-HEATER-1, name: 熱水器 1, circuit_id: C-220-WATER-HEATER-1, room_id: 4f-storage, source: smart-home.yaml / water-heaters, link_status: location-and-outlet-unconfirmed}
-  - {id: LOAD-4F-WATER-HEATER-2, name: 熱水器 2, circuit_id: C-220-WATER-HEATER-2, room_id: 4f-storage, source: smart-home.yaml / water-heaters, link_status: location-and-outlet-unconfirmed}
-
+- id: LOAD-4F-IH
+  name: IH 爐
+  circuit_id: C-220-IH
+  point_id: OUT-4F-V005
+  room_id: 4f-kitchen
+  position:
+  - 1170
+  - 350
+  - 90
+  source: 家具購買規劃總表!4 + furniture.yaml kitchen rotation
+  link_status: furniture-aligned-estimate
+- id: LOAD-4F-BATH-MAIN-HEATER
+  name: 主浴暖風機
+  circuit_id: C-220-BATH-MAIN-HEATER
+  point_id: OUT-4F-V006
+  room_id: 4f-main-bathroom
+  position:
+  - 82.7
+  - 430.8
+  - 270
+  source: 家具購買規劃總表!27
+  link_status: drawing-inferred
+- id: LOAD-4F-BATH-GUEST-HEATER
+  name: 客浴暖風機
+  circuit_id: C-220-BATH-GUEST-HEATER
+  point_id: OUT-4F-V002
+  room_id: 4f-guest-bathroom
+  position:
+  - 1094
+  - 101.2
+  - 270
+  source: 家具購買規劃總表!26
+  link_status: drawing-inferred
+- id: LOAD-4F-AC-LIVING
+  name: 客餐廳冷氣
+  circuit_id: C-220-AC-LIVING
+  point_id: OUT-4F-V007
+  room_id: 4f-living-dining
+  position:
+  - 549.5
+  - 581.9
+  - 230
+  source: electrical.yaml / intended_load
+  link_status: drawing-inferred
+- id: LOAD-4F-AC-MAIN
+  name: 主臥冷氣
+  circuit_id: C-220-AC-BEDROOMS
+  point_id: OUT-4F-V004
+  room_id: 4f-main-bedroom
+  position:
+  - 11.5
+  - 202.3
+  - 230
+  source: electrical.yaml / intended_load
+  link_status: drawing-inferred
+- id: LOAD-4F-AC-SECONDARY
+  name: 次臥冷氣
+  circuit_id: C-220-AC-BEDROOMS
+  point_id: OUT-4F-V008
+  room_id: 4f-secondary-bedroom
+  position:
+  - 233.8
+  - 583.3
+  - 230
+  source: electrical.yaml / intended_load
+  link_status: drawing-inferred
+- id: LOAD-4F-DISHWASHER
+  name: 洗碗機
+  circuit_id: C-110-DISHWASHER
+  room_id: 4f-kitchen
+  position:
+  - 1170
+  - 275
+  - 70
+  source: 家具購買規劃總表!11 + furniture.yaml kitchen rotation
+  link_status: furniture-aligned-estimate
+- id: LOAD-4F-WASHER-DRYER
+  name: 洗烘衣機
+  circuit_id: C-110-WASHER-DRYER
+  room_id: 4f-storage
+  position:
+  - 932
+  - 62
+  - 100
+  source: 家具購買規劃總表!45
+  link_status: outlet-not-located
+- id: LOAD-4F-ISLAND
+  name: 中島電器
+  circuit_id: C-110-ISLAND
+  room_id: 4f-kitchen
+  position:
+  - 1000
+  - 293
+  - 90
+  source: 家具購買規劃總表!7 + furniture.yaml kitchen rotation
+  link_status: furniture-aligned-estimate
+- id: LOAD-4F-DEHUMIDIFIER
+  name: 吊隱式除濕機
+  circuit_id: C-110-DEHUMIDIFIER
+  room_id: 4f-storage
+  position:
+  - 950
+  - 112
+  - 245
+  source: 家具購買規劃總表!8
+  link_status: outlet-not-located
+- id: LOAD-4F-FRIDGE
+  name: 冰箱
+  circuit_id: C-OUT-4F-03
+  room_id: 4f-kitchen
+  position:
+  - 850
+  - 215
+  - 105
+  source: 家具購買規劃總表!10 + furniture.yaml kitchen rotation
+  link_status: furniture-aligned-estimate
+- id: LOAD-4F-HOOD
+  name: 抽油煙機
+  circuit_id: C-OUT-4F-03
+  room_id: 4f-kitchen
+  position:
+  - 1170
+  - 350
+  - 220
+  source: 家具購買規劃總表!47 + furniture.yaml kitchen rotation
+  link_status: furniture-aligned-estimate
+- id: LOAD-4F-WATER-HEATER-1
+  name: 熱水器 1
+  circuit_id: C-220-WATER-HEATER-1
+  room_id: 4f-storage
+  source: smart-home.yaml / water-heaters
+  link_status: location-and-outlet-unconfirmed
+- id: LOAD-4F-WATER-HEATER-2
+  name: 熱水器 2
+  circuit_id: C-220-WATER-HEATER-2
+  room_id: 4f-storage
+  source: smart-home.yaml / water-heaters
+  link_status: location-and-outlet-unconfirmed
 point_types:
   general_outlet:
     label: 一般電器插座
     symbol: S
     voltage: 110
     default_mounting_height_cm: 30
-    render_color: "#7cad69"
+    render_color: '#7cad69'
   optional_outlet:
     label: 可有可無／可討論插座
     symbol: S?
     voltage: 110
     default_mounting_height_cm: 30
-    render_color: "#c9dec1"
+    render_color: '#c9dec1'
   high_level_outlet:
     label: 靠近天花板插座
     symbol: U
     voltage: 110
     default_mounting_height_cm: 220
-    render_color: "#4286f5"
+    render_color: '#4286f5'
   planned_220v:
     label: 220V規劃點
     symbol: V
     voltage: 220
     default_mounting_height_cm: to-confirm
-    render_color: "#e8b8bc"
+    render_color: '#e8b8bc'
   downlight:
     label: 崁燈
     symbol: DL
     voltage: 110
     default_mounting_height_cm: 280
-    render_color: "#f1d93b"
+    render_color: '#f1d93b'
   pendant:
     label: 吊燈
     symbol: PD
     voltage: 110
     default_mounting_height_cm: 260
-    render_color: "#d94a4a"
+    render_color: '#d94a4a'
   ceiling_light:
     label: 吸頂燈
     symbol: CL
     voltage: 110
     default_mounting_height_cm: 280
-    render_color: "#333333"
-
+    render_color: '#333333'
 circuits:
-  - id: C-OUT-4F-01
-    name: 臥室與私領域一般插座
-    category: receptacle
-    voltage: 110
-    conductor_mm2: 2.0
-    breaker_a: to-confirm
-    rcd_required: false
-    status: proposed
-  - id: C-OUT-4F-02
-    name: 客餐廳與入口一般插座
-    category: receptacle
-    voltage: 110
-    conductor_mm2: 2.0
-    breaker_a: to-confirm
-    rcd_required: false
-    status: proposed
-  - id: C-OUT-4F-03
-    name: 廚房與家事區一般插座
-    category: receptacle
-    voltage: 110
-    conductor_mm2: 2.0
-    breaker_a: to-confirm
-    rcd_required: true
-    status: proposed
-  - id: C-OUT-BATH-MAIN
-    name: 主浴插座
-    category: bathroom-receptacle
-    voltage: 110
-    conductor_mm2: 2.0
-    breaker_a: to-confirm
-    rcd_required: true
-    status: planned
-  - id: C-OUT-BATH-GUEST
-    name: 客浴插座
-    category: bathroom-receptacle
-    voltage: 110
-    conductor_mm2: 2.0
-    breaker_a: to-confirm
-    rcd_required: true
-    status: planned
-  - id: C-LGT-4F-01
-    name: 臥室、走道與主浴照明
-    category: lighting
-    voltage: 110
-    conductor_mm2: 2.0
-    breaker_a: to-confirm
-    neutral_at_switch: true
-    status: proposed
-  - id: C-LGT-4F-02
-    name: 客餐廳、廚房、客浴與入口照明
-    category: lighting
-    voltage: 110
-    conductor_mm2: 2.0
-    breaker_a: to-confirm
-    neutral_at_switch: true
-    status: proposed
-  - id: C-220-IH
-    name: IH爐專用
-    category: dedicated-appliance
-    voltage: 220
-    conductor_mm2: 5.5
-    breaker_a: 30
-    rcd_required: true
-    status: planned
-  - id: C-220-BATH-MAIN-HEATER
-    name: 主浴暖風機專用
-    category: dedicated-appliance
-    voltage: 220
-    conductor_mm2: 5.5
-    breaker_a: to-confirm
-    rcd_required: true
-    status: planned
-  - id: C-220-BATH-GUEST-HEATER
-    name: 客浴暖風機專用
-    category: dedicated-appliance
-    voltage: 220
-    conductor_mm2: 5.5
-    breaker_a: to-confirm
-    rcd_required: true
-    status: planned
-  - id: C-220-AC-LIVING
-    name: 客餐廳冷氣專用
-    category: hvac
-    voltage: 220
-    conductor_mm2: 5.5
-    breaker_a: to-confirm
-    status: planned
-  - id: C-220-AC-BEDROOMS
-    name: 主臥與次臥一對二冷氣
-    category: hvac
-    voltage: 220
-    conductor_mm2: 5.5
-    breaker_a: to-confirm
-    status: planned
-  - id: C-220-UTILITY-RESERVED
-    name: 家事區220V預留
-    category: reserved
-    voltage: 220
-    conductor_mm2: to-confirm
-    breaker_a: to-confirm
-    status: needs-load-confirmation
-  - id: C-220-KITCHEN-RESERVED
-    name: 廚房220V預留
-    category: reserved
-    voltage: 220
-    conductor_mm2: to-confirm
-    breaker_a: to-confirm
-    status: needs-load-confirmation
-  - id: C-110-DISHWASHER
-    name: 洗碗機專用
-    category: dedicated-appliance
-    voltage: 110
-    conductor_mm2: 5.5
-    breaker_a: to-confirm
-    rcd_required: true
-    status: planned
-  - id: C-110-WASHER-DRYER
-    name: 洗烘衣機專用
-    category: dedicated-appliance
-    voltage: 110
-    conductor_mm2: 5.5
-    breaker_a: to-confirm
-    rcd_required: true
-    status: planned
-  - id: C-110-ISLAND
-    name: 中島電器專用
-    category: dedicated-appliance
-    voltage: 110
-    conductor_mm2: 5.5
-    breaker_a: to-confirm
-    rcd_required: true
-    status: planned
-  - id: C-110-DEHUMIDIFIER
-    name: 吊隱式除濕機專用
-    category: dedicated-appliance
-    voltage: 110
-    conductor_mm2: to-confirm
-    breaker_a: to-confirm
-    status: planned
-  - id: C-220-WATER-HEATER-1
-    name: 熱水器 1 專用（待核）
-    category: dedicated-appliance
-    voltage: 220
-    conductor_mm2: to-confirm
-    breaker_a: to-confirm
-    status: needs-panel-review
-  - id: C-220-WATER-HEATER-2
-    name: 熱水器 2 專用（待核）
-    category: dedicated-appliance
-    voltage: 220
-    conductor_mm2: to-confirm
-    breaker_a: to-confirm
-    status: needs-panel-review
-
+- id: C-OUT-4F-01
+  name: 臥室與私領域一般插座
+  category: receptacle
+  voltage: 110
+  conductor_mm2: 2.0
+  breaker_a: to-confirm
+  rcd_required: false
+  status: proposed
+- id: C-OUT-4F-02
+  name: 客餐廳與入口一般插座
+  category: receptacle
+  voltage: 110
+  conductor_mm2: 2.0
+  breaker_a: to-confirm
+  rcd_required: false
+  status: proposed
+- id: C-OUT-4F-03
+  name: 廚房與家事區一般插座
+  category: receptacle
+  voltage: 110
+  conductor_mm2: 2.0
+  breaker_a: to-confirm
+  rcd_required: true
+  status: proposed
+- id: C-OUT-BATH-MAIN
+  name: 主浴插座
+  category: bathroom-receptacle
+  voltage: 110
+  conductor_mm2: 2.0
+  breaker_a: to-confirm
+  rcd_required: true
+  status: planned
+- id: C-OUT-BATH-GUEST
+  name: 客浴插座
+  category: bathroom-receptacle
+  voltage: 110
+  conductor_mm2: 2.0
+  breaker_a: to-confirm
+  rcd_required: true
+  status: planned
+- id: C-LGT-4F-01
+  name: 臥室、走道與主浴照明
+  category: lighting
+  voltage: 110
+  conductor_mm2: 2.0
+  breaker_a: to-confirm
+  neutral_at_switch: true
+  status: proposed
+- id: C-LGT-4F-02
+  name: 客餐廳、廚房、客浴與入口照明
+  category: lighting
+  voltage: 110
+  conductor_mm2: 2.0
+  breaker_a: to-confirm
+  neutral_at_switch: true
+  status: proposed
+- id: C-220-IH
+  name: IH爐專用
+  category: dedicated-appliance
+  voltage: 220
+  conductor_mm2: 5.5
+  breaker_a: 30
+  rcd_required: true
+  status: planned
+- id: C-220-BATH-MAIN-HEATER
+  name: 主浴暖風機專用
+  category: dedicated-appliance
+  voltage: 220
+  conductor_mm2: 5.5
+  breaker_a: to-confirm
+  rcd_required: true
+  status: planned
+- id: C-220-BATH-GUEST-HEATER
+  name: 客浴暖風機專用
+  category: dedicated-appliance
+  voltage: 220
+  conductor_mm2: 5.5
+  breaker_a: to-confirm
+  rcd_required: true
+  status: planned
+- id: C-220-AC-LIVING
+  name: 客餐廳冷氣專用
+  category: hvac
+  voltage: 220
+  conductor_mm2: 5.5
+  breaker_a: to-confirm
+  status: planned
+- id: C-220-AC-BEDROOMS
+  name: 主臥與次臥一對二冷氣
+  category: hvac
+  voltage: 220
+  conductor_mm2: 5.5
+  breaker_a: to-confirm
+  status: planned
+- id: C-220-UTILITY-RESERVED
+  name: 家事區220V預留
+  category: reserved
+  voltage: 220
+  conductor_mm2: to-confirm
+  breaker_a: to-confirm
+  status: needs-load-confirmation
+- id: C-220-KITCHEN-RESERVED
+  name: 廚房220V預留
+  category: reserved
+  voltage: 220
+  conductor_mm2: to-confirm
+  breaker_a: to-confirm
+  status: needs-load-confirmation
+- id: C-110-DISHWASHER
+  name: 洗碗機專用
+  category: dedicated-appliance
+  voltage: 110
+  conductor_mm2: 5.5
+  breaker_a: to-confirm
+  rcd_required: true
+  status: planned
+- id: C-110-WASHER-DRYER
+  name: 洗烘衣機專用
+  category: dedicated-appliance
+  voltage: 110
+  conductor_mm2: 5.5
+  breaker_a: to-confirm
+  rcd_required: true
+  status: planned
+- id: C-110-ISLAND
+  name: 中島電器專用
+  category: dedicated-appliance
+  voltage: 110
+  conductor_mm2: 5.5
+  breaker_a: to-confirm
+  rcd_required: true
+  status: planned
+- id: C-110-DEHUMIDIFIER
+  name: 吊隱式除濕機專用
+  category: dedicated-appliance
+  voltage: 110
+  conductor_mm2: to-confirm
+  breaker_a: to-confirm
+  status: planned
+- id: C-220-WATER-HEATER-1
+  name: 熱水器 1 專用（待核）
+  category: dedicated-appliance
+  voltage: 220
+  conductor_mm2: to-confirm
+  breaker_a: to-confirm
+  status: needs-panel-review
+- id: C-220-WATER-HEATER-2
+  name: 熱水器 2 專用（待核）
+  category: dedicated-appliance
+  voltage: 220
+  conductor_mm2: to-confirm
+  breaker_a: to-confirm
+  status: needs-panel-review
 points:
-  - id: OUT-4F-S001
-    type: general_outlet
-    floor: 4F
-    space_id: 4f-main-bedroom
-    circuit_id: C-OUT-4F-01
-    position: [97.6, 20.9, 30]
-    source_id: SRC-4F-OUTLETS
-    status: needs-point-verification
-  - id: OUT-4F-S002
-    type: general_outlet
-    floor: 4F
-    space_id: 4f-guest-bathroom
-    circuit_id: C-OUT-BATH-GUEST
-    position: [1029.4, 25.8, 30]
-    source_id: SRC-4F-OUTLETS
-    status: needs-point-verification
-  - id: OUT-4F-S003
-    type: general_outlet
-    floor: 4F
-    space_id: 4f-main-bedroom
-    circuit_id: C-OUT-4F-01
-    position: [347.8, 25.8, 30]
-    source_id: SRC-4F-OUTLETS
-    status: needs-point-verification
-  - id: OUT-4F-S004
-    type: general_outlet
-    floor: 4F
-    space_id: 4f-living-dining
-    circuit_id: C-OUT-4F-02
-    position: [647.9, 30.7, 30]
-    source_id: SRC-4F-OUTLETS
-    status: needs-point-verification
-  - id: OUT-4F-S005
-    type: general_outlet
-    floor: 4F
-    space_id: 4f-storage
-    circuit_id: C-OUT-4F-03
-    position: [922.9, 30.7, 30]
-    source_id: SRC-4F-OUTLETS
-    status: needs-point-verification
-  - id: OUT-4F-S006
-    type: general_outlet
-    floor: 4F
-    space_id: 4f-utility-passage
-    circuit_id: C-OUT-4F-03
-    position: [816.2, 30.7, 30]
-    source_id: SRC-4F-OUTLETS
-    status: needs-point-verification
-  - id: OUT-4F-S007
-    type: general_outlet
-    floor: 4F
-    space_id: 4f-main-bedroom
-    circuit_id: C-OUT-4F-01
-    position: [459.1, 83.4, 30]
-    source_id: SRC-4F-OUTLETS
-    status: needs-point-verification
-  - id: OUT-4F-S008
-    type: general_outlet
-    floor: 4F
-    space_id: 4f-main-bedroom
-    circuit_id: C-OUT-4F-01
-    position: [23.5, 93.5, 30]
-    source_id: SRC-4F-OUTLETS
-    status: needs-point-verification
-  - id: OUT-4F-S009
-    type: general_outlet
-    floor: 4F
-    space_id: 4f-utility-passage
-    circuit_id: C-OUT-4F-03
-    position: [806, 156.5, 30]
-    source_id: SRC-4F-OUTLETS
-    status: needs-point-verification
-  - id: OUT-4F-S010
-    type: general_outlet
-    floor: 4F
-    space_id: 4f-main-bedroom
-    circuit_id: C-OUT-4F-01
-    position: [459.5, 157, 30]
-    source_id: SRC-4F-OUTLETS
-    status: needs-point-verification
-  - id: OUT-4F-S011
-    type: general_outlet
-    floor: 4F
-    space_id: 4f-living-dining
-    circuit_id: C-OUT-4F-02
-    position: [760.1, 218, 30]
-    source_id: SRC-4F-OUTLETS
-    status: needs-point-verification
-  - id: OUT-4F-S012
-    type: general_outlet
-    floor: 4F
-    space_id: 4f-kitchen
-    circuit_id: C-OUT-4F-03
-    position: [807.8, 218, 30]
-    source_id: SRC-4F-OUTLETS
-    status: needs-point-verification
-  - id: OUT-4F-S013
-    type: general_outlet
-    floor: 4F
-    space_id: 4f-main-bedroom
-    circuit_id: C-OUT-4F-01
-    position: [459.5, 219.8, 30]
-    source_id: SRC-4F-OUTLETS
-    status: needs-point-verification
-  - id: OUT-4F-S014
-    type: general_outlet
-    floor: 4F
-    space_id: 4f-kitchen
-    circuit_id: C-OUT-4F-03
-    position: [1169.9, 277.4, 30]
-    source_id: SRC-4F-OUTLETS
-    status: needs-point-verification
-  - id: OUT-4F-S015
-    type: general_outlet
-    floor: 4F
-    space_id: 4f-main-bedroom
-    circuit_id: C-OUT-4F-01
-    position: [167.8, 304.5, 30]
-    source_id: SRC-4F-OUTLETS
-    status: needs-point-verification
-  - id: OUT-4F-S016
-    type: general_outlet
-    floor: 4F
-    space_id: 4f-kitchen
-    circuit_id: C-OUT-4F-03
-    position: [1018.9, 332.1, 30]
-    source_id: SRC-4F-OUTLETS
-    status: needs-point-verification
-  - id: OUT-4F-S017
-    type: general_outlet
-    floor: 4F
-    space_id: 4f-main-bathroom
-    circuit_id: C-OUT-BATH-MAIN
-    position: [156.4, 351.9, 30]
-    source_id: SRC-4F-OUTLETS
-    status: needs-point-verification
-  - id: OUT-4F-S018
-    type: general_outlet
-    floor: 4F
-    space_id: 4f-kitchen
-    circuit_id: C-OUT-4F-03
-    position: [1007.7, 376.4, 30]
-    source_id: SRC-4F-OUTLETS
-    status: needs-point-verification
-  - id: OUT-4F-S019
-    type: general_outlet
-    floor: 4F
-    space_id: 4f-living-dining
-    circuit_id: C-OUT-4F-02
-    position: [760.1, 376.4, 30]
-    source_id: SRC-4F-OUTLETS
-    status: needs-point-verification
-  - id: OUT-4F-S020
-    type: general_outlet
-    floor: 4F
-    space_id: 4f-kitchen
-    circuit_id: C-OUT-4F-03
-    position: [815.7, 376.4, 30]
-    source_id: SRC-4F-OUTLETS
-    status: needs-point-verification
-  - id: OUT-4F-S021
-    type: general_outlet
-    floor: 4F
-    space_id: 4f-secondary-bedroom
-    circuit_id: C-OUT-4F-01
-    position: [200.5, 388.6, 30]
-    source_id: SRC-4F-OUTLETS
-    status: needs-point-verification
-  - id: OUT-4F-S022
-    type: general_outlet
-    floor: 4F
-    space_id: 4f-secondary-bedroom
-    circuit_id: C-OUT-4F-01
-    position: [459, 417, 30]
-    source_id: SRC-4F-OUTLETS
-    status: needs-point-verification
-  - id: OUT-4F-S023
-    type: general_outlet
-    floor: 4F
-    space_id: 4f-secondary-bedroom
-    circuit_id: C-OUT-4F-01
-    position: [420.8, 438.1, 30]
-    source_id: SRC-4F-OUTLETS
-    status: needs-point-verification
-  - id: OUT-4F-S024
-    type: general_outlet
-    floor: 4F
-    space_id: 4f-main-bathroom
-    circuit_id: C-OUT-BATH-MAIN
-    position: [155.1, 446.3, 30]
-    source_id: SRC-4F-OUTLETS
-    status: needs-point-verification
-  - id: OUT-4F-S025
-    type: general_outlet
-    floor: 4F
-    space_id: 4f-secondary-bedroom
-    circuit_id: C-OUT-4F-01
-    position: [200.8, 562.6, 30]
-    source_id: SRC-4F-OUTLETS
-    status: needs-point-verification
-  - id: OUT-4F-S026
-    type: general_outlet
-    floor: 4F
-    space_id: 4f-secondary-bedroom
-    circuit_id: C-OUT-4F-01
-    position: [459.2, 577.7, 30]
-    source_id: SRC-4F-OUTLETS
-    status: needs-point-verification
-  - id: OUT-4F-S027
-    type: general_outlet
-    floor: 4F
-    space_id: 4f-living-dining
-    circuit_id: C-OUT-4F-02
-    position: [688.6, 577.9, 30]
-    source_id: SRC-4F-OUTLETS
-    status: needs-point-verification
-  - id: OUT-4F-O001
-    type: optional_outlet
-    floor: 4F
-    space_id: 4f-guest-bathroom
-    circuit_id: C-OUT-BATH-GUEST
-    position: [1086.7, 25.8, 30]
-    source_id: SRC-4F-OUTLETS
-    status: optional
-  - id: OUT-4F-O002
-    type: optional_outlet
-    floor: 4F
-    space_id: 4f-living-dining
-    circuit_id: C-OUT-4F-02
-    position: [760.1, 455.7, 30]
-    source_id: SRC-4F-OUTLETS
-    status: optional
-  - id: OUT-4F-O003
-    type: optional_outlet
-    floor: 4F
-    space_id: 4f-secondary-bedroom
-    circuit_id: C-OUT-4F-01
-    position: [459.5, 525.7, 30]
-    source_id: SRC-4F-OUTLETS
-    status: optional
-  - id: OUT-4F-U001
-    type: high_level_outlet
-    floor: 4F
-    space_id: 4f-main-bedroom
-    circuit_id: C-OUT-4F-01
-    position: [148.8, 257.2, 220]
-    source_id: SRC-4F-OUTLETS
-    status: drawing-extracted
-  - id: OUT-4F-U002
-    type: high_level_outlet
-    floor: 4F
-    space_id: 4f-main-bedroom
-    circuit_id: C-OUT-4F-01
-    position: [12.1, 257.8, 220]
-    source_id: SRC-4F-OUTLETS
-    status: drawing-extracted
-  - id: OUT-4F-U003
-    type: high_level_outlet
-    floor: 4F
-    space_id: 4f-secondary-bedroom
-    circuit_id: C-OUT-4F-01
-    position: [485, 601.7, 220]
-    source_id: SRC-4F-OUTLETS
-    status: drawing-extracted
-  - id: OUT-4F-V001
-    type: planned_220v
-    floor: 4F
-    space_id: 4f-utility-passage
-    circuit_id: C-220-UTILITY-RESERVED
-    position: [869.2, 30.6, to-confirm]
-    source_id: SRC-4F-OUTLETS
-    status: needs-load-confirmation
-    intended_load: utility-high-load-to-confirm
-  - id: OUT-4F-V002
-    type: planned_220v
-    floor: 4F
-    space_id: 4f-guest-bathroom
-    circuit_id: C-220-BATH-GUEST-HEATER
-    position: [1094, 101.2, to-confirm]
-    source_id: SRC-4F-OUTLETS
-    status: needs-load-confirmation
-    intended_load: guest-bath-heater
-  - id: OUT-4F-V003
-    type: planned_220v
-    floor: 4F
-    space_id: 4f-kitchen
-    circuit_id: C-220-KITCHEN-RESERVED
-    position: [1169.8, 195.2, to-confirm]
-    source_id: SRC-4F-OUTLETS
-    status: needs-load-confirmation
-    intended_load: kitchen-high-load-to-confirm
-  - id: OUT-4F-V004
-    type: planned_220v
-    floor: 4F
-    space_id: 4f-main-bedroom
-    circuit_id: C-220-AC-BEDROOMS
-    position: [12.9, 219.8, to-confirm]
-    source_id: SRC-4F-OUTLETS
-    status: needs-load-confirmation
-    intended_load: main-bedroom-ac
-  - id: OUT-4F-V005
-    type: planned_220v
-    floor: 4F
-    space_id: 4f-kitchen
-    circuit_id: C-220-IH
-    position: [1170, 350, to-confirm]
-    source_id: SRC-4F-OUTLETS
-    status: needs-load-confirmation
-    intended_load: ih-cooktop
-  - id: OUT-4F-V006
-    type: planned_220v
-    floor: 4F
-    space_id: 4f-main-bathroom
-    circuit_id: C-220-BATH-MAIN-HEATER
-    position: [82.7, 430.8, to-confirm]
-    source_id: SRC-4F-OUTLETS
-    status: needs-load-confirmation
-    intended_load: main-bath-heater
-  - id: OUT-4F-V007
-    type: planned_220v
-    floor: 4F
-    space_id: 4f-living-dining
-    circuit_id: C-220-AC-LIVING
-    position: [549.5, 581.9, to-confirm]
-    source_id: SRC-4F-OUTLETS
-    status: needs-load-confirmation
-    intended_load: living-room-ac
-  - id: OUT-4F-V008
-    type: planned_220v
-    floor: 4F
-    space_id: 4f-secondary-bedroom
-    circuit_id: C-220-AC-BEDROOMS
-    position: [246.7, 583.3, to-confirm]
-    source_id: SRC-4F-OUTLETS
-    status: needs-load-confirmation
-    intended_load: secondary-bedroom-ac
-  - id: LGT-4F-DL001
-    type: downlight
-    floor: 4F
-    space_id: 4f-main-bedroom
-    circuit_id: C-LGT-4F-01
-    position: [372.5, 49.5, 280]
-    source_id: SRC-4F-LIGHTS
-    status: drawing-extracted
-    control_group_id: SG-MASTER-DOWNLIGHT
-  - id: LGT-4F-DL002
-    type: downlight
-    floor: 4F
-    space_id: 4f-main-bedroom
-    circuit_id: C-LGT-4F-01
-    position: [465.6, 69.6, 280]
-    source_id: SRC-4F-LIGHTS
-    status: drawing-extracted
-    control_group_id: SG-MASTER-DOWNLIGHT
-  - id: LGT-4F-DL003
-    type: downlight
-    floor: 4F
-    space_id: 4f-main-bedroom
-    circuit_id: C-LGT-4F-01
-    position: [64.4, 74.3, 280]
-    source_id: SRC-4F-LIGHTS
-    status: drawing-extracted
-    control_group_id: SG-MASTER-DOWNLIGHT
-  - id: LGT-4F-DL004
-    type: downlight
-    floor: 4F
-    space_id: 4f-guest-bathroom
-    circuit_id: C-LGT-4F-02
-    position: [1154.7, 82.4, 280]
-    source_id: SRC-4F-LIGHTS
-    status: drawing-extracted
-    control_group_id: SG-GUEST-BATH-DOWNLIGHT
-  - id: LGT-4F-DL005
-    type: downlight
-    floor: 4F
-    space_id: 4f-guest-bathroom
-    circuit_id: C-LGT-4F-02
-    position: [1080.3, 82.5, 280]
-    source_id: SRC-4F-LIGHTS
-    status: drawing-extracted
-    control_group_id: SG-GUEST-BATH-DOWNLIGHT
-  - id: LGT-4F-DL006
-    type: downlight
-    floor: 4F
-    space_id: 4f-guest-bathroom
-    circuit_id: C-LGT-4F-02
-    position: [1021, 82.7, 280]
-    source_id: SRC-4F-LIGHTS
-    status: drawing-extracted
-    control_group_id: SG-GUEST-BATH-DOWNLIGHT
-  - id: LGT-4F-DL007
-    type: downlight
-    floor: 4F
-    space_id: 4f-storage
-    circuit_id: C-LGT-4F-02
-    position: [941.7, 124.9, 280]
-    source_id: SRC-4F-LIGHTS
-    status: drawing-extracted
-    control_group_id: SG-UTILITY-DOWNLIGHT
-  - id: LGT-4F-DL008
-    type: downlight
-    floor: 4F
-    space_id: 4f-main-bedroom
-    circuit_id: C-LGT-4F-01
-    position: [372.6, 128.5, 280]
-    source_id: SRC-4F-LIGHTS
-    status: drawing-extracted
-    control_group_id: SG-MASTER-DOWNLIGHT
-  - id: LGT-4F-DL009
-    type: downlight
-    floor: 4F
-    space_id: 4f-main-bedroom
-    circuit_id: C-LGT-4F-01
-    position: [466, 135, 280]
-    source_id: SRC-4F-LIGHTS
-    status: drawing-extracted
-    control_group_id: SG-MASTER-DOWNLIGHT
-  - id: LGT-4F-DL010
-    type: downlight
-    floor: 4F
-    space_id: 4f-main-bedroom
-    circuit_id: C-LGT-4F-01
-    position: [64.3, 149.6, 280]
-    source_id: SRC-4F-LIGHTS
-    status: drawing-extracted
-    control_group_id: SG-MASTER-DOWNLIGHT
-  - id: LGT-4F-DL011
-    type: downlight
-    floor: 4F
-    space_id: 4f-main-bedroom
-    circuit_id: C-LGT-4F-01
-    position: [372.7, 195.2, 280]
-    source_id: SRC-4F-LIGHTS
-    status: drawing-extracted
-    control_group_id: SG-MASTER-DOWNLIGHT
-  - id: LGT-4F-DL012
-    type: downlight
-    floor: 4F
-    space_id: 4f-main-bedroom
-    circuit_id: C-LGT-4F-01
-    position: [466, 199.7, 280]
-    source_id: SRC-4F-LIGHTS
-    status: drawing-extracted
-    control_group_id: SG-MASTER-DOWNLIGHT
-  - id: LGT-4F-DL013
-    type: downlight
-    floor: 4F
-    space_id: 4f-kitchen
-    circuit_id: C-LGT-4F-02
-    position: [1125.9, 224.8, 280]
-    source_id: SRC-4F-LIGHTS
-    status: drawing-extracted
-    control_group_id: SG-KITCHEN-DOWNLIGHT
-  - id: LGT-4F-DL014
-    type: downlight
-    floor: 4F
-    space_id: 4f-main-bedroom
-    circuit_id: C-LGT-4F-01
-    position: [64.5, 225.1, 280]
-    source_id: SRC-4F-LIGHTS
-    status: drawing-extracted
-    control_group_id: SG-MASTER-DOWNLIGHT
-  - id: LGT-4F-DL015
-    type: downlight
-    floor: 4F
-    space_id: 4f-kitchen
-    circuit_id: C-LGT-4F-02
-    position: [1007.7, 231.4, 280]
-    source_id: SRC-4F-LIGHTS
-    status: drawing-extracted
-    control_group_id: SG-KITCHEN-DOWNLIGHT
-  - id: LGT-4F-DL016
-    type: downlight
-    floor: 4F
-    space_id: 4f-kitchen
-    circuit_id: C-LGT-4F-02
-    position: [912.2, 263, 280]
-    source_id: SRC-4F-LIGHTS
-    status: drawing-extracted
-    control_group_id: SG-KITCHEN-DOWNLIGHT
-  - id: LGT-4F-DL017
-    type: downlight
-    floor: 4F
-    space_id: 4f-kitchen
-    circuit_id: C-LGT-4F-02
-    position: [841, 263.3, 280]
-    source_id: SRC-4F-LIGHTS
-    status: drawing-extracted
-    control_group_id: SG-KITCHEN-DOWNLIGHT
-  - id: LGT-4F-DL018
-    type: downlight
-    floor: 4F
-    space_id: 4f-kitchen
-    circuit_id: C-LGT-4F-02
-    position: [1126, 288.1, 280]
-    source_id: SRC-4F-LIGHTS
-    status: drawing-extracted
-    control_group_id: SG-KITCHEN-DOWNLIGHT
-  - id: LGT-4F-DL019
-    type: downlight
-    floor: 4F
-    space_id: 4f-living-dining
-    circuit_id: C-LGT-4F-02
-    position: [533.7, 305.3, 280]
-    source_id: SRC-4F-LIGHTS
-    status: drawing-extracted
-    control_group_id: SG-LIVING-DINING-DOWNLIGHT
-  - id: LGT-4F-DL020
-    type: downlight
-    floor: 4F
-    space_id: 4f-living-dining
-    circuit_id: C-LGT-4F-02
-    position: [628.2, 305.6, 280]
-    source_id: SRC-4F-LIGHTS
-    status: drawing-extracted
-    control_group_id: SG-LIVING-DINING-DOWNLIGHT
-  - id: LGT-4F-DL021
-    type: downlight
-    floor: 4F
-    space_id: 4f-main-bedroom
-    circuit_id: C-LGT-4F-01
-    position: [393.5, 305.7, 280]
-    source_id: SRC-4F-LIGHTS
-    status: drawing-extracted
-    control_group_id: SG-MASTER-DOWNLIGHT
-  - id: LGT-4F-DL022
-    type: downlight
-    floor: 4F
-    space_id: 4f-kitchen
-    circuit_id: C-LGT-4F-02
-    position: [1125.8, 351.1, 280]
-    source_id: SRC-4F-LIGHTS
-    status: drawing-extracted
-    control_group_id: SG-KITCHEN-DOWNLIGHT
-  - id: LGT-4F-DL023
-    type: downlight
-    floor: 4F
-    space_id: 4f-secondary-bedroom
-    circuit_id: C-LGT-4F-01
-    position: [247, 358.6, 280]
-    source_id: SRC-4F-LIGHTS
-    status: drawing-extracted
-    control_group_id: SG-SECONDARY-DOWNLIGHT
-  - id: LGT-4F-DL024
-    type: downlight
-    floor: 4F
-    space_id: 4f-living-dining
-    circuit_id: C-LGT-4F-02
-    position: [681.3, 379.3, 280]
-    source_id: SRC-4F-LIGHTS
-    status: drawing-extracted
-    control_group_id: SG-LIVING-DINING-DOWNLIGHT
-  - id: LGT-4F-DL025
-    type: downlight
-    floor: 4F
-    space_id: 4f-main-bathroom
-    circuit_id: C-LGT-4F-01
-    position: [99.3, 379.4, 280]
-    source_id: SRC-4F-LIGHTS
-    status: drawing-extracted
-    control_group_id: SG-MAIN-BATH-DOWNLIGHT
-  - id: LGT-4F-DL026
-    type: downlight
-    floor: 4F
-    space_id: 4f-secondary-bedroom
-    circuit_id: C-LGT-4F-01
-    position: [473.9, 424.5, 280]
-    source_id: SRC-4F-LIGHTS
-    status: drawing-extracted
-    control_group_id: SG-SECONDARY-DOWNLIGHT
-  - id: LGT-4F-DL027
-    type: downlight
-    floor: 4F
-    space_id: 4f-living-dining
-    circuit_id: C-LGT-4F-02
-    position: [681.5, 456.4, 280]
-    source_id: SRC-4F-LIGHTS
-    status: drawing-extracted
-    control_group_id: SG-LIVING-DINING-DOWNLIGHT
-  - id: LGT-4F-DL028
-    type: downlight
-    floor: 4F
-    space_id: 4f-main-bathroom
-    circuit_id: C-LGT-4F-01
-    position: [99.5, 461.5, 280]
-    source_id: SRC-4F-LIGHTS
-    status: drawing-extracted
-    control_group_id: SG-MAIN-BATH-DOWNLIGHT
-  - id: LGT-4F-DL029
-    type: downlight
-    floor: 4F
-    space_id: 4f-secondary-bedroom
-    circuit_id: C-LGT-4F-01
-    position: [473.8, 522.6, 280]
-    source_id: SRC-4F-LIGHTS
-    status: drawing-extracted
-    control_group_id: SG-SECONDARY-DOWNLIGHT
-  - id: LGT-4F-DL030
-    type: downlight
-    floor: 4F
-    space_id: 4f-living-dining
-    circuit_id: C-LGT-4F-02
-    position: [681.3, 533.5, 280]
-    source_id: SRC-4F-LIGHTS
-    status: drawing-extracted
-    control_group_id: SG-LIVING-DINING-DOWNLIGHT
-  - id: LGT-4F-DL031
-    type: downlight
-    floor: 4F
-    space_id: 4f-main-bathroom
-    circuit_id: C-LGT-4F-01
-    position: [99.3, 552.1, 280]
-    source_id: SRC-4F-LIGHTS
-    status: drawing-extracted
-    control_group_id: SG-MAIN-BATH-DOWNLIGHT
-  - id: LGT-4F-DL032
-    type: downlight
-    floor: 4F
-    space_id: 4f-secondary-bedroom
-    circuit_id: C-LGT-4F-01
-    position: [247.2, 562.4, 280]
-    source_id: SRC-4F-LIGHTS
-    status: drawing-extracted
-    control_group_id: SG-SECONDARY-DOWNLIGHT
-  - id: LGT-4F-DL033
-    type: downlight
-    floor: 4F
-    space_id: 4f-secondary-bedroom
-    circuit_id: C-LGT-4F-01
-    position: [356.7, 562.5, 280]
-    source_id: SRC-4F-LIGHTS
-    status: drawing-extracted
-    control_group_id: SG-SECONDARY-DOWNLIGHT
-  - id: LGT-4F-PD001
-    type: pendant
-    floor: 4F
-    space_id: 4f-living-dining
-    circuit_id: C-LGT-4F-02
-    position: [559.6, 470.4, 260]
-    source_id: SRC-4F-LIGHTS
-    status: drawing-extracted
-    control_group_id: SG-LIVING-DINING-PENDANT
-  - id: LGT-4F-PD002
-    type: pendant
-    floor: 4F
-    space_id: 4f-kitchen
-    circuit_id: C-LGT-4F-02
-    position: [1008.1, 305.8, 260]
-    source_id: SRC-4F-LIGHTS
-    status: drawing-extracted
-    control_group_id: SG-KITCHEN-PENDANT
-  - id: LGT-4F-PD003
-    type: pendant
-    floor: 4F
-    space_id: 4f-kitchen
-    circuit_id: C-LGT-4F-02
-    position: [1008.1, 348.8, 260]
-    source_id: SRC-4F-LIGHTS
-    status: drawing-extracted
-    control_group_id: SG-KITCHEN-PENDANT
-  - id: LGT-4F-CL001
-    type: ceiling_light
-    floor: 4F
-    space_id: 4f-main-bedroom
-    circuit_id: C-LGT-4F-01
-    position: [217.2, 113, 280]
-    source_id: SRC-4F-LIGHTS
-    status: drawing-extracted
-    control_group_id: SG-MASTER-CEILING
-  - id: LGT-4F-CL002
-    type: ceiling_light
-    floor: 4F
-    space_id: 4f-living-dining
-    circuit_id: C-LGT-4F-02
-    position: [595.4, 154.7, 280]
-    source_id: SRC-4F-LIGHTS
-    status: drawing-extracted
-    control_group_id: SG-LIVING-DINING-CEILING
-  - id: LGT-4F-CL003
-    type: ceiling_light
-    floor: 4F
-    space_id: 4f-secondary-bedroom
-    circuit_id: C-LGT-4F-01
-    position: [272.2, 492.5, 280]
-    source_id: SRC-4F-LIGHTS
-    status: drawing-extracted
-    control_group_id: SG-SECONDARY-CEILING
-  - id: LGT-4F-CL004
-    type: ceiling_light
-    floor: 4F
-    space_id: 4f-utility-passage
-    circuit_id: C-LGT-4F-02
-    position: [845.8, 101.9, 280]
-    source_id: SRC-4F-LIGHTS
-    status: drawing-extracted
-    control_group_id: SG-UTILITY-PASSAGE-CEILING
+- id: OUT-4F-S001
+  type: general_outlet
+  floor: 4F
+  space_id: 4f-main-bedroom
+  circuit_id: C-OUT-4F-01
+  position:
+  - 87.2
+  - 19.2
+  - 30
+  source_id: SRC-4F-OUTLETS
+  status: needs-point-verification
+- id: OUT-4F-S002
+  type: general_outlet
+  floor: 4F
+  space_id: 4f-guest-bathroom
+  circuit_id: C-OUT-BATH-GUEST
+  position:
+  - 1029.4
+  - 25.8
+  - 30
+  source_id: SRC-4F-OUTLETS
+  status: needs-point-verification
+- id: OUT-4F-S003
+  type: general_outlet
+  floor: 4F
+  space_id: 4f-main-bedroom
+  circuit_id: C-OUT-4F-01
+  position:
+  - 310.6
+  - 23.7
+  - 30
+  source_id: SRC-4F-OUTLETS
+  status: needs-point-verification
+- id: OUT-4F-S004
+  type: general_outlet
+  floor: 4F
+  space_id: 4f-living-dining
+  circuit_id: C-OUT-4F-02
+  position:
+  - 647.9
+  - 30.7
+  - 30
+  source_id: SRC-4F-OUTLETS
+  status: needs-point-verification
+- id: OUT-4F-S005
+  type: general_outlet
+  floor: 4F
+  space_id: 4f-storage
+  circuit_id: C-OUT-4F-03
+  position:
+  - 922.9
+  - 30.7
+  - 30
+  source_id: SRC-4F-OUTLETS
+  status: needs-point-verification
+- id: OUT-4F-S006
+  type: general_outlet
+  floor: 4F
+  space_id: 4f-utility-passage
+  circuit_id: C-OUT-4F-03
+  position:
+  - 816.2
+  - 30.7
+  - 30
+  source_id: SRC-4F-OUTLETS
+  status: needs-point-verification
+- id: OUT-4F-S007
+  type: general_outlet
+  floor: 4F
+  space_id: 4f-main-bedroom
+  circuit_id: C-OUT-4F-01
+  position:
+  - 410.0
+  - 76.7
+  - 30
+  source_id: SRC-4F-OUTLETS
+  status: needs-point-verification
+- id: OUT-4F-S008
+  type: general_outlet
+  floor: 4F
+  space_id: 4f-main-bedroom
+  circuit_id: C-OUT-4F-01
+  position:
+  - 21.0
+  - 86.0
+  - 30
+  source_id: SRC-4F-OUTLETS
+  status: needs-point-verification
+- id: OUT-4F-S009
+  type: general_outlet
+  floor: 4F
+  space_id: 4f-utility-passage
+  circuit_id: C-OUT-4F-03
+  position:
+  - 806
+  - 156.5
+  - 30
+  source_id: SRC-4F-OUTLETS
+  status: needs-point-verification
+- id: OUT-4F-S010
+  type: general_outlet
+  floor: 4F
+  space_id: 4f-main-bedroom
+  circuit_id: C-OUT-4F-01
+  position:
+  - 410.3
+  - 144.5
+  - 30
+  source_id: SRC-4F-OUTLETS
+  status: needs-point-verification
+- id: OUT-4F-S011
+  type: general_outlet
+  floor: 4F
+  space_id: 4f-living-dining
+  circuit_id: C-OUT-4F-02
+  position:
+  - 760.1
+  - 218
+  - 30
+  source_id: SRC-4F-OUTLETS
+  status: needs-point-verification
+- id: OUT-4F-S012
+  type: general_outlet
+  floor: 4F
+  space_id: 4f-kitchen
+  circuit_id: C-OUT-4F-03
+  position:
+  - 807.8
+  - 218
+  - 30
+  source_id: SRC-4F-OUTLETS
+  status: needs-point-verification
+- id: OUT-4F-S013
+  type: general_outlet
+  floor: 4F
+  space_id: 4f-main-bedroom
+  circuit_id: C-OUT-4F-01
+  position:
+  - 410.3
+  - 202.3
+  - 30
+  source_id: SRC-4F-OUTLETS
+  status: needs-point-verification
+- id: OUT-4F-S014
+  type: general_outlet
+  floor: 4F
+  space_id: 4f-kitchen
+  circuit_id: C-OUT-4F-03
+  position:
+  - 1169.9
+  - 277.4
+  - 30
+  source_id: SRC-4F-OUTLETS
+  status: needs-point-verification
+- id: OUT-4F-S015
+  type: general_outlet
+  floor: 4F
+  space_id: 4f-main-bedroom
+  circuit_id: C-OUT-4F-01
+  position:
+  - 149.8
+  - 280.2
+  - 30
+  source_id: SRC-4F-OUTLETS
+  status: needs-point-verification
+- id: OUT-4F-S016
+  type: general_outlet
+  floor: 4F
+  space_id: 4f-kitchen
+  circuit_id: C-OUT-4F-03
+  position:
+  - 1018.9
+  - 332.1
+  - 30
+  source_id: SRC-4F-OUTLETS
+  status: needs-point-verification
+- id: OUT-4F-S017
+  type: general_outlet
+  floor: 4F
+  space_id: 4f-main-bathroom
+  circuit_id: C-OUT-BATH-MAIN
+  position:
+  - 156.4
+  - 351.9
+  - 30
+  source_id: SRC-4F-OUTLETS
+  status: needs-point-verification
+- id: OUT-4F-S018
+  type: general_outlet
+  floor: 4F
+  space_id: 4f-kitchen
+  circuit_id: C-OUT-4F-03
+  position:
+  - 1007.7
+  - 376.4
+  - 30
+  source_id: SRC-4F-OUTLETS
+  status: needs-point-verification
+- id: OUT-4F-S019
+  type: general_outlet
+  floor: 4F
+  space_id: 4f-living-dining
+  circuit_id: C-OUT-4F-02
+  position:
+  - 760.1
+  - 376.4
+  - 30
+  source_id: SRC-4F-OUTLETS
+  status: needs-point-verification
+- id: OUT-4F-S020
+  type: general_outlet
+  floor: 4F
+  space_id: 4f-kitchen
+  circuit_id: C-OUT-4F-03
+  position:
+  - 815.7
+  - 376.4
+  - 30
+  source_id: SRC-4F-OUTLETS
+  status: needs-point-verification
+- id: OUT-4F-S021
+  type: general_outlet
+  floor: 4F
+  space_id: 4f-secondary-bedroom
+  circuit_id: C-OUT-4F-01
+  position:
+  - 195.1
+  - 388.6
+  - 30
+  source_id: SRC-4F-OUTLETS
+  status: needs-point-verification
+- id: OUT-4F-S022
+  type: general_outlet
+  floor: 4F
+  space_id: 4f-secondary-bedroom
+  circuit_id: C-OUT-4F-01
+  position:
+  - 411.5
+  - 417
+  - 30
+  source_id: SRC-4F-OUTLETS
+  status: needs-point-verification
+- id: OUT-4F-S023
+  type: general_outlet
+  floor: 4F
+  space_id: 4f-secondary-bedroom
+  circuit_id: C-OUT-4F-01
+  position:
+  - 379.5
+  - 438.1
+  - 30
+  source_id: SRC-4F-OUTLETS
+  status: needs-point-verification
+- id: OUT-4F-S024
+  type: general_outlet
+  floor: 4F
+  space_id: 4f-main-bathroom
+  circuit_id: C-OUT-BATH-MAIN
+  position:
+  - 155.1
+  - 446.3
+  - 30
+  source_id: SRC-4F-OUTLETS
+  status: needs-point-verification
+- id: OUT-4F-S025
+  type: general_outlet
+  floor: 4F
+  space_id: 4f-secondary-bedroom
+  circuit_id: C-OUT-4F-01
+  position:
+  - 195.4
+  - 562.6
+  - 30
+  source_id: SRC-4F-OUTLETS
+  status: needs-point-verification
+- id: OUT-4F-S026
+  type: general_outlet
+  floor: 4F
+  space_id: 4f-secondary-bedroom
+  circuit_id: C-OUT-4F-01
+  position:
+  - 411.7
+  - 577.7
+  - 30
+  source_id: SRC-4F-OUTLETS
+  status: needs-point-verification
+- id: OUT-4F-S027
+  type: general_outlet
+  floor: 4F
+  space_id: 4f-living-dining
+  circuit_id: C-OUT-4F-02
+  position:
+  - 688.6
+  - 577.9
+  - 30
+  source_id: SRC-4F-OUTLETS
+  status: needs-point-verification
+- id: OUT-4F-O001
+  type: optional_outlet
+  floor: 4F
+  space_id: 4f-guest-bathroom
+  circuit_id: C-OUT-BATH-GUEST
+  position:
+  - 1086.7
+  - 25.8
+  - 30
+  source_id: SRC-4F-OUTLETS
+  status: optional
+- id: OUT-4F-O002
+  type: optional_outlet
+  floor: 4F
+  space_id: 4f-living-dining
+  circuit_id: C-OUT-4F-02
+  position:
+  - 760.1
+  - 455.7
+  - 30
+  source_id: SRC-4F-OUTLETS
+  status: optional
+- id: OUT-4F-O003
+  type: optional_outlet
+  floor: 4F
+  space_id: 4f-secondary-bedroom
+  circuit_id: C-OUT-4F-01
+  position:
+  - 411.9
+  - 525.7
+  - 30
+  source_id: SRC-4F-OUTLETS
+  status: optional
+- id: OUT-4F-U001
+  type: high_level_outlet
+  floor: 4F
+  space_id: 4f-main-bedroom
+  circuit_id: C-OUT-4F-01
+  position:
+  - 132.9
+  - 236.7
+  - 220
+  source_id: SRC-4F-OUTLETS
+  status: drawing-extracted
+- id: OUT-4F-U002
+  type: high_level_outlet
+  floor: 4F
+  space_id: 4f-main-bedroom
+  circuit_id: C-OUT-4F-01
+  position:
+  - 10.8
+  - 237.2
+  - 220
+  source_id: SRC-4F-OUTLETS
+  status: drawing-extracted
+- id: OUT-4F-U003
+  type: high_level_outlet
+  floor: 4F
+  space_id: 4f-secondary-bedroom
+  circuit_id: C-OUT-4F-01
+  position:
+  - 433.3
+  - 601.7
+  - 220
+  source_id: SRC-4F-OUTLETS
+  status: drawing-extracted
+- id: OUT-4F-V001
+  type: planned_220v
+  floor: 4F
+  space_id: 4f-utility-passage
+  circuit_id: C-220-UTILITY-RESERVED
+  position:
+  - 869.2
+  - 30.6
+  - to-confirm
+  source_id: SRC-4F-OUTLETS
+  status: needs-load-confirmation
+  intended_load: utility-high-load-to-confirm
+- id: OUT-4F-V002
+  type: planned_220v
+  floor: 4F
+  space_id: 4f-guest-bathroom
+  circuit_id: C-220-BATH-GUEST-HEATER
+  position:
+  - 1094
+  - 101.2
+  - to-confirm
+  source_id: SRC-4F-OUTLETS
+  status: needs-load-confirmation
+  intended_load: guest-bath-heater
+- id: OUT-4F-V003
+  type: planned_220v
+  floor: 4F
+  space_id: 4f-kitchen
+  circuit_id: C-220-KITCHEN-RESERVED
+  position:
+  - 1169.8
+  - 195.2
+  - to-confirm
+  source_id: SRC-4F-OUTLETS
+  status: needs-load-confirmation
+  intended_load: kitchen-high-load-to-confirm
+- id: OUT-4F-V004
+  type: planned_220v
+  floor: 4F
+  space_id: 4f-main-bedroom
+  circuit_id: C-220-AC-BEDROOMS
+  position:
+  - 11.5
+  - 202.3
+  - to-confirm
+  source_id: SRC-4F-OUTLETS
+  status: needs-load-confirmation
+  intended_load: main-bedroom-ac
+- id: OUT-4F-V005
+  type: planned_220v
+  floor: 4F
+  space_id: 4f-kitchen
+  circuit_id: C-220-IH
+  position:
+  - 1170
+  - 350
+  - to-confirm
+  source_id: SRC-4F-OUTLETS
+  status: needs-load-confirmation
+  intended_load: ih-cooktop
+- id: OUT-4F-V006
+  type: planned_220v
+  floor: 4F
+  space_id: 4f-main-bathroom
+  circuit_id: C-220-BATH-MAIN-HEATER
+  position:
+  - 82.7
+  - 430.8
+  - to-confirm
+  source_id: SRC-4F-OUTLETS
+  status: needs-load-confirmation
+  intended_load: main-bath-heater
+- id: OUT-4F-V007
+  type: planned_220v
+  floor: 4F
+  space_id: 4f-living-dining
+  circuit_id: C-220-AC-LIVING
+  position:
+  - 549.5
+  - 581.9
+  - to-confirm
+  source_id: SRC-4F-OUTLETS
+  status: needs-load-confirmation
+  intended_load: living-room-ac
+- id: OUT-4F-V008
+  type: planned_220v
+  floor: 4F
+  space_id: 4f-secondary-bedroom
+  circuit_id: C-220-AC-BEDROOMS
+  position:
+  - 233.8
+  - 583.3
+  - to-confirm
+  source_id: SRC-4F-OUTLETS
+  status: needs-load-confirmation
+  intended_load: secondary-bedroom-ac
+- id: LGT-4F-DL001
+  type: downlight
+  floor: 4F
+  space_id: 4f-main-bedroom
+  circuit_id: C-LGT-4F-01
+  position:
+  - 332.6
+  - 45.6
+  - 280
+  source_id: SRC-4F-LIGHTS
+  status: drawing-extracted
+  control_group_id: SG-MASTER-DOWNLIGHT
+- id: LGT-4F-DL002
+  type: downlight
+  floor: 4F
+  space_id: 4f-main-bedroom
+  circuit_id: C-LGT-4F-01
+  position:
+  - 415.8
+  - 64.0
+  - 280
+  source_id: SRC-4F-LIGHTS
+  status: drawing-extracted
+  control_group_id: SG-MASTER-DOWNLIGHT
+- id: LGT-4F-DL003
+  type: downlight
+  floor: 4F
+  space_id: 4f-main-bedroom
+  circuit_id: C-LGT-4F-01
+  position:
+  - 57.5
+  - 68.4
+  - 280
+  source_id: SRC-4F-LIGHTS
+  status: drawing-extracted
+  control_group_id: SG-MASTER-DOWNLIGHT
+- id: LGT-4F-DL004
+  type: downlight
+  floor: 4F
+  space_id: 4f-guest-bathroom
+  circuit_id: C-LGT-4F-02
+  position:
+  - 1154.7
+  - 82.4
+  - 280
+  source_id: SRC-4F-LIGHTS
+  status: drawing-extracted
+  control_group_id: SG-GUEST-BATH-DOWNLIGHT
+- id: LGT-4F-DL005
+  type: downlight
+  floor: 4F
+  space_id: 4f-guest-bathroom
+  circuit_id: C-LGT-4F-02
+  position:
+  - 1080.3
+  - 82.5
+  - 280
+  source_id: SRC-4F-LIGHTS
+  status: drawing-extracted
+  control_group_id: SG-GUEST-BATH-DOWNLIGHT
+- id: LGT-4F-DL006
+  type: downlight
+  floor: 4F
+  space_id: 4f-guest-bathroom
+  circuit_id: C-LGT-4F-02
+  position:
+  - 1021
+  - 82.7
+  - 280
+  source_id: SRC-4F-LIGHTS
+  status: drawing-extracted
+  control_group_id: SG-GUEST-BATH-DOWNLIGHT
+- id: LGT-4F-DL007
+  type: downlight
+  floor: 4F
+  space_id: 4f-storage
+  circuit_id: C-LGT-4F-02
+  position:
+  - 941.7
+  - 124.9
+  - 280
+  source_id: SRC-4F-LIGHTS
+  status: drawing-extracted
+  control_group_id: SG-UTILITY-DOWNLIGHT
+- id: LGT-4F-DL008
+  type: downlight
+  floor: 4F
+  space_id: 4f-main-bedroom
+  circuit_id: C-LGT-4F-01
+  position:
+  - 332.7
+  - 118.2
+  - 280
+  source_id: SRC-4F-LIGHTS
+  status: drawing-extracted
+  control_group_id: SG-MASTER-DOWNLIGHT
+- id: LGT-4F-DL009
+  type: downlight
+  floor: 4F
+  space_id: 4f-main-bedroom
+  circuit_id: C-LGT-4F-01
+  position:
+  - 416.1
+  - 124.2
+  - 280
+  source_id: SRC-4F-LIGHTS
+  status: drawing-extracted
+  control_group_id: SG-MASTER-DOWNLIGHT
+- id: LGT-4F-DL010
+  type: downlight
+  floor: 4F
+  space_id: 4f-main-bedroom
+  circuit_id: C-LGT-4F-01
+  position:
+  - 57.4
+  - 137.7
+  - 280
+  source_id: SRC-4F-LIGHTS
+  status: drawing-extracted
+  control_group_id: SG-MASTER-DOWNLIGHT
+- id: LGT-4F-DL011
+  type: downlight
+  floor: 4F
+  space_id: 4f-main-bedroom
+  circuit_id: C-LGT-4F-01
+  position:
+  - 332.8
+  - 179.6
+  - 280
+  source_id: SRC-4F-LIGHTS
+  status: drawing-extracted
+  control_group_id: SG-MASTER-DOWNLIGHT
+- id: LGT-4F-DL012
+  type: downlight
+  floor: 4F
+  space_id: 4f-main-bedroom
+  circuit_id: C-LGT-4F-01
+  position:
+  - 416.1
+  - 183.8
+  - 280
+  source_id: SRC-4F-LIGHTS
+  status: drawing-extracted
+  control_group_id: SG-MASTER-DOWNLIGHT
+- id: LGT-4F-DL013
+  type: downlight
+  floor: 4F
+  space_id: 4f-kitchen
+  circuit_id: C-LGT-4F-02
+  position:
+  - 1125.9
+  - 224.8
+  - 280
+  source_id: SRC-4F-LIGHTS
+  status: drawing-extracted
+  control_group_id: SG-KITCHEN-DOWNLIGHT
+- id: LGT-4F-DL014
+  type: downlight
+  floor: 4F
+  space_id: 4f-main-bedroom
+  circuit_id: C-LGT-4F-01
+  position:
+  - 57.6
+  - 207.1
+  - 280
+  source_id: SRC-4F-LIGHTS
+  status: drawing-extracted
+  control_group_id: SG-MASTER-DOWNLIGHT
+- id: LGT-4F-DL015
+  type: downlight
+  floor: 4F
+  space_id: 4f-kitchen
+  circuit_id: C-LGT-4F-02
+  position:
+  - 1007.7
+  - 231.4
+  - 280
+  source_id: SRC-4F-LIGHTS
+  status: drawing-extracted
+  control_group_id: SG-KITCHEN-DOWNLIGHT
+- id: LGT-4F-DL016
+  type: downlight
+  floor: 4F
+  space_id: 4f-kitchen
+  circuit_id: C-LGT-4F-02
+  position:
+  - 912.2
+  - 263
+  - 280
+  source_id: SRC-4F-LIGHTS
+  status: drawing-extracted
+  control_group_id: SG-KITCHEN-DOWNLIGHT
+- id: LGT-4F-DL017
+  type: downlight
+  floor: 4F
+  space_id: 4f-kitchen
+  circuit_id: C-LGT-4F-02
+  position:
+  - 841
+  - 263.3
+  - 280
+  source_id: SRC-4F-LIGHTS
+  status: drawing-extracted
+  control_group_id: SG-KITCHEN-DOWNLIGHT
+- id: LGT-4F-DL018
+  type: downlight
+  floor: 4F
+  space_id: 4f-kitchen
+  circuit_id: C-LGT-4F-02
+  position:
+  - 1126
+  - 288.1
+  - 280
+  source_id: SRC-4F-LIGHTS
+  status: drawing-extracted
+  control_group_id: SG-KITCHEN-DOWNLIGHT
+- id: LGT-4F-DL019
+  type: downlight
+  floor: 4F
+  space_id: 4f-living-dining
+  circuit_id: C-LGT-4F-02
+  position:
+  - 533.7
+  - 305.3
+  - 280
+  source_id: SRC-4F-LIGHTS
+  status: drawing-extracted
+  control_group_id: SG-LIVING-DINING-DOWNLIGHT
+- id: LGT-4F-DL020
+  type: downlight
+  floor: 4F
+  space_id: 4f-living-dining
+  circuit_id: C-LGT-4F-02
+  position:
+  - 628.2
+  - 305.6
+  - 280
+  source_id: SRC-4F-LIGHTS
+  status: drawing-extracted
+  control_group_id: SG-LIVING-DINING-DOWNLIGHT
+- id: LGT-4F-DL021
+  type: downlight
+  floor: 4F
+  space_id: 4f-main-bedroom
+  circuit_id: C-LGT-4F-01
+  position:
+  - 325
+  - 281.3
+  - 280
+  source_id: SRC-4F-LIGHTS
+  status: drawing-extracted
+  control_group_id: SG-MASTER-DOWNLIGHT
+  coordinate_status: relocated-inside-room-after-pdf-reconstruction
+- id: LGT-4F-DL022
+  type: downlight
+  floor: 4F
+  space_id: 4f-kitchen
+  circuit_id: C-LGT-4F-02
+  position:
+  - 1125.8
+  - 351.1
+  - 280
+  source_id: SRC-4F-LIGHTS
+  status: drawing-extracted
+  control_group_id: SG-KITCHEN-DOWNLIGHT
+- id: LGT-4F-DL023
+  type: downlight
+  floor: 4F
+  space_id: 4f-secondary-bedroom
+  circuit_id: C-LGT-4F-01
+  position:
+  - 234.0
+  - 358.6
+  - 280
+  source_id: SRC-4F-LIGHTS
+  status: drawing-extracted
+  control_group_id: SG-SECONDARY-DOWNLIGHT
+- id: LGT-4F-DL024
+  type: downlight
+  floor: 4F
+  space_id: 4f-living-dining
+  circuit_id: C-LGT-4F-02
+  position:
+  - 681.3
+  - 379.3
+  - 280
+  source_id: SRC-4F-LIGHTS
+  status: drawing-extracted
+  control_group_id: SG-LIVING-DINING-DOWNLIGHT
+- id: LGT-4F-DL025
+  type: downlight
+  floor: 4F
+  space_id: 4f-main-bathroom
+  circuit_id: C-LGT-4F-01
+  position:
+  - 99.3
+  - 379.4
+  - 280
+  source_id: SRC-4F-LIGHTS
+  status: drawing-extracted
+  control_group_id: SG-MAIN-BATH-DOWNLIGHT
+- id: LGT-4F-DL026
+  type: downlight
+  floor: 4F
+  space_id: 4f-secondary-bedroom
+  circuit_id: C-LGT-4F-01
+  position:
+  - 424.0
+  - 424.5
+  - 280
+  source_id: SRC-4F-LIGHTS
+  status: drawing-extracted
+  control_group_id: SG-SECONDARY-DOWNLIGHT
+- id: LGT-4F-DL027
+  type: downlight
+  floor: 4F
+  space_id: 4f-living-dining
+  circuit_id: C-LGT-4F-02
+  position:
+  - 681.5
+  - 456.4
+  - 280
+  source_id: SRC-4F-LIGHTS
+  status: drawing-extracted
+  control_group_id: SG-LIVING-DINING-DOWNLIGHT
+- id: LGT-4F-DL028
+  type: downlight
+  floor: 4F
+  space_id: 4f-main-bathroom
+  circuit_id: C-LGT-4F-01
+  position:
+  - 99.5
+  - 461.5
+  - 280
+  source_id: SRC-4F-LIGHTS
+  status: drawing-extracted
+  control_group_id: SG-MAIN-BATH-DOWNLIGHT
+- id: LGT-4F-DL029
+  type: downlight
+  floor: 4F
+  space_id: 4f-secondary-bedroom
+  circuit_id: C-LGT-4F-01
+  position:
+  - 423.9
+  - 522.6
+  - 280
+  source_id: SRC-4F-LIGHTS
+  status: drawing-extracted
+  control_group_id: SG-SECONDARY-DOWNLIGHT
+- id: LGT-4F-DL030
+  type: downlight
+  floor: 4F
+  space_id: 4f-living-dining
+  circuit_id: C-LGT-4F-02
+  position:
+  - 681.3
+  - 533.5
+  - 280
+  source_id: SRC-4F-LIGHTS
+  status: drawing-extracted
+  control_group_id: SG-LIVING-DINING-DOWNLIGHT
+- id: LGT-4F-DL031
+  type: downlight
+  floor: 4F
+  space_id: 4f-main-bathroom
+  circuit_id: C-LGT-4F-01
+  position:
+  - 99.3
+  - 552.1
+  - 280
+  source_id: SRC-4F-LIGHTS
+  status: drawing-extracted
+  control_group_id: SG-MAIN-BATH-DOWNLIGHT
+- id: LGT-4F-DL032
+  type: downlight
+  floor: 4F
+  space_id: 4f-secondary-bedroom
+  circuit_id: C-LGT-4F-01
+  position:
+  - 234.2
+  - 562.4
+  - 280
+  source_id: SRC-4F-LIGHTS
+  status: drawing-extracted
+  control_group_id: SG-SECONDARY-DOWNLIGHT
+- id: LGT-4F-DL033
+  type: downlight
+  floor: 4F
+  space_id: 4f-secondary-bedroom
+  circuit_id: C-LGT-4F-01
+  position:
+  - 325.9
+  - 562.5
+  - 280
+  source_id: SRC-4F-LIGHTS
+  status: drawing-extracted
+  control_group_id: SG-SECONDARY-DOWNLIGHT
+- id: LGT-4F-PD001
+  type: pendant
+  floor: 4F
+  space_id: 4f-living-dining
+  circuit_id: C-LGT-4F-02
+  position:
+  - 559.6
+  - 470.4
+  - 260
+  source_id: SRC-4F-LIGHTS
+  status: drawing-extracted
+  control_group_id: SG-LIVING-DINING-PENDANT
+- id: LGT-4F-PD002
+  type: pendant
+  floor: 4F
+  space_id: 4f-kitchen
+  circuit_id: C-LGT-4F-02
+  position:
+  - 1008.1
+  - 305.8
+  - 260
+  source_id: SRC-4F-LIGHTS
+  status: drawing-extracted
+  control_group_id: SG-KITCHEN-PENDANT
+- id: LGT-4F-PD003
+  type: pendant
+  floor: 4F
+  space_id: 4f-kitchen
+  circuit_id: C-LGT-4F-02
+  position:
+  - 1008.1
+  - 348.8
+  - 260
+  source_id: SRC-4F-LIGHTS
+  status: drawing-extracted
+  control_group_id: SG-KITCHEN-PENDANT
+- id: LGT-4F-CL001
+  type: ceiling_light
+  floor: 4F
+  space_id: 4f-main-bedroom
+  circuit_id: C-LGT-4F-01
+  position:
+  - 194.0
+  - 104.0
+  - 280
+  source_id: SRC-4F-LIGHTS
+  status: drawing-extracted
+  control_group_id: SG-MASTER-CEILING
+- id: LGT-4F-CL002
+  type: ceiling_light
+  floor: 4F
+  space_id: 4f-living-dining
+  circuit_id: C-LGT-4F-02
+  position:
+  - 595.4
+  - 154.7
+  - 280
+  source_id: SRC-4F-LIGHTS
+  status: drawing-extracted
+  control_group_id: SG-LIVING-DINING-CEILING
+- id: LGT-4F-CL003
+  type: ceiling_light
+  floor: 4F
+  space_id: 4f-secondary-bedroom
+  circuit_id: C-LGT-4F-01
+  position:
+  - 255.1
+  - 492.5
+  - 280
+  source_id: SRC-4F-LIGHTS
+  status: drawing-extracted
+  control_group_id: SG-SECONDARY-CEILING
+- id: LGT-4F-CL004
+  type: ceiling_light
+  floor: 4F
+  space_id: 4f-utility-passage
+  circuit_id: C-LGT-4F-02
+  position:
+  - 845.8
+  - 101.9
+  - 280
+  source_id: SRC-4F-LIGHTS
+  status: drawing-extracted
+  control_group_id: SG-UTILITY-PASSAGE-CEILING
 control_groups:
-  - id: SG-MASTER-DOWNLIGHT
-    name: SG MASTER DOWNLIGHT
-    point_ids: [LGT-4F-DL001, LGT-4F-DL002, LGT-4F-DL003, LGT-4F-DL008, LGT-4F-DL009, LGT-4F-DL010, LGT-4F-DL011, LGT-4F-DL012, LGT-4F-DL014, LGT-4F-DL021]
-    wall_control: physical-switch
-    dimming_at_wall: false
-    neutral_required: true
-    smart_control: module-or-smart-switch-to-confirm
-    status: proposed
-  - id: SG-GUEST-BATH-DOWNLIGHT
-    name: SG GUEST BATH DOWNLIGHT
-    point_ids: [LGT-4F-DL004, LGT-4F-DL005, LGT-4F-DL006]
-    wall_control: physical-switch
-    dimming_at_wall: false
-    neutral_required: true
-    smart_control: module-or-smart-switch-to-confirm
-    status: proposed
-  - id: SG-UTILITY-DOWNLIGHT
-    name: SG UTILITY DOWNLIGHT
-    point_ids: [LGT-4F-DL007]
-    wall_control: physical-switch
-    dimming_at_wall: false
-    neutral_required: true
-    smart_control: module-or-smart-switch-to-confirm
-    status: proposed
-  - id: SG-KITCHEN-DOWNLIGHT
-    name: SG KITCHEN DOWNLIGHT
-    point_ids: [LGT-4F-DL013, LGT-4F-DL015, LGT-4F-DL016, LGT-4F-DL017, LGT-4F-DL018, LGT-4F-DL022]
-    wall_control: physical-switch
-    dimming_at_wall: false
-    neutral_required: true
-    smart_control: module-or-smart-switch-to-confirm
-    status: proposed
-  - id: SG-LIVING-DINING-DOWNLIGHT
-    name: SG LIVING DINING DOWNLIGHT
-    point_ids: [LGT-4F-DL019, LGT-4F-DL020, LGT-4F-DL024, LGT-4F-DL027, LGT-4F-DL030]
-    wall_control: physical-switch
-    dimming_at_wall: false
-    neutral_required: true
-    smart_control: module-or-smart-switch-to-confirm
-    status: proposed
-  - id: SG-SECONDARY-DOWNLIGHT
-    name: SG SECONDARY DOWNLIGHT
-    point_ids: [LGT-4F-DL023, LGT-4F-DL026, LGT-4F-DL029, LGT-4F-DL032, LGT-4F-DL033]
-    wall_control: physical-switch
-    dimming_at_wall: false
-    neutral_required: true
-    smart_control: module-or-smart-switch-to-confirm
-    status: proposed
-  - id: SG-MAIN-BATH-DOWNLIGHT
-    name: SG MAIN BATH DOWNLIGHT
-    point_ids: [LGT-4F-DL025, LGT-4F-DL028, LGT-4F-DL031]
-    wall_control: physical-switch
-    dimming_at_wall: false
-    neutral_required: true
-    smart_control: module-or-smart-switch-to-confirm
-    status: proposed
-  - id: SG-LIVING-DINING-PENDANT
-    name: SG LIVING DINING PENDANT
-    point_ids: [LGT-4F-PD001]
-    wall_control: physical-switch
-    dimming_at_wall: false
-    neutral_required: true
-    smart_control: module-or-smart-switch-to-confirm
-    status: proposed
-  - id: SG-KITCHEN-PENDANT
-    name: SG KITCHEN PENDANT
-    point_ids: [LGT-4F-PD002, LGT-4F-PD003]
-    wall_control: physical-switch
-    dimming_at_wall: false
-    neutral_required: true
-    smart_control: module-or-smart-switch-to-confirm
-    status: proposed
-  - id: SG-MASTER-CEILING
-    name: SG MASTER CEILING
-    point_ids: [LGT-4F-CL001]
-    wall_control: physical-switch
-    dimming_at_wall: false
-    neutral_required: true
-    smart_control: module-or-smart-switch-to-confirm
-    status: proposed
-  - id: SG-LIVING-DINING-CEILING
-    name: SG LIVING DINING CEILING
-    point_ids: [LGT-4F-CL002]
-    wall_control: physical-switch
-    dimming_at_wall: false
-    neutral_required: true
-    smart_control: module-or-smart-switch-to-confirm
-    status: proposed
-  - id: SG-SECONDARY-CEILING
-    name: SG SECONDARY CEILING
-    point_ids: [LGT-4F-CL003]
-    wall_control: physical-switch
-    dimming_at_wall: false
-    neutral_required: true
-    smart_control: module-or-smart-switch-to-confirm
-    status: proposed
-  - id: SG-UTILITY-PASSAGE-CEILING
-    name: SG UTILITY PASSAGE CEILING
-    point_ids: [LGT-4F-CL004]
-    wall_control: physical-switch
-    dimming_at_wall: false
-    neutral_required: true
-    smart_control: module-or-smart-switch-to-confirm
-    status: proposed
-
+- id: SG-MASTER-DOWNLIGHT
+  name: SG MASTER DOWNLIGHT
+  point_ids:
+  - LGT-4F-DL001
+  - LGT-4F-DL002
+  - LGT-4F-DL003
+  - LGT-4F-DL008
+  - LGT-4F-DL009
+  - LGT-4F-DL010
+  - LGT-4F-DL011
+  - LGT-4F-DL012
+  - LGT-4F-DL014
+  - LGT-4F-DL021
+  wall_control: physical-switch
+  dimming_at_wall: false
+  neutral_required: true
+  smart_control: module-or-smart-switch-to-confirm
+  status: proposed
+- id: SG-GUEST-BATH-DOWNLIGHT
+  name: SG GUEST BATH DOWNLIGHT
+  point_ids:
+  - LGT-4F-DL004
+  - LGT-4F-DL005
+  - LGT-4F-DL006
+  wall_control: physical-switch
+  dimming_at_wall: false
+  neutral_required: true
+  smart_control: module-or-smart-switch-to-confirm
+  status: proposed
+- id: SG-UTILITY-DOWNLIGHT
+  name: SG UTILITY DOWNLIGHT
+  point_ids:
+  - LGT-4F-DL007
+  wall_control: physical-switch
+  dimming_at_wall: false
+  neutral_required: true
+  smart_control: module-or-smart-switch-to-confirm
+  status: proposed
+- id: SG-KITCHEN-DOWNLIGHT
+  name: SG KITCHEN DOWNLIGHT
+  point_ids:
+  - LGT-4F-DL013
+  - LGT-4F-DL015
+  - LGT-4F-DL016
+  - LGT-4F-DL017
+  - LGT-4F-DL018
+  - LGT-4F-DL022
+  wall_control: physical-switch
+  dimming_at_wall: false
+  neutral_required: true
+  smart_control: module-or-smart-switch-to-confirm
+  status: proposed
+- id: SG-LIVING-DINING-DOWNLIGHT
+  name: SG LIVING DINING DOWNLIGHT
+  point_ids:
+  - LGT-4F-DL019
+  - LGT-4F-DL020
+  - LGT-4F-DL024
+  - LGT-4F-DL027
+  - LGT-4F-DL030
+  wall_control: physical-switch
+  dimming_at_wall: false
+  neutral_required: true
+  smart_control: module-or-smart-switch-to-confirm
+  status: proposed
+- id: SG-SECONDARY-DOWNLIGHT
+  name: SG SECONDARY DOWNLIGHT
+  point_ids:
+  - LGT-4F-DL023
+  - LGT-4F-DL026
+  - LGT-4F-DL029
+  - LGT-4F-DL032
+  - LGT-4F-DL033
+  wall_control: physical-switch
+  dimming_at_wall: false
+  neutral_required: true
+  smart_control: module-or-smart-switch-to-confirm
+  status: proposed
+- id: SG-MAIN-BATH-DOWNLIGHT
+  name: SG MAIN BATH DOWNLIGHT
+  point_ids:
+  - LGT-4F-DL025
+  - LGT-4F-DL028
+  - LGT-4F-DL031
+  wall_control: physical-switch
+  dimming_at_wall: false
+  neutral_required: true
+  smart_control: module-or-smart-switch-to-confirm
+  status: proposed
+- id: SG-LIVING-DINING-PENDANT
+  name: SG LIVING DINING PENDANT
+  point_ids:
+  - LGT-4F-PD001
+  wall_control: physical-switch
+  dimming_at_wall: false
+  neutral_required: true
+  smart_control: module-or-smart-switch-to-confirm
+  status: proposed
+- id: SG-KITCHEN-PENDANT
+  name: SG KITCHEN PENDANT
+  point_ids:
+  - LGT-4F-PD002
+  - LGT-4F-PD003
+  wall_control: physical-switch
+  dimming_at_wall: false
+  neutral_required: true
+  smart_control: module-or-smart-switch-to-confirm
+  status: proposed
+- id: SG-MASTER-CEILING
+  name: SG MASTER CEILING
+  point_ids:
+  - LGT-4F-CL001
+  wall_control: physical-switch
+  dimming_at_wall: false
+  neutral_required: true
+  smart_control: module-or-smart-switch-to-confirm
+  status: proposed
+- id: SG-LIVING-DINING-CEILING
+  name: SG LIVING DINING CEILING
+  point_ids:
+  - LGT-4F-CL002
+  wall_control: physical-switch
+  dimming_at_wall: false
+  neutral_required: true
+  smart_control: module-or-smart-switch-to-confirm
+  status: proposed
+- id: SG-SECONDARY-CEILING
+  name: SG SECONDARY CEILING
+  point_ids:
+  - LGT-4F-CL003
+  wall_control: physical-switch
+  dimming_at_wall: false
+  neutral_required: true
+  smart_control: module-or-smart-switch-to-confirm
+  status: proposed
+- id: SG-UTILITY-PASSAGE-CEILING
+  name: SG UTILITY PASSAGE CEILING
+  point_ids:
+  - LGT-4F-CL004
+  wall_control: physical-switch
+  dimming_at_wall: false
+  neutral_required: true
+  smart_control: module-or-smart-switch-to-confirm
+  status: proposed
 rendering:
   default_floor: 4F
   layers:
-    - id: outlets
-      point_types: [general_outlet, optional_outlet, high_level_outlet, planned_220v]
-    - id: lighting
-      point_types: [downlight, pendant, ceiling_light]
-    - id: circuits
-      group_by: circuit_id
+  - id: outlets
+    point_types:
+    - general_outlet
+    - optional_outlet
+    - high_level_outlet
+    - planned_220v
+  - id: lighting
+    point_types:
+    - downlight
+    - pendant
+    - ceiling_light
+  - id: circuits
+    group_by: circuit_id
   labels:
     show_point_id: on-hover
     show_symbol: true
     show_circuit: on-select
   three_d:
     enabled: true
-    position_format: "[x, y, z]"
+    position_format: '[x, y, z]'
     mounting_height_source: point.position[2]
-
 validation_rules:
   ids_unique: true
   circuit_reference_required: true
