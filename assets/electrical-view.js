@@ -175,26 +175,14 @@ window.renderElectricalExperience = function renderElectricalExperience(state) {
   state.electricalCleanup = () => {state.electricalLightingController=null;teardown.splice(0).forEach(dispose => dispose());};
 
   function render2D() {
-    const pad = 35, b = floor.bounds;
     const routeItems=showRoutes?window.ElectricalCircuitView.previewRoutes(electrical,floor,routeFilter,routeRoom):[];
     const routeSvg=routeItems.map(({route,kind})=>route?`<polyline class="circuit-route electrical-route-${kind}" points="${route.path.map(p=>p.join(',')).join(' ')}"/>`:'').join('');
     const fixtureSvg=visible.map(point=>lighting.isFixture(point)
       ? lighting.svgFixture(electrical,point,state,escapeHtml)
       : `<g class="electrical-marker" data-point-id="${escapeHtml(point.id)}" tabindex="0" role="button" aria-label="${escapeHtml(point.id + ' ' + titleOf(point))}" transform="translate(${point.position[0]} ${point.position[1]})"><circle r="13" fill="${escapeHtml(colorOf(point))}"/><text y=".5">${escapeHtml(symbolOf(point))}</text></g>`).join('');
     canvas.classList.add('is-2d');
-    canvas.innerHTML = `<svg viewBox="${-pad} ${-pad} ${b.width + 2*pad} ${b.depth + 2*pad}" role="img" aria-label="四樓插座與燈具平面圖">
-      <g class="electrical-scene-base" style="filter:brightness(${lightingEnabled?lighting.ambientBrightness(ambientPercent):1})">
-      <rect x="${-pad}" y="${-pad}" width="${b.width + 2*pad}" height="${b.depth + 2*pad}" fill="#f4f0e7"/>
-      ${floor.rooms.map(room => `<polygon points="${room.polygon.map(pair => pair.join(',')).join(' ')}" fill="${roomColor(room.category)}" opacity=".75"/>`).join('')}
-      ${floor.walls.map(wall => `<line x1="${wall.start[0]}" y1="${wall.start[1]}" x2="${wall.end[0]}" y2="${wall.end[1]}" stroke="#515750" stroke-width="${wall.thickness || 10}"/>`).join('')}
-      ${state.showFurniture ? window.FurnitureView.svg(window.FurnitureView.itemsForFloor(state.furniture,floor.id),escapeHtml) : ''}
-      </g>
-      ${lighting.svgWash(electrical,floor,state)}
-      ${routeSvg}
-      ${showRoutes ? `<g class="circuit-panel" transform="translate(${electrical.distribution_panel.position[0]} ${electrical.distribution_panel.position[1]})"><rect x="-17" y="-18" width="34" height="36" rx="5"/><text y="5">盤</text></g>` : ''}
-      ${window.RoomInteriors.svgOpenings(floor)}${floor.rooms.map(room => {const [x,y] = centroid(room.polygon); return `<text class="electrical-room-name" x="${x}" y="${y}">${escapeHtml(room.name)}</text>`;}).join('')}
-      ${fixtureSvg}
-    </svg>`;
+    const shared=window.RoomInteriors.svgBase(floor,{furniture:state.furniture,interiors:state.interiors,showFurniture:state.showFurniture,roomColor,labels:true,labelClass:'electrical-room-name',sceneClass:'electrical-scene-base',ariaLabel:'四樓插座與燈具平面圖'});
+    canvas.innerHTML=shared.replace('</svg>',`${lighting.svgWash(electrical,floor,state)}${routeSvg}${showRoutes?`<g class="circuit-panel" transform="translate(${electrical.distribution_panel.position[0]} ${electrical.distribution_panel.position[1]})"><rect x="-17" y="-18" width="34" height="36"/><text y="5">盤</text></g>`:''}${fixtureSvg}</svg>`);
     state.electricalLightingController=value=>{const base=canvas.querySelector('.electrical-scene-base');if(base)base.style.filter=`brightness(${lightingEnabled?lighting.ambientBrightness(value):1})`;};
     canvas.addEventListener('click', event => {const marker=event.target.closest('[data-point-id]');const furniture=event.target.closest('[data-furniture-id]');if(marker)selectPoint(marker.dataset.pointId);else if(furniture)selectFurniture(furniture.dataset.furnitureId);});
     canvas.addEventListener('keydown', event => {const node=event.target.closest('[data-point-id],[data-furniture-id]');if(node && ['Enter',' '].includes(event.key)){event.preventDefault();if(node.dataset.pointId)selectPoint(node.dataset.pointId);else selectFurniture(node.dataset.furnitureId);}});
@@ -223,12 +211,12 @@ window.renderElectricalExperience = function renderElectricalExperience(state) {
     const floorMeshes = [];
     floor.rooms.forEach(room => {
       const shape = new THREE.Shape();room.polygon.forEach((p,i) => i ? shape.lineTo(p[0],p[1]) : shape.moveTo(p[0],p[1]));
-      const mesh = new THREE.Mesh(new THREE.ShapeGeometry(shape),new THREE.MeshLambertMaterial({color:roomColor(room.category),side:THREE.DoubleSide}));
+      const floorMaterial=window.RoomInteriors.roomStyle(state.interiors,room.id)?.surfaces?.floor;const mesh = new THREE.Mesh(new THREE.ShapeGeometry(shape),new THREE.MeshLambertMaterial({color:floorMaterial?window.RoomInteriors.color(state.interiors,floorMaterial):roomColor(room.category),side:THREE.DoubleSide}));
       mesh.rotation.x = Math.PI/2;mesh.position.y = -.5;scene.add(mesh);floorMeshes.push(mesh);
     });
     window.RoomInteriors.addWalls3D(scene,floor,state.interiors,THREE);
     const furnitureItems = state.showFurniture ? window.FurnitureView.itemsForFloor(state.furniture,floor.id) : [];
-    const furnitureGroups=window.FurnitureView.add3D(scene,furnitureItems,THREE);
+    const furnitureGroups=window.FurnitureView.add3D(scene,furnitureItems,THREE);if(state.showFurniture)window.RoomInteriors.add3D(scene,floor,state.interiors,THREE);
     if(showRoutes) {
       const routeItems=window.ElectricalCircuitView.previewRoutes(electrical,floor,routeFilter,routeRoom);
       const routeGroup=new THREE.Group();routeGroup.name='electrical-route-preview';
