@@ -10,6 +10,24 @@ window.RoomInteriors = (() => {
   const footprint = o => {const [w,d]=o.size,rotated=Math.abs(o.rotation_deg||0)%180===90;return [rotated?d:w,rotated?w:d];};
   const esc = value => String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
+  function svgOpenings(floor) {
+    return (floor.openings||[]).map(o=>{
+      const [x,y]=o.center,vertical=o.orientation==='vertical'||['west','east','bedroom-living','living-service','living-entry'].includes(o.boundary),dx=vertical?0:o.width/2,dy=vertical?o.width/2:0;
+      if(o.type==='passage')return `<g><title>無門開口 ${o.width} cm</title><line x1="${x-dx}" y1="${y-dy}" x2="${x+dx}" y2="${y+dy}" stroke="#799889" stroke-width="1" stroke-dasharray="4 4"/></g>`;
+      if(o.type==='door'&&o.hinge&&o.open_leaf_end){
+        const [hx,hy]=o.hinge,[ex,ey]=o.open_leaf_end,cx=2*x-hx,cy=2*y-hy,sweep=(cx-hx)*(ey-hy)-(cy-hy)*(ex-hx)>0?1:0;
+        return `<g fill="none" stroke="#926e4d"><title>門 ${o.width} cm</title><line x1="${hx}" y1="${hy}" x2="${ex}" y2="${ey}" stroke-width="3"/><path d="M ${cx} ${cy} A ${o.width} ${o.width} 0 0 ${sweep} ${ex} ${ey}" stroke-width="1.2" stroke-dasharray="5 3"/></g>`;
+      }
+      return `<line x1="${x-dx}" y1="${y-dy}" x2="${x+dx}" y2="${y+dy}" stroke="${o.type==='window'?'#6f98a0':'#a27b57'}" stroke-width="5"/>`;
+    }).join('');
+  }
+
+  function svgDimensions(floor) {
+    if(!floor.measurement?.dimension_chains)return '';
+    const w=floor.bounds.width,d=floor.bounds.depth;
+    return `<g fill="#56655a" stroke="#879187" stroke-width=".7"><path d="M0 -12 V-26 M0 -20 H${w} M${w} -12 V-26 M-12 0 H-28 M-20 0 V${d} M-12 ${d} H-28"/><text x="${w/2}" y="-24" text-anchor="middle" font-size="11" stroke="none">${w} cm</text><text transform="translate(-25 ${d/2}) rotate(-90)" text-anchor="middle" font-size="11" stroke="none">${d} cm</text></g>`;
+  }
+
   function validate(data,plan) {
     if(!data || !Array.isArray(data.rooms) || !data.materials)throw new Error('室內配置缺少 rooms 或 materials');
     const known=new Set(plan.floors.flatMap(f=>f.rooms.map(r=>`${f.id}/${r.id}`))), ids=new Set();
@@ -49,7 +67,7 @@ window.RoomInteriors = (() => {
     const selectable=[];
     for(const r of (data?.rooms||[]).filter(r=>r.floor_id===floor.id))for(const zone of r.surfaces?.floor_zones||[]){
       const shape=new THREE.Shape();zone.polygon.forEach((p,i)=>i?shape.lineTo(...p):shape.moveTo(...p));
-      const mesh=new THREE.Mesh(new THREE.ShapeGeometry(shape),material3D(THREE,data,zone.material));mesh.rotation.x=-Math.PI/2;mesh.position.y=1;parent.add(mesh);
+      const mesh=new THREE.Mesh(new THREE.ShapeGeometry(shape),material3D(THREE,data,zone.material));mesh.rotation.x=Math.PI/2;mesh.position.y=1;parent.add(mesh);
     }
     for(const o of objects(data,floor.id)){
       const [w,d,h]=o.size,[x,z,base]=o.position,group=new THREE.Group();group.position.set(x,0,z);group.rotation.y=-(o.rotation_deg||0)*Math.PI/180;group.userData.interiorId=o.id;parent.add(group);
@@ -117,10 +135,15 @@ window.RoomInteriors = (() => {
         }
       }
     }
+    for(const o of floor.openings||[]){
+      if(o.type!=='door'||!o.hinge||!o.open_leaf_end)continue;
+      const [hx,hz]=o.hinge,[ex,ez]=o.open_leaf_end;
+      const leaf=box(parent,THREE,Math.hypot(ex-hx,ez-hz),o.height||220,3,(hx+ex)/2,(o.height||220)/2,(hz+ez)/2,new THREE.MeshStandardMaterial({color:0xb29a7e,roughness:.85}));leaf.rotation.y=-Math.atan2(ez-hz,ex-hx);
+    }
     // Some doors and windows are already represented by a gap between wall segments.
     for(const o of floor.openings||[]){
       if(o.type!=='window'||!o.center)continue;
-      const vertical=o.boundary==='east'||o.boundary==='west',glass=box(parent,THREE,o.width,o.height||120,1.4,o.center[0],(Number(o.sill_height)||0)+(o.height||120)/2,o.center[1],new THREE.MeshStandardMaterial({color:0xb8d2d6,transparent:true,opacity:.34,metalness:.1,roughness:.16,side:THREE.DoubleSide}));
+      const vertical=o.orientation==='vertical'||o.boundary==='east'||o.boundary==='west',glass=box(parent,THREE,o.width,o.height||120,1.4,o.center[0],(Number(o.sill_height)||0)+(o.height||120)/2,o.center[1],new THREE.MeshStandardMaterial({color:0xb8d2d6,transparent:true,opacity:.34,metalness:.1,roughness:.16,side:THREE.DoubleSide}));
       if(vertical)glass.rotation.y=Math.PI/2;
     }
   }
@@ -129,5 +152,5 @@ window.RoomInteriors = (() => {
     const finishes=[['地面',surface.floor],['一般牆面',wall.upper],['腰牆',wall.lower],...Object.entries(surface.walls||{}).filter(([side])=>side!=='default').flatMap(([side,value])=>[[`${names[side]||side}上部`,value.upper],[`${names[side]||side}下部`,value.lower]])];
     return `<div class="interior-sidebar"><h4>室內材質與設備</h4><div class="interior-materials">${finishes.filter(([,id])=>id).map(([title,id])=>`<div><i style="background:${color(data,id)}"></i>${esc(title)}：${esc(materials(data)[id]?.name||id)}</div>`).join('')}</div>${(style.objects||[]).map(o=>`<div class="interior-entry">${esc(o.name)}<small>${o.size.join(' × ')} cm</small></div>`).join('')}<p class="micro">${esc(style.reference_view?.note||'設備位置為規劃示意，請依現場確認。')}</p></div>`;
   }
-  return {validate,roomStyle,objects,color,footprint,svgFloorZones,svgObjects,add3D,addWalls3D,sidebar};
+  return {validate,roomStyle,objects,color,footprint,svgFloorZones,svgObjects,svgOpenings,svgDimensions,add3D,addWalls3D,sidebar};
 })();
