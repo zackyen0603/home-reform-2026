@@ -6,7 +6,7 @@ window.FurnitureView = (() => {
   const overrideKey='home-reform:furniture-overrides:v2';
   const readOverrides=()=>{try{return JSON.parse(localStorage.getItem(overrideKey)||'{}')||{};}catch{return {};}};
   const applyOverrides=items=>{const overrides=readOverrides();return (items||[]).map(item=>{const patch=overrides[item.id];return patch?{...item,...patch,position:patch.position||item.position,size:patch.size||item.size}:item;});};
-  const itemsForFloor = (data, floorId) => floorId === data?.metadata?.floor_id ? applyOverrides(data.items||[]) : [];
+  const itemsForFloor = (data, floorId) => [...(floorId === data?.metadata?.floor_id ? applyOverrides(data.items||[]) : []), ...(window.CabinetDesigner?.forFloor(floorId)||[])];
   const saveOverride=(id,patch)=>{const all=readOverrides();all[id]={...(all[id]||{}),...patch};localStorage.setItem(overrideKey,JSON.stringify(all));};
   const resetOverride=id=>{const all=readOverrides();delete all[id];localStorage.setItem(overrideKey,JSON.stringify(all));};
   const resetOverrides=()=>localStorage.removeItem(overrideKey);
@@ -80,6 +80,15 @@ window.FurnitureView = (() => {
         case 'chair':
           box(w-5,7,d-5,0,43,0,wood);box(w-6,43,7,0,66,d/2-6,wood);legs(40,12);
           break;
+        case 'designed_cabinet': {
+          const n=item.cabinet_modules||3,t=item.cabinet_panel_cm||1.8;
+          box(t,h,d,-w/2+t/2,h/2,0);box(t,h,d,w/2-t/2,h/2,0);
+          box(w-2*t,t,d,0,t/2,0);box(w-2*t,t,d,0,h-t/2,0);
+          box(w-2*t,h-2*t,Math.min(t,1),0,h/2,-d/2,pale);
+          for(let i=1;i<n;i++)box(t,h-2*t,d,-w/2+i*w/n,h/2,0);
+          if(item.doors==='hinged')for(let i=0;i<n;i++)box(w/n-1,h-2,1,-w/2+(i+.5)*w/n,h/2,d/2+1,pale);
+          break;
+        }
         case 'wardrobe':
           box(w,h,d,0,h/2,0,pale);
           for(const part of [-1,0,1])box(2,h-7,2,part*w/3,h/2,d/2+1,dark);
