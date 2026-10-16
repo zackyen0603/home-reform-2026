@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="顏宅居家整修、智慧家庭與2D/3D平面圖資料儀表板。">
+  <meta name="theme-color" content="#1e211d">
+  <title>顏宅整修控制台｜Home Reform 2026</title>
+  <link rel="stylesheet" href="./assets/styles.css?v=20260923-direct-manipulation">
+  <link rel="stylesheet" href="./assets/electrical-view.css?v=20260923-tv-electrical-models">
+  <link rel="stylesheet" href="./assets/lighting-preview.css?v=20260923-lighting-materials">
+  <link rel="stylesheet" href="./assets/furniture-view.css?v=20260923-kitchen">
+  <link rel="stylesheet" href="./assets/elevation-view.css?v=20260923-elevation">
+  <link rel="stylesheet" href="./assets/room-interiors.css?v=20260923-master-bath">
+  <link rel="stylesheet" href="./assets/circuit-view.css?v=20260923-preview-controls">
+  <script src="https://cdn.jsdelivr.net/npm/js-yaml@4.1.0/dist/js-yaml.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+</head>
+<body>
+  <div class="loading" id="loading"><div class="loading-mark"></div><p>載入六份專案資料中…</p></div>
+  <div class="app-shell" id="app" hidden>
+    <aside class="sidebar">
+      <a class="brand" href="./index.html" aria-label="回到總覽">
+        <span class="brand-mark">顏</span><span>宅整修控制台<small>HOME REFORM · 2026</small></span>
+      </a>
+      <nav id="nav"></nav>
+      <div class="source-panel">
+        <p>資料來源</p>
+        <a href="./home-reform.yaml">home-reform.yaml</a>
+        <a href="./smart-home.yaml">smart-home.yaml</a>
+        <a href="./floorplan.yaml">floorplan.yaml</a>
+        <a href="./electrical.yaml">electrical.yaml</a>
+        <a href="./furniture.yaml">furniture.yaml</a>
+        <a href="./interiors.yaml">interiors.yaml</a>
+        <a href="./construction-schedule.yaml">construction-schedule.yaml</a>
+      </div>
+    </aside>
+
+    <header class="mobile-header">
+      <div class="brand"><span class="brand-mark">顏</span><span>整修控制台</span></div>
+      <button id="menuButton" class="icon-button" aria-label="開啟選單">☰</button>
+    </header>
+
+    <main>
+      <section id="overview" class="hero-section"></section>
+      
+      <section id="floorplan" class="content-section"></section>
+      
+      <section id="electrical" class="content-section"></section>
+      <section id="smart-home" class="content-section"></section>
+      <section id="automations" class="content-section"></section>
+      <section id="infrastructure" class="content-section"></section>
+      <section id="spaces" class="content-section"></section>
+      <section id="equipment" class="content-section"></section>
+      <section id="decisions" class="content-section"></section>
+      <footer id="footer"></footer>
+    </main>
+  </div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <script src="./assets/cabinet-core.js?v=1"></script>
+  <script src="./assets/app.js?v=20260923-tv-electrical-models"></script>
+  <script src="./assets/furniture-view.js?v=20260923-tv-electrical-models"></script>
+  <script src="./assets/room-interiors.js?v=20260923-lighting-materials"></script>
+  <script src="./assets/elevation-view.js?v=20260923-shared-plan-v2"></script>
+  <script src="./assets/circuit-view.js?v=20260923-shared-plan-v2"></script>
+  <script src="./assets/lighting-preview.js?v=20260923-lighting-materials"></script>
+  <script src="./assets/electrical-view.js?v=20260923-tv-electrical-models"></script>
+</body>
+</html>
