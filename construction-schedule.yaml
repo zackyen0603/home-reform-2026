@@ -1,0 +1,44 @@
+schema_version: "1.0"
+metadata:
+  title: 一樓與四樓施工暨採購進場追蹤
+  updated: 2026-10-16
+  timezone: Asia/Taipei
+  note: 工程日期依屋主暫定工期；採購及送貨日期為建議時窗，非已確認訂單或廠商承諾。實際完成與交付須人工更新。
+milestones:
+  - {id: M1, date: 2026-11-16, name: 開工保護}
+  - {id: M2, date: 2027-02-03, name: 一樓細清}
+  - {id: M3, date: 2027-03-21, name: 四樓細清與預計完工}
+tasks:
+  - {id: T01, floor: both, name: 保護工程, start: 2026-11-16, end: 2026-11-16, status: planned}
+  - {id: T02, floor: both, name: 拆除工程, start: 2026-11-17, end: 2026-11-21, status: planned}
+  - {id: T03, floor: both, name: 泥作與水電工程, start: 2026-11-23, end: 2026-12-11, status: planned}
+  - {id: T04, floor: both, name: 泥作與鋁門窗安裝, start: 2026-12-14, end: 2026-12-18, status: planned}
+  - {id: T05, floor: 1F, name: 一樓木作, start: 2026-12-21, end: 2026-12-25, status: planned}
+  - {id: T06, floor: 4F, name: 四樓木作, start: 2026-12-28, end: 2027-01-15, status: planned}
+  - {id: T07, floor: 1F, name: 一樓油漆, start: 2027-01-11, end: 2027-01-29, status: planned}
+  - {id: T08, floor: 1F, name: 一樓水電及冷氣收尾, start: 2027-02-01, end: 2027-02-01, status: planned}
+  - {id: T09, floor: 1F, name: 一樓木地板, start: 2027-02-02, end: 2027-02-02, status: planned}
+  - {id: T10, floor: 1F, name: 一樓細清, start: 2027-02-03, end: 2027-02-03, status: planned}
+  - {id: T11, floor: 4F, name: 四樓油漆, start: 2027-02-11, end: 2027-03-05, status: planned}
+  - {id: T12, floor: 4F, name: 四樓系統櫃安裝, start: 2027-03-08, end: 2027-03-12, status: planned}
+  - {id: T13, floor: 4F, name: 四樓冷氣與水電收尾, start: 2027-03-15, end: 2027-03-16, status: planned}
+  - {id: T14, floor: 4F, name: 四樓木地板, start: 2027-03-17, end: 2027-03-18, status: planned}
+  - {id: T15, floor: 4F, name: 四樓油漆收尾, start: 2027-03-19, end: 2027-03-20, status: planned}
+  - {id: T16, floor: 4F, name: 四樓細清, start: 2027-03-21, end: 2027-03-21, status: planned}
+purchases:
+  - {id: P01, floor: both, category: 建材設備, name: 鋁門窗與玻璃, order_by: 2026-11-20, delivery_start: 2026-12-14, delivery_end: 2026-12-18, install_start: 2026-12-14, install_end: 2026-12-18, status: planned, note: 下單前確認洞口尺寸與玻璃厚度}
+  - {id: P02, floor: both, category: 智慧家庭, name: 智慧開關／感測器／網路預埋材料, order_by: 2026-11-13, delivery_start: 2026-11-23, delivery_end: 2026-12-04, install_start: 2026-11-23, install_end: 2026-12-11, status: planned, note: 先確認開關零線、底盒、AP網路線與感測器供電位置}
+  - {id: P03, floor: 4F, category: 廚房, name: IH 爐 Panasonic KZ-J1H6A 系列, order_by: 2026-12-04, delivery_start: 2027-03-08, delivery_end: 2027-03-12, install_start: 2027-03-15, install_end: 2027-03-16, status: evaluating, note: 先確認200V與櫥櫃開孔；送貨日期可與廚具廠協調}
+  - {id: P04, floor: 4F, category: 廚房, name: Fisher & Paykel DD60DHI9 洗碗機, order_by: 2026-12-04, delivery_start: 2027-03-08, delivery_end: 2027-03-12, install_start: 2027-03-15, install_end: 2027-03-16, status: evaluating, note: 機型與上下水及櫃位需先定案}
+  - {id: P05, floor: 4F, category: 廚房, name: 櫻花 80cm 近吸油煙機, order_by: 2026-12-04, delivery_start: 2027-03-08, delivery_end: 2027-03-12, install_start: 2027-03-15, install_end: 2027-03-16, status: evaluating, note: R7615/R7653 待選；先定排煙管與安裝高度}
+  - {id: P06, floor: 4F, category: 廚房, name: 水槽與龍頭, order_by: 2026-12-04, delivery_start: 2027-03-08, delivery_end: 2027-03-12, install_start: 2027-03-15, install_end: 2027-03-16, status: evaluating, note: 水槽型號及檯面開孔需在檯面製作前確定}
+  - {id: P07, floor: 4F, category: 浴室, name: TOTO 馬桶／免治便座／浴櫃鏡櫃, order_by: 2026-11-27, delivery_start: 2027-03-08, delivery_end: 2027-03-12, install_start: 2027-03-15, install_end: 2027-03-16, status: planned, note: 免治 TCF8CKM31 已購，其餘依實際品項確認；進場需防破損}
+  - {id: P08, floor: 4F, category: 浴室, name: 恆溫淋浴與浴室暖風機, order_by: 2026-11-27, delivery_start: 2027-03-08, delivery_end: 2027-03-12, install_start: 2027-03-15, install_end: 2027-03-16, status: evaluating, note: 水路及220V迴路須於粗配階段確定}
+  - {id: P09, floor: 1F, category: 冷氣, name: 一樓客廳分離式冷氣, order_by: 2026-12-18, delivery_start: 2027-01-25, delivery_end: 2027-01-29, install_start: 2027-02-01, install_end: 2027-02-01, status: evaluating, note: 5.0/6.3kW 型號及管線先確認}
+  - {id: P10, floor: 4F, category: 冷氣, name: 四樓冷氣與吊隱除濕機, order_by: 2026-11-27, delivery_start: 2027-01-04, delivery_end: 2027-01-15, install_start: 2027-01-04, install_end: 2027-03-16, status: evaluating, note: 吊隱設備本體需配合木作封板前進場；冷氣末端於3月收尾}
+  - {id: P11, floor: 4F, category: 家具, name: 主臥 240cm 系統衣櫃與其他系統櫃, order_by: 2027-01-08, delivery_start: 2027-03-08, delivery_end: 2027-03-12, install_start: 2027-03-08, install_end: 2027-03-12, status: planned, note: 尺寸、板材、把手與抽屜需先複量定稿}
+  - {id: P12, floor: 4F, category: 家具, name: 床組／書桌／餐桌／沙發／餐邊櫃, order_by: 2027-02-12, delivery_start: 2027-03-22, delivery_end: 2027-03-31, status: evaluating, note: 建議四樓細清後才送貨以免施工損傷}
+  - {id: P13, floor: 4F, category: 電器, name: 冰箱／洗衣機／烘衣機, order_by: 2027-02-12, delivery_start: 2027-03-22, delivery_end: 2027-03-31, status: planned, note: 粗配前須確定電源、上下水及排水規格}
+  - {id: P14, floor: 4F, category: 電器, name: 電視／投影與影音設備, order_by: 2027-02-19, delivery_start: 2027-03-22, delivery_end: 2027-03-31, status: evaluating, note: 木作階段先確認壁掛載重、管路與插座}
+  - {id: P15, floor: both, category: 燈具, name: 崁燈／吊燈／吸頂燈與面板, order_by: 2026-12-04, delivery_start: 2027-01-18, delivery_end: 2027-01-29, install_start: 2027-02-01, install_end: 2027-03-16, status: evaluating, note: 先提供開孔尺寸與迴路；分樓層按完工時程安裝}
+  - {id: P16, floor: 1F, category: 門禁, name: 一樓採光門／智慧門鈴／玄關設備, order_by: 2026-12-04, delivery_start: 2027-01-18, delivery_end: 2027-01-29, install_start: 2027-02-01, install_end: 2027-02-03, status: evaluating, note: 門洞與外部供電線先定案}
